@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MagicMall Tg NFT Gift to Sticker</title>
+    <title>MagicMall NFT Gift to Telegram Sticker</title>
     <!-- Essential Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
@@ -444,7 +444,7 @@
                 currentLottieAnimation.destroy();
                 currentLottieAnimation = null;
             }
-            previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">Preview will load here after pasting link.</div>';
+            previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">ထည့်ထားသော Gift အားပြသပေးပါလိမ့်မယ်။</div>';
             previewBox.classList.remove('active');
         }
 
@@ -460,11 +460,9 @@
         }
 
         function openOptimizationTool() {
-            if (currentLottieUrl) {
-                const editorBaseUrl = 'https://t.me/Magic_Mall_GameShop'; 
-                const finalUrl = `${editorBaseUrl}?url=${encodeURIComponent(currentLottieUrl)}`;
-                window.open(finalUrl, '_blank');
-            }
+            const editorBaseUrl = 'https://t.me/Magic_Mall_GameShop'; 
+            // We just open the Telegram link directly as intended by the button text
+            window.open(editorBaseUrl, '_blank');
         }
         
         function renderLottiePreview(json_data) {
@@ -491,7 +489,8 @@
         // ===================================
 
         async function fetchLottieData(nftId, lottieUrl) {
-            updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။);
+            // FIX: Template literal was not closed with a backtick (`)
+            updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။`);
             
             const previewBox = document.getElementById('lottie-preview');
             previewBox.classList.add('active');
