@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagicMall Tg NFT Gift to Sticker</title>
+    <!-- Essential Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        /* CSS VARIABLES for Theming */
+        :root {
+            /* Light Mode Defaults */
+            --bg-start: #f0f4f9;
+            --bg-end: #e7f1fc;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --container-border: rgba(255, 255, 255, 0.3);
+            --text-color-primary: #173f5f;
+            --text-color-secondary: #4a4a4a;
+            --input-bg: rgba(255, 255, 255, 0.7);
+            --particle-color: rgba(23, 63, 95, 0.5); /* Blue-ish particles */
+            --button-primary: #0088cc;
+            --button-primary-hover: #0077b3;
+            --button-secondary: #333;
+            --button-secondary-hover: #1a1a1a;
+            --focus-glow: #0088cc; /* Color for input focus glow */
+        }
+
+        .dark-mode {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+            --container-bg: rgba(0, 0, 0, 0.25); /* Darker, slightly transparent glass */
+            --container-border: rgba(255, 255, 255, 0.1);
+            --text-color-primary: #f1f5f9;
+            --text-color-secondary: #cbd5e1;
+            --input-bg: rgba(255, 255, 255, 0.15);
+            --particle-color: rgba(255, 255, 255, 0.3); /* White-ish particles */
+            --button-primary: #2d94d7;
+            --button-primary-hover: #1f80c0;
+            --button-secondary: #555;
+            --button-secondary-hover: #777;
+            --focus-glow: #2d94d7;
+        }
+
+        /* KEYFRAMES for Animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* PARTICLE CANVAS - MUST BE fixed and z-index -1 */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* BASE & TYPOGRAPHY */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color-primary);
+            transition: background 0.5s ease;
+            /* Background for Glassmorphism using variables */
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); 
+        }
+
+        /* GLASSSMORHISM CONTAINER */
+        .container {
+            position: relative;
+            z-index: 10;
+            background: var(--container-bg);
+            padding: 50px; 
+            border-radius: 20px; 
+            
+            backdrop-filter: blur(25px); /* Strong blur effect */
+            -webkit-backdrop-filter: blur(25px); 
+            
+            border: 1px solid var(--container-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
+            
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-sizing: border-box; 
+
+            animation: fadeInUp 0.8s ease-out;
+            transition: background-color 0.5s, border-color 0.5s;
+        }
+
+        /* THEME TOGGLE BUTTON - Fixed to screen corner, mini square with rounded corners */
+        .theme-toggle {
+            position: fixed; 
+            top: 20px;       
+            right: 20px;     
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--container-border);
+            cursor: pointer;
+            font-size: 1rem; 
+            padding: 10px; 
+            border-radius: 10px; 
+            transition: all 0.3s;
+            color: var(--text-color-primary);
+            opacity: 0.8; 
+            z-index: 100; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            line-height: 1; 
+            width: 40px; 
+            height: 40px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            opacity: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* PREVIEW BOX STYLING */
+        #lottie-preview {
+            width: 100%;
+            padding-bottom: 100%; 
+            position: relative;
+            background: var(--container-bg); 
+            border-radius: 15px;
+            border: 1px solid var(--container-border);
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none; 
+            line-height: 1.4;
+        }
+
+        #lottie-preview.active {
+            display: block;
+        }
+
+        /* Ensure Lottie SVG fills the box */
+        #lottie-preview svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important; 
+            height: 100% !important;
+        }
+
+        /* RESPONSIVENESS */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px; 
+                font-size: 0.9rem;
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        h1 {
+            color: var(--text-color-primary);
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            transition: color 0.5s;
+        }
+        .description {
+            margin-bottom: 25px;
+            color: var(--text-color-secondary);
+            padding: 0 10px; 
+            transition: color 0.5s;
+        }
+        
+        /* ----------------------------------- */
+        /* INPUT FIELD (Liquid Focus Effect) */
+        /* ----------------------------------- */
+        input[type="text"] {
+            width: 100%;
+            padding: 15px; 
+            margin-bottom: 20px;
+            border: 1px solid var(--container-border);
+            border-radius: 15px; 
+            font-size: 1em;
+            box-sizing: border-box; 
+            transition: border-color 0.3s, background 0.5s, color 0.5s, box-shadow 0.3s;
+            background: var(--input-bg);
+            color: var(--text-color-primary);
+            /* Initial subtle shadow */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        input[type="text"]:focus {
+             border-color: transparent; /* Hide standard border on focus */
+             outline: none;
+             background: var(--input-bg);
+             /* Liquid Focus Shadow: Inner glow (1st shadow) + soft outer glow (2nd shadow) */
+             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1),
+                         0 0 15px var(--focus-glow);
+        }
+        /* Dark mode focus adjustment */
+        .dark-mode input[type="text"]:focus {
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1),
+                        0 0 15px var(--focus-glow);
+        }
+
+        /* BUTTONS */
+        .action-buttons {
+            display: flex;
+            flex-direction: column; 
+            gap: 10px; 
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: var(--button-primary);
+            color: white;
+            padding: 14px 30px; 
+            border: none;
+            border-radius: 15px; 
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s; /* Include box-shadow in transition */
+            width: 100%;
+            /* Enhanced Initial Shadow */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
+        }
+        
+        /* ----------------------------------- */
+        /* BUTTON GLOW EFFECT ON HOVER */
+        /* ----------------------------------- */
+        button:hover {
+            background-color: var(--button-primary-hover);
+            /* Adds a colored glow to the outer shadow on hover */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-primary);
+        }
+        button:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Secondary Action Styles - Customized Glow Colors */
+        #downloadJsonButton {
+            background-color: var(--button-secondary);
+        }
+        #downloadJsonButton:hover {
+            background-color: var(--button-secondary-hover);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-secondary);
+        }
+        #optimizeButton {
+            background-color: #ff9900;
+        }
+        #optimizeButton:hover {
+            background-color: #cc7a00;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px #ff9900;
+        }
+        /* Dark mode specific glow for secondary buttons */
+        .dark-mode #downloadJsonButton:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-secondary);
+        }
+        .dark-mode #optimizeButton:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px #ff9900;
+        }
+
+        /* STATUS AND PROGRESS BAR */
+        #status {
+            margin-top: 25px;
+            padding: 20px; 
+            border-radius: 20px; 
+            font-weight: bold;
+            text-align: left;
+            line-height: 1.4;
+            transition: background-color 0.5s, border-color 0.5s;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: var(--input-bg);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--button-primary);
+            transition: width 0.4s ease-in-out;
+        }
+
+        .error {
+            background-color: rgba(255, 237, 237, 0.8); 
+            color: #cc0000;
+            border: 1px solid #cc0000;
+        }
+        .dark-mode .error {
+            background-color: rgba(65, 0, 0, 0.6); 
+            color: #ff9999;
+            border: 1px solid #ff9999;
+        }
+        .success {
+            background-color: rgba(237, 255, 241, 0.8); 
+            color: #008800;
+            border: 1px solid #008800;
+        }
+        .dark-mode .success {
+            background-color: rgba(0, 65, 0, 0.6); 
+            color: #99ff99;
+            border: 1px solid #008800;
+        }
+        .loading {
+            color: var(--button-primary);
+            background-color: rgba(240, 248, 255, 0.8);
+            border: 1px solid var(--button-primary);
+        }
+        .dark-mode .loading {
+            color: #94d8ff;
+            background-color: rgba(0, 30, 60, 0.6);
+            border: 1px solid #94d8ff;
+        }
+        #status a {
+            color: var(--button-primary);
+            text-decoration: none;
+            font-weight: normal;
+        }
+        #status a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- THEME TOGGLE BUTTON IS FIXED -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
+    <div class="container">
+        <h1>MagicMall NFT Gift to Telegram Sticker</h1>
+        <p class="description">Public Telegram NFT link ကိုအောက်မှာထည့်ပေးပါ။</p>
+        
+        <!-- Preview Box -->
+        <div id="lottie-preview">
+            <div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">ထည့်ထားသော Gift အားပြသပေးပါလိမ့်မယ်။</div>
+        </div>
+
+        <input type="text" id="nftLink" placeholder="🔗 NFT Link t.me/nft/ID link ကိုဒီမှာထည့်ပါ။" oninput="resetUI()">
+        
+        <div class="action-buttons">
+            <button id="convertButton">Telegram Stickerသို့ပြောင်းပြီးDownloadဆွဲမည်။</button>
+            <button id="downloadJsonButton" style="display: none;">JSON file အားDownload ဆွဲမည် 💾</button>
+            <button id="optimizeButton" style="display: none;">Optimize လုပ်ရန် ownerစီသို့ 🛠️</button>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach main event listeners
+            document.getElementById('convertButton').addEventListener('click', convertAndDownload);
+            document.getElementById('downloadJsonButton').addEventListener('click', downloadRawJson);
+            document.getElementById('optimizeButton').addEventListener('click', openOptimizationTool);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('nftLink').addEventListener('paste', function(event) {
+                setTimeout(convertAndDownload, 50); 
+            }); 
+            document.getElementById('nftLink').oninput = resetUI;
+            
+            // Initialize theme immediately
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('darkMode');
+            
+            let initialMode = savedTheme === 'true';
+            if (savedTheme === null) {
+                initialMode = prefersDark;
+            }
+            applyTheme(initialMode);
+        });
+        
+        // Global state variables
+        const TELEGRAM_TGS_LIMIT_KB = 64; 
+        const TELEGRAM_TGS_LIMIT_BYTES = TELEGRAM_TGS_LIMIT_KB * 1024;
+        let currentLottieUrl = ''; 
+        let currentNftId = '';
+        let currentLottieAnimation = null;
+        let fetchedLottieJson = null;       
+        let fetchedLottieJsonText = null;   
+
+        // ===================================
+        // THEME LOGIC
+        // ===================================
+        function applyTheme(isDarkMode) {
+            const body = document.body;
+            const toggleButton = document.getElementById('themeToggle');
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                toggleButton.innerHTML = '☀️'; /* Sun icon for Dark Mode */
+            } else {
+                body.classList.remove('dark-mode');
+                toggleButton.innerHTML = '🌙'; /* Moon icon for Light Mode */
+            }
+        }
+
+        function toggleTheme() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const newMode = !isDarkMode;
+            applyTheme(newMode);
+            localStorage.setItem('darkMode', newMode ? 'true' : 'false');
+        }
+
+        // ===================================
+        // UTILITY FUNCTIONS (UI Management)
+        // ===================================
+
+        function updateProgress(step, totalSteps, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'loading';
+            const percentage = (step / totalSteps) * 100;
+            
+            statusDiv.innerHTML = `
+                ${message}
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: ${percentage.toFixed(0)}%;"></div>
+                </div>
+            `;
+        }
+        
+        function resetPreview() {
+            const previewBox = document.getElementById('lottie-preview');
+            if (currentLottieAnimation) {
+                currentLottieAnimation.destroy();
+                currentLottieAnimation = null;
+            }
+            previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">Preview will load here after pasting link.</div>';
+            previewBox.classList.remove('active');
+        }
+
+        function resetUI() {
+            document.getElementById('convertButton').style.display = 'block';
+            document.getElementById('downloadJsonButton').style.display = 'none';
+            document.getElementById('optimizeButton').style.display = 'none';
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('status').className = '';
+            resetPreview();
+            fetchedLottieJson = null; 
+            fetchedLottieJsonText = null;
+        }
+
+        function openOptimizationTool() {
+            if (currentLottieUrl) {
+                const editorBaseUrl = 'https://t.me/Magic_Mall_GameShop'; 
+                const finalUrl = `${editorBaseUrl}?url=${encodeURIComponent(currentLottieUrl)}`;
+                window.open(finalUrl, '_blank');
+            }
+        }
+        
+        function renderLottiePreview(json_data) {
+            const previewBox = document.getElementById('lottie-preview');
+            previewBox.classList.add('active');
+            previewBox.innerHTML = '';
+
+            currentLottieAnimation = lottie.loadAnimation({
+                container: previewBox,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                animationData: json_data
+            });
+
+            currentLottieAnimation.addEventListener('error', () => {
+                 previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: #cc0000; font-weight: bold;">❌ Error Rendering Animation</div>';
+            });
+            currentLottieAnimation.resize();
+        }
+
+        // ===================================
+        // FETCH & CONVERT LOGIC
+        // ===================================
+
+        async function fetchLottieData(nftId, lottieUrl) {
+            updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။);
+            
+            const previewBox = document.getElementById('lottie-preview');
+            previewBox.classList.add('active');
+
+            try {
+                const response = await fetch(lottieUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Fetch Error (HTTP ${response.status})`);
+                }
+                
+                const jsonText = await response.text();
+                const jsonData = JSON.parse(jsonText);
+                
+                fetchedLottieJsonText = jsonText;
+                
+                renderLottiePreview(jsonData);
+                
+                return jsonData;
+
+            } catch (error) {
+                document.getElementById('status').className = 'error';
+                document.getElementById('status').innerHTML = `❌ Error အချက်အလက်များ မရယူနိုင်ခဲ့ပါ။🥹 ${error.message}`;
+                
+                resetPreview();
+                previewBox.classList.add('active');
+                previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: #cc0000; font-weight: bold;">❌ Fetch/Parse Error</div>';
+                return null;
+            }
+        }
+
+        async function downloadRawJson() {
+            const linkInput = document.getElementById('nftLink').value.trim();
+            const match = linkInput.match(/t\.me\/nft\/([a-zA-Z0-9_-]+)/);
+            if (!match) return; 
+            
+            const nftId = match[1];
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'loading';
+            statusDiv.innerHTML = 'Downloading raw JSON...';
+            
+            try {
+                let lottieJsonText = fetchedLottieJsonText;
+                
+                if (!lottieJsonText) {
+                    const response = await fetch(`https://nft.fragment.com/gift/${nftId}.lottie.json`);
+                    if (!response.ok) {
+                        statusDiv.className = 'error';
+                        statusDiv.innerHTML = `❌ Error အချက်အလက်များမတွေ့ခဲ့ပါ။🥺`;
+                        return;
+                    }
+                    lottieJsonText = await response.text();
+                }
+
+                const jsonBlob = new Blob([lottieJsonText], { type: 'application/json' });
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(jsonBlob);
+                downloadLink.download = `${nftId}.json`;
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                statusDiv.className = 'success';
+                statusDiv.innerHTML = `✅ အောင်မြင်စွာ ${nftId}.json ကို Download ဆွဲပြီးပါပြီ`;
+                
+            } catch (error) {
+                statusDiv.className = 'error';
+                statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
+                console.error(error);
+            }
+        }
+
+        async function convertAndDownload() {
+            resetUI(); 
+            const linkInput = document.getElementById('nftLink').value.trim();
+            const statusDiv = document.getElementById('status');
+
+            const match = linkInput.match(/t\.me\/nft\/([a-zA-Z0-9_-]+)/);
+            if (!match) {
+                statusDiv.className = 'error';
+                statusDiv.innerHTML = '🛑 Link မှား နေပါတယ်ပြထားတဲ့ link format အတိုင်းထည့်ပါ။`t.me/nft/NFT-ID`.';
+                return;
+            }
+
+            currentNftId = match[1];
+            currentLottieUrl = `https://nft.fragment.com/gift/${currentNftId}.lottie.json`;
+
+            try {
+                const lottieJsonData = await fetchLottieData(currentNftId, currentLottieUrl);
+                if (!lottieJsonData) return;
+                
+                fetchedLottieJson = lottieJsonData;
+
+                updateProgress(2, 3, `⏳ **Step 2/3:** Compressing Lottie JSON to **.tgs** format and checking size...`);
+
+                if (!fetchedLottieJsonText) {
+                    throw new Error("Compression error: Raw JSON text not found.");
+                }
+                const lottieJsonText = fetchedLottieJsonText; 
+                
+                const jsonBytes = new TextEncoder().encode(lottieJsonText);
+                const tgsBytes = pako.gzip(jsonBytes);
+                const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
+                
+                if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
+                    document.getElementById('convertButton').style.display = 'none';
+                    document.getElementById('downloadJsonButton').style.display = 'block';
+                    document.getElementById('optimizeButton').style.display = 'block';
+
+                    statusDiv.className = 'error';
+                    statusDiv.innerHTML = `
+                        ❌ File Size အရမ်းကြီးနေပါတယ်။<br>
+                        Sticker size က **${tgsSizeKB} KB** (Limit: ${TELEGRAM_TGS_LIMIT_KB} KB).<br>
+                        Telegram ဘက်ကလက်မခံတဲ့အတွက်ကြောင့် အောက်ကခလုတ်ကိုနှိပ်ပြီးပြင်ပါ။
+                    `;
+                    return; 
+                }
+
+                updateProgress(3, 3, `🚀 Step 3/3: Size စစ်ဆေးမှု့အောင်မြင်ပါတယ်။🥳 (${tgsSizeKB} KB). စတင်download ဆွဲနေပါပြီ။`);
+
+                const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(tgsBlob);
+                downloadLink.download = `${currentNftId}.tgs`;
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                statusDiv.className = 'success';
+                statusDiv.innerHTML = `
+                    ✅ အောင်အောင်မြင်မြင်  ${currentNftId} sticker ကို Downloadဆွဲပြီးပါပြီ။🥰<br>
+                    Size ${tgsSizeKB} KB.
+                `;
+
+            } catch (error) {
+                resetUI(); 
+                statusDiv.className = 'error';
+                statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
+                console.error(error);
+            }
+        }
+        
+        
+        // ===================================
+        // PARTICLE LOGIC
+        // ===================================
+        
+        (function() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let w, h;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.radius = Math.random() * 2 + 1;
+                    this.vx = Math.random() * 0.5 - 0.25;
+                    this.vy = Math.random() * 0.5 - 0.25;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--particle-color') || 'rgba(23, 63, 95, 0.5)';
+                    ctx.fill();
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Simple boundary check: wrap particles around
+                    if (this.x < 0) this.x = w;
+                    if (this.x > w) this.x = 0;
+                    if (this.y < 0) this.y = h;
+                    if (this.y > h) this.y = 0;
+                }
+            }
+
+            function initParticles() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                particles = [];
+                const particleCount = w < 600 ? 40 : 80;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            
+            function startAnimationLoop() {
+                requestAnimationFrame(startAnimationLoop);
+                ctx.clearRect(0, 0, w, h);
+                
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+            }
+
+            initParticles();
+            startAnimationLoop();
+
+            window.addEventListener('resize', initParticles);
+        })(); 
+
+    </script>
+</body>
+</html>
+
