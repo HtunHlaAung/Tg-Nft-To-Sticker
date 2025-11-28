@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MagicMall NFT Gift to Telegram Sticker</title>
-    <!-- Essential Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
@@ -18,28 +17,32 @@
             --text-color-primary: #173f5f;
             --text-color-secondary: #4a4a4a;
             --input-bg: rgba(255, 255, 255, 0.7);
-            --particle-color: rgba(23, 63, 95, 0.5); /* Blue-ish particles */
+            --particle-color: rgba(23, 63, 95, 0.5); 
             --button-primary: #0088cc;
             --button-primary-hover: #0077b3;
             --button-secondary: #333;
             --button-secondary-hover: #1a1a1a;
-            --focus-glow: #0088cc; /* Color for input focus glow */
+            --focus-glow: #0088cc; 
+            --validation-color-error: #f33; 
+            --validation-color-success: #00c853;
         }
 
         .dark-mode {
             --bg-start: #0f172a;
             --bg-end: #1e293b;
-            --container-bg: rgba(0, 0, 0, 0.25); /* Darker, slightly transparent glass */
+            --container-bg: rgba(0, 0, 0, 0.25);
             --container-border: rgba(255, 255, 255, 0.1);
             --text-color-primary: #f1f5f9;
             --text-color-secondary: #cbd5e1;
             --input-bg: rgba(255, 255, 255, 0.15);
-            --particle-color: rgba(255, 255, 255, 0.3); /* White-ish particles */
+            --particle-color: rgba(255, 255, 255, 0.3);
             --button-primary: #2d94d7;
             --button-primary-hover: #1f80c0;
             --button-secondary: #555;
             --button-secondary-hover: #777;
             --focus-glow: #2d94d7;
+            --validation-color-error: #f66;
+            --validation-color-success: #69f0ae;
         }
 
         /* KEYFRAMES for Animation */
@@ -48,7 +51,34 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* PARTICLE CANVAS - MUST BE fixed and z-index -1 */
+        /* NEW: Keyframes for button loading animation */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* NEW: Keyframes for validation icon bounce */
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            }
+            0% { opacity: 0; -webkit-transform: scale3d(.3, .3, .3); transform: scale3d(.3, .3, .3); }
+            20% { -webkit-transform: scale3d(1.1, 1.1, 1.1); transform: scale3d(1.1, 1.1, 1.1); }
+            40% { -webkit-transform: scale3d(.9, .9, .9); transform: scale3d(.9, .9, .9); }
+            60% { opacity: 1; -webkit-transform: scale3d(1.03, 1.03, 1.03); transform: scale3d(1.03, 1.03, 1.03); }
+            80% { -webkit-transform: scale3d(.97, .97, .97); transform: scale3d(.97, .97, .97); }
+            100% { opacity: 1; -webkit-transform: scale3d(1, 1, 1); transform: scale3d(1, 1, 1); }
+        }
+
+        /* NEW: Keyframes for simple CSS spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* PARTICLE CANVAS */
         #particle-canvas {
             position: fixed;
             top: 0;
@@ -58,7 +88,7 @@
             z-index: -1;
         }
 
-        /* BASE & TYPOGRAPHY */
+        /* BASE & CONTAINER */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
@@ -68,44 +98,36 @@
             margin: 0;
             color: var(--text-color-primary);
             transition: background 0.5s ease;
-            /* Background for Glassmorphism using variables */
             background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); 
         }
 
-        /* GLASSSMORHISM CONTAINER */
         .container {
             position: relative;
             z-index: 10;
             background: var(--container-bg);
             padding: 50px; 
             border-radius: 20px; 
-            
-            backdrop-filter: blur(25px); /* Strong blur effect */
+            backdrop-filter: blur(25px); 
             -webkit-backdrop-filter: blur(25px); 
-            
             border: 1px solid var(--container-border);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
-            
             width: 100%;
             max-width: 480px;
             text-align: center;
             box-sizing: border-box; 
-
             animation: fadeInUp 0.8s ease-out;
             transition: background-color 0.5s, border-color 0.5s;
         }
 
-        /* THEME TOGGLE BUTTON - Fixed to screen corner, mini square with rounded corners */
+        /* THEME TOGGLE (Animated Icon) */
         .theme-toggle {
             position: fixed; 
             top: 20px;       
             right: 20px;     
             background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--container-border);
             cursor: pointer;
-            font-size: 1rem; 
             padding: 10px; 
             border-radius: 10px; 
             transition: all 0.3s;
@@ -113,7 +135,6 @@
             opacity: 0.8; 
             z-index: 100; 
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            line-height: 1; 
             width: 40px; 
             height: 40px; 
             display: flex;
@@ -123,13 +144,20 @@
         .theme-toggle:hover {
             transform: scale(1.05);
             opacity: 1;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .theme-toggle span {
+            font-size: 1.2rem;
+            transition: transform 0.5s ease-in-out, opacity 0.5s;
+            display: inline-block;
+        }
+        .dark-mode .theme-toggle span {
+            transform: rotate(360deg);
         }
 
-        /* PREVIEW BOX STYLING */
+        /* SQUARE PREVIEW BOX STYLING */
         #lottie-preview {
             width: 100%;
-            padding-bottom: 100%; 
+            padding-bottom: 100%; /* Enforces 1:1 aspect ratio */
             position: relative;
             background: var(--container-bg); 
             border-radius: 15px;
@@ -138,14 +166,24 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: none; 
-            line-height: 1.4;
         }
 
         #lottie-preview.active {
             display: block;
         }
-
-        /* Ensure Lottie SVG fills the box */
+        
+        .preview-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-color-secondary);
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
         #lottie-preview svg {
             position: absolute;
             top: 0;
@@ -154,45 +192,16 @@
             height: 100% !important;
         }
 
-        /* RESPONSIVENESS */
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-                margin: 20px;
-            }
-            h1 {
-                font-size: 1.4rem;
-            }
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-                padding: 8px; 
-                font-size: 0.9rem;
-                width: 36px;
-                height: 36px;
-            }
-        }
-
-        h1 {
-            color: var(--text-color-primary);
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-            transition: color 0.5s;
-        }
-        .description {
-            margin-bottom: 25px;
-            color: var(--text-color-secondary);
-            padding: 0 10px; 
-            transition: color 0.5s;
-        }
-        
         /* ----------------------------------- */
-        /* INPUT FIELD (Liquid Focus Effect) */
+        /* INPUT FIELD & VALIDATION STYLES */
         /* ----------------------------------- */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
         input[type="text"] {
             width: 100%;
-            padding: 15px; 
-            margin-bottom: 20px;
+            padding: 15px 45px 15px 15px;
             border: 1px solid var(--container-border);
             border-radius: 15px; 
             font-size: 1em;
@@ -200,22 +209,40 @@
             transition: border-color 0.3s, background 0.5s, color 0.5s, box-shadow 0.3s;
             background: var(--input-bg);
             color: var(--text-color-primary);
-            /* Initial subtle shadow */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
         input[type="text"]:focus {
-             border-color: transparent; /* Hide standard border on focus */
+             border-color: transparent;
              outline: none;
-             background: var(--input-bg);
-             /* Liquid Focus Shadow: Inner glow (1st shadow) + soft outer glow (2nd shadow) */
-             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1),
-                         0 0 15px var(--focus-glow);
+             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1), 0 0 15px var(--focus-glow);
         }
-        /* Dark mode focus adjustment */
-        .dark-mode input[type="text"]:focus {
-            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1),
-                        0 0 15px var(--focus-glow);
+
+        .validation-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            pointer-events: none;
+            transition: opacity 0.3s, color 0.3s;
+            opacity: 0;
         }
+        
+        input[data-valid="true"] { border: 2px solid var(--validation-color-success); }
+        input[data-valid="true"] + .validation-icon {
+            color: var(--validation-color-success);
+            opacity: 1;
+            animation: bounceIn 0.6s;
+        }
+        
+        input[data-valid="false"] { border: 2px solid var(--validation-color-error); }
+        input[data-valid="false"] + .validation-icon {
+            color: var(--validation-color-error);
+            opacity: 1;
+            animation: bounceIn 0.6s;
+        }
+        /* ----------------------------------- */
+
 
         /* BUTTONS */
         .action-buttons {
@@ -233,51 +260,41 @@
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s; /* Include box-shadow in transition */
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
             width: 100%;
-            /* Enhanced Initial Shadow */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
         }
-        
-        /* ----------------------------------- */
-        /* BUTTON GLOW EFFECT ON HOVER */
-        /* ----------------------------------- */
-        button:hover {
+        button:hover:not(:disabled):not(.loading) { /* Only hover if not disabled AND not loading */
             background-color: var(--button-primary-hover);
-            /* Adds a colored glow to the outer shadow on hover */
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-primary);
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 15px var(--button-primary); 
         }
-        button:active {
+        button:active:not(:disabled):not(.loading) {
             transform: scale(0.97);
             box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Secondary Action Styles - Customized Glow Colors */
-        #downloadJsonButton {
-            background-color: var(--button-secondary);
-        }
-        #downloadJsonButton:hover {
-            background-color: var(--button-secondary-hover);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-secondary);
-        }
-        #optimizeButton {
-            background-color: #ff9900;
-        }
-        #optimizeButton:hover {
-            background-color: #cc7a00;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px #ff9900;
-        }
-        /* Dark mode specific glow for secondary buttons */
-        .dark-mode #downloadJsonButton:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--button-secondary);
-        }
-        .dark-mode #optimizeButton:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 15px #ff9900;
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
+        /* Button loading state */
+        button.loading {
+            animation: pulse 1.2s infinite ease-in-out;
+            pointer-events: none; 
+            background-color: var(--button-primary-hover); 
+            transform: none !important; /* Force reset transforms */
+        }
+
+
         /* STATUS AND PROGRESS BAR */
-        #status {
+        #status-area { 
+            position: relative;
             margin-top: 25px;
+        }
+        #status {
             padding: 20px; 
             border-radius: 20px; 
             font-weight: bold;
@@ -285,6 +302,23 @@
             line-height: 1.4;
             transition: background-color 0.5s, border-color 0.5s;
         }
+
+        /* CSS Spinner for loading status */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--text-color-primary); 
+            border-radius: 50%;
+            width: 1em;
+            height: 1em;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5em;
+        }
+        .dark-mode .spinner {
+            border-top: 3px solid var(--text-color-primary);
+        }
+
         .progress-bar {
             width: 100%;
             height: 10px;
@@ -338,36 +372,87 @@
         #status a:hover {
             text-decoration: underline;
         }
+
+        /* Success Lottie Animation Container */
+        #success-lottie-container {
+            position: absolute;
+            top: -60px; /* Position above the status box */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+        #success-lottie-container.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
 
     <canvas id="particle-canvas"></canvas>
     
-    <!-- THEME TOGGLE BUTTON IS FIXED -->
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark and light mode">
+        <span id="themeIcon">🌙</span>
+    </button>
 
     <div class="container">
         <h1>MagicMall NFT Gift to Telegram Sticker</h1>
-        <p class="description">Public Telegram NFT link ကိုအောက်မှာထည့်ပေးပါ။</p>
         
-        <!-- Preview Box -->
+        <p class="description" id="input-description">Public Telegram NFT link ကိုအောက်မှာထည့်ပေးပါ။ Link format: <code>t.me/nft/NFT-ID</code></p>
+        
         <div id="lottie-preview">
-            <div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">ထည့်ထားသော Gift အားပြသပေးပါလိမ့်မယ်။</div>
+            <div class="preview-placeholder">🔗 Link ထည့်ပြီးပါက ဒီနေရာမှာ Gift animation ကိုပြသပေးပါလိမ့်မယ်။</div>
         </div>
 
-        <input type="text" id="nftLink" placeholder="🔗 NFT Link t.me/nft/ID link ကိုဒီမှာထည့်ပါ။" oninput="resetUI()">
-        
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="nftLink" 
+                placeholder="🔗 NFT Link t.me/nft/ID link ကိုဒီမှာထည့်ပါ။" 
+                oninput="validateInput(); handleAutoLoad()"
+                aria-describedby="input-description"
+                aria-required="true"
+            >
+            <span class="validation-icon" id="validationIcon"></span>
+        </div>
+
         <div class="action-buttons">
             <button id="convertButton">Telegram Stickerသို့ပြောင်းပြီးDownloadဆွဲမည်။</button>
             <button id="downloadJsonButton" style="display: none;">JSON file အားDownload ဆွဲမည် 💾</button>
             <button id="optimizeButton" style="display: none;">Optimize လုပ်ရန် ownerစီသို့ 🛠️</button>
         </div>
         
-        <div id="status"></div>
+        <div id="status-area">
+            <div id="success-lottie-container"></div>
+            <div id="status" role="alert" aria-live="polite"></div>
+        </div>
     </div>
 
     <script>
+        // Global state variables
+        const TELEGRAM_TGS_LIMIT_KB = 64; 
+        const TELEGRAM_TGS_LIMIT_BYTES = TELEGRAM_TGS_LIMIT_KB * 1024;
+        const LINK_REGEX = /t\.me\/nft\/([a-zA-Z0-9_-]+)/;
+        
+        let currentNftId = null;
+        let currentLottieUrl = null;
+        let currentLottieAnimation = null;
+        let fetchedLottieJsonText = null;
+        let lastLoadedNftId = null; 
+        let successLottieAnimation = null; 
+        let fetchAbortController = null;
+
+        // Lottie JSON for a simple checkmark success animation (Same as before)
+        const successCheckmarkLottie = {
+            "v": "5.7.4", "fr": 30, "ip": 0, "op": 60, "w": 100, "h": 100, "nm": "Success Checkmark", "ddd": 0, "assets": [],
+            "layers": [{"ddd": 0, "ind": 1, "ty": 4, "nm": "Checkmark", "sr": 1, "ks": {"o": {"a": 0, "k": 100, "ix": 11}, "rp": {"a": 0, "k": 0, "ix": 12}, "s": {"a": 0, "k": [100, 100, 100], "ix": 6}, "p": {"a": 0, "k": [50, 50, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0, 0], "ix": 1}, "r": {"a": 0, "k": 0, "ix": 10}}, "ao": 0, "shapes": [{"ty": "gr", "nm": "Group 1", "it": [{"ty": "sh", "nm": "Path 1", "ind": 0, "ks": {"a": 0, "k": {"i": [[-1.2, 0], [0, -1.2], [1.2, 0]], "o": [[0, -1.2], [1.2, 0], [0, 1.2]], "v": [[28.5, 52.8], [42.6, 66.8], [71.5, 37.9]]}, "ix": 2}, "mn": "ADBEVectorShape", "hd": false}, {"ty": "st", "c": {"a": 0, "k": [0, 0.8, 0.4, 1], "ix": 3}, "o": {"a": 0, "k": 100, "ix": 4}, "w": {"a": 0, "k": 10, "ix": 5}, "lc": 1, "lj": 1, "ml": 4, "mn": "ADBEVectorGraphicStroke", "hd": false}, {"ty": "gr", "nm": "Group 2", "it": [], "mn": "ADBEVectorGroup", "hd": false}], "mn": "ADBEVectorGroup", "hd": false}], "bm": 0}]
+        };
+
+
         document.addEventListener('DOMContentLoaded', () => {
             // Attach main event listeners
             document.getElementById('convertButton').addEventListener('click', convertAndDownload);
@@ -375,54 +460,99 @@
             document.getElementById('optimizeButton').addEventListener('click', openOptimizationTool);
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('nftLink').addEventListener('paste', function(event) {
-                setTimeout(convertAndDownload, 50); 
+                setTimeout(() => { validateInput(); handleAutoLoad(); }, 50); 
             }); 
-            document.getElementById('nftLink').oninput = resetUI;
             
             // Initialize theme immediately
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const savedTheme = localStorage.getItem('darkMode');
-            
             let initialMode = savedTheme === 'true';
             if (savedTheme === null) {
                 initialMode = prefersDark;
             }
             applyTheme(initialMode);
+
+            // Initialize success Lottie animation (hidden by default)
+            const successContainer = document.getElementById('success-lottie-container');
+            if (successContainer) {
+                successLottieAnimation = lottie.loadAnimation({
+                    container: successContainer,
+                    renderer: 'svg',
+                    loop: false,
+                    autoplay: false,
+                    animationData: successCheckmarkLottie
+                });
+            }
         });
         
-        // Global state variables
-        const TELEGRAM_TGS_LIMIT_KB = 64; 
-        const TELEGRAM_TGS_LIMIT_BYTES = TELEGRAM_TGS_LIMIT_KB * 1024;
-        let currentLottieUrl = ''; 
-        let currentNftId = '';
-        let currentLottieAnimation = null;
-        let fetchedLottieJson = null;       
-        let fetchedLottieJsonText = null;   
+        // ===================================
+        // NEW AUTO-LOAD LOGIC
+        // ===================================
+        async function handleAutoLoad() {
+            const inputElement = document.getElementById('nftLink');
+            const linkInput = inputElement.value.trim();
+            const match = linkInput.match(LINK_REGEX);
+            
+            if (!match) {
+                // Do not call resetUI() here if validation shows an error.
+                // It's handled by validateInput() to keep the error message visible.
+                if (linkInput === '') resetUI();
+                return;
+            }
+            
+            const newNftId = match[1];
+            
+            if (newNftId === lastLoadedNftId) {
+                return;
+            }
+            
+            if (fetchAbortController) {
+                fetchAbortController.abort();
+            }
+            fetchAbortController = new AbortController();
+            
+            currentNftId = newNftId;
+            currentLottieUrl = `https://nft.fragment.com/gift/${currentNftId}.lottie.json`;
+            
+            // Reset state for new fetch
+            document.getElementById('downloadJsonButton').style.display = 'none';
+            document.getElementById('optimizeButton').style.display = 'none';
+            fetchedLottieJsonText = null;
+            
+            const previewBox = document.getElementById('lottie-preview');
+            previewBox.classList.add('active');
+            // Use spinner in placeholder
+            previewBox.innerHTML = `<div class="preview-placeholder"><span class="spinner"></span> Loading ${currentNftId}...</div>`;
 
-        // ===================================
-        // THEME LOGIC
-        // ===================================
-        function applyTheme(isDarkMode) {
-            const body = document.body;
-            const toggleButton = document.getElementById('themeToggle');
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                toggleButton.innerHTML = '☀️'; /* Sun icon for Dark Mode */
-            } else {
-                body.classList.remove('dark-mode');
-                toggleButton.innerHTML = '🌙'; /* Moon icon for Light Mode */
+
+            try {
+                const jsonData = await fetchLottieData(currentNftId, currentLottieUrl, true);
+                if (jsonData) {
+                    renderLottiePreview(jsonData);
+                    lastLoadedNftId = currentNftId; 
+                    document.getElementById('status').innerHTML = '';
+                    document.getElementById('status').className = '';
+                } else {
+                     lastLoadedNftId = null; 
+                     resetUI();
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log('Fetch aborted for new input.');
+                    return;
+                }
+                lastLoadedNftId = null;
+                // If auto-load fails, keep the preview box active but show error
+                document.getElementById('lottie-preview').innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error: Gift not found or network failed.</div>';
+                console.error("Auto-load failed:", error);
+                
+            } finally {
+                fetchAbortController = null;
             }
         }
 
-        function toggleTheme() {
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const newMode = !isDarkMode;
-            applyTheme(newMode);
-            localStorage.setItem('darkMode', newMode ? 'true' : 'false');
-        }
-
         // ===================================
-        // UTILITY FUNCTIONS (UI Management)
+        // UTILITY FUNCTIONS 
         // ===================================
 
         function updateProgress(step, totalSteps, message) {
@@ -431,11 +561,12 @@
             const percentage = (step / totalSteps) * 100;
             
             statusDiv.innerHTML = `
-                ${message}
+                <span class="spinner"></span> ${message}
                 <div class="progress-bar">
                     <div class="progress-bar-fill" style="width: ${percentage.toFixed(0)}%;"></div>
                 </div>
             `;
+            statusDiv.setAttribute('aria-label', `Loading: Step ${step} of ${totalSteps}. ${message.replace(/<[^>]*>?/gm, '')}`);
         }
         
         function resetPreview() {
@@ -444,31 +575,35 @@
                 currentLottieAnimation.destroy();
                 currentLottieAnimation = null;
             }
-            previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: var(--text-color-secondary);">ထည့်ထားသော Gift အားပြသပေးပါလိမ့်မယ်။</div>';
+            previewBox.innerHTML = '<div class="preview-placeholder">🔗 Link ထည့်ပြီးပါက ဒီနေရာမှာ Gift animation ကိုပြသပေးပါလိမ့်မယ်။</div>';
             previewBox.classList.remove('active');
         }
 
         function resetUI() {
-            document.getElementById('convertButton').style.display = 'block';
-            document.getElementById('downloadJsonButton').style.display = 'none';
-            document.getElementById('optimizeButton').style.display = 'none';
-            document.getElementById('status').innerHTML = '';
-            document.getElementById('status').className = '';
-            resetPreview();
-            fetchedLottieJson = null; 
-            fetchedLottieJsonText = null;
-        }
+            // Check if the input is currently showing a *valid* status before resetting everything
+            const inputElement = document.getElementById('nftLink');
+            if (inputElement.getAttribute('data-valid') !== 'false') {
+                document.getElementById('convertButton').style.display = 'block';
+                document.getElementById('downloadJsonButton').style.display = 'none';
+                document.getElementById('optimizeButton').style.display = 'none';
+                document.getElementById('status').innerHTML = '';
+                document.getElementById('status').className = '';
+                document.getElementById('status').removeAttribute('aria-label');
+                document.getElementById('convertButton').disabled = true; // Disable until valid input is re-entered
+                document.getElementById('convertButton').classList.remove('loading'); 
+                hideSuccessAnimation(); 
 
-        function openOptimizationTool() {
-            const editorBaseUrl = 'https://t.me/Magic_Mall_GameShop'; 
-            // We just open the Telegram link directly as intended by the button text
-            window.open(editorBaseUrl, '_blank');
+                resetPreview();
+                fetchedLottieJsonText = null;
+                lastLoadedNftId = null;
+            }
         }
         
         function renderLottiePreview(json_data) {
+            resetPreview();
             const previewBox = document.getElementById('lottie-preview');
             previewBox.classList.add('active');
-            previewBox.innerHTML = '';
+            previewBox.setAttribute('aria-busy', 'true');
 
             currentLottieAnimation = lottie.loadAnimation({
                 container: previewBox,
@@ -478,59 +613,172 @@
                 animationData: json_data
             });
 
+            currentLottieAnimation.addEventListener('DOMLoaded', () => {
+                 previewBox.setAttribute('aria-busy', 'false');
+            });
             currentLottieAnimation.addEventListener('error', () => {
-                 previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: #cc0000; font-weight: bold;">❌ Error Rendering Animation</div>';
+                 previewBox.innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error Rendering Animation (Lottie Data Corrupt)</div>';
+                 previewBox.setAttribute('aria-busy', 'false');
             });
             currentLottieAnimation.resize();
+        }
+
+        // ===================================
+        // SUCCESS LOTTIE ANIMATION CONTROLS
+        // ===================================
+        function showSuccessAnimation() {
+            const container = document.getElementById('success-lottie-container');
+            if (container && successLottieAnimation) {
+                container.classList.add('show');
+                successLottieAnimation.goToAndPlay(0, true);
+                setTimeout(hideSuccessAnimation, 2000); 
+            }
+        }
+
+        function hideSuccessAnimation() {
+            const container = document.getElementById('success-lottie-container');
+            if (container && successLottieAnimation) {
+                container.classList.remove('show');
+                successLottieAnimation.stop();
+            }
         }
 
         // ===================================
         // FETCH & CONVERT LOGIC
         // ===================================
 
-        async function fetchLottieData(nftId, lottieUrl) {
-            // FIX: Template literal was not closed with a backtick (`)
-            updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။`);
-            
-            const previewBox = document.getElementById('lottie-preview');
-            previewBox.classList.add('active');
+        async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false) {
+            const signal = fetchAbortController ? fetchAbortController.signal : null;
 
+            if (!isAutoLoad) {
+                updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။`);
+            }
+            
             try {
-                const response = await fetch(lottieUrl);
+                const response = await fetch(lottieUrl, { signal });
                 
                 if (!response.ok) {
                     throw new Error(`Fetch Error (HTTP ${response.status})`);
                 }
                 
-                const jsonText = await response.text();
-                const jsonData = JSON.parse(jsonText);
+                const text = await response.text();
+                fetchedLottieJsonText = text;
+                const jsonData = JSON.parse(text);
                 
-                fetchedLottieJsonText = jsonText;
-                
-                renderLottiePreview(jsonData);
+                if (!isAutoLoad) {
+                    renderLottiePreview(jsonData);
+                }
                 
                 return jsonData;
 
             } catch (error) {
-                document.getElementById('status').className = 'error';
-                document.getElementById('status').innerHTML = `❌ Error အချက်အလက်များ မရယူနိုင်ခဲ့ပါ။🥹 ${error.message}`;
+                if (error.name === 'AbortError') throw error; // Re-throw Abort errors
                 
-                resetPreview();
-                previewBox.classList.add('active');
-                previewBox.innerHTML = '<div style="text-align: center; padding: 50% 0; color: #cc0000; font-weight: bold;">❌ Fetch/Parse Error</div>';
+                if (!isAutoLoad) {
+                    document.getElementById('status').className = 'error';
+                    document.getElementById('status').innerHTML = `❌ Error အချက်အလက်များ မရယူနိုင်ခဲ့ပါ။🥹 ${error.message}`;
+                    resetPreview();
+                }
                 return null;
             }
         }
+        
+        async function convertAndDownload() {
+            const convertButton = document.getElementById('convertButton');
+            
+            if (!validateInput()) {
+                return;
+            }
+            
+            convertButton.classList.add('loading'); // NEW: Start loading animation immediately
+            
+            // If fetching failed, ensure we use the correct ID/URL
+            if (!fetchedLottieJsonText) {
+                 const linkInput = document.getElementById('nftLink').value.trim();
+                 const match = linkInput.match(LINK_REGEX);
+                 if (!match) { convertButton.classList.remove('loading'); return; } 
 
+                 currentNftId = match[1];
+                 currentLottieUrl = `https://nft.fragment.com/gift/${currentNftId}.lottie.json`;
+
+                 await fetchLottieData(currentNftId, currentLottieUrl, false);
+                 if (!fetchedLottieJsonText) {
+                     convertButton.classList.remove('loading'); // Stop loading on fetch failure
+                     return;
+                 }
+            }
+            
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                const jsonToCompressText = fetchedLottieJsonText;
+                
+                updateProgress(2, 3, `<span class="spinner"></span> **Step 2/3:** Compressing Lottie JSON to **.tgs** format and checking size...`);
+                
+                const jsonBytes = new TextEncoder().encode(jsonToCompressText);
+                const tgsBytes = pako.gzip(jsonBytes);
+                const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
+                
+                if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
+                    document.getElementById('convertButton').style.display = 'none';
+                    document.getElementById('downloadJsonButton').style.display = 'block';
+                    document.getElementById('optimizeButton').style.display = 'block';
+
+                    statusDiv.className = 'error';
+                    statusDiv.innerHTML = `
+                        ❌ File Size အရမ်းကြီးနေပါတယ်။<br>
+                        Sticker size က **${tgsSizeKB} KB** (Limit: ${TELEGRAM_TGS_LIMIT_KB} KB).<br>
+                        Telegram ဘက်ကလက်မခံတဲ့အတွက်ကြောင့် အောက်ကခလုတ်ကိုနှိပ်ပြီးပြင်ပါ။
+                    `;
+                    convertButton.classList.remove('loading');
+                    return; 
+                }
+
+                updateProgress(3, 3, `🚀 Step 3/3: Size စစ်ဆေးမှု့အောင်မြင်ပါတယ်။🥳 (${tgsSizeKB} KB). စတင်download ဆွဲနေပါပြီ။`);
+
+                const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
+                const downloadLink = document.createElement('a');
+                const tempUrl = URL.createObjectURL(tgsBlob);
+
+                downloadLink.href = tempUrl;
+                downloadLink.download = `${currentNftId}.tgs`;
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                URL.revokeObjectURL(tempUrl);
+
+                // FINAL UI UPDATE
+                showSuccessAnimation(); // NEW: Trigger success animation
+                
+                statusDiv.className = 'success';
+                statusDiv.innerHTML = `
+                    ✅ အောင်အောင်မြင်မြင်  ${currentNftId} sticker ကို Downloadဆွဲပြီးပါပြီ။🥰<br>
+                    Size ${tgsSizeKB} KB.
+                `;
+
+            } catch (error) {
+                resetUI(); 
+                statusDiv.className = 'error';
+                statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
+                console.error(error);
+            } finally {
+                convertButton.classList.remove('loading'); // Ensure loading state is always removed
+            }
+        }
+        
+        // --- Remaining Helper Functions (Download JSON, Optimization Link, Theme, Validation, Particles) ---
+        
         async function downloadRawJson() {
-            const linkInput = document.getElementById('nftLink').value.trim();
-            const match = linkInput.match(/t\.me\/nft\/([a-zA-Z0-9_-]+)/);
+             const linkInput = document.getElementById('nftLink').value.trim();
+            const match = linkInput.match(LINK_REGEX);
             if (!match) return; 
             
             const nftId = match[1];
             const statusDiv = document.getElementById('status');
             statusDiv.className = 'loading';
-            statusDiv.innerHTML = 'Downloading raw JSON...';
+            statusDiv.innerHTML = '<span class="spinner"></span> Downloading raw JSON...';
             
             try {
                 let lottieJsonText = fetchedLottieJsonText;
@@ -547,12 +795,16 @@
 
                 const jsonBlob = new Blob([lottieJsonText], { type: 'application/json' });
                 const downloadLink = document.createElement('a');
-                downloadLink.href = URL.createObjectURL(jsonBlob);
+                const tempUrl = URL.createObjectURL(jsonBlob);
+                
+                downloadLink.href = tempUrl;
                 downloadLink.download = `${nftId}.json`;
                 
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
+                
+                URL.revokeObjectURL(tempUrl);
                 
                 statusDiv.className = 'success';
                 statusDiv.innerHTML = `✅ အောင်မြင်စွာ ${nftId}.json ကို Download ဆွဲပြီးပါပြီ`;
@@ -563,83 +815,64 @@
                 console.error(error);
             }
         }
-
-        async function convertAndDownload() {
-            resetUI(); 
-            const linkInput = document.getElementById('nftLink').value.trim();
-            const statusDiv = document.getElementById('status');
-
-            const match = linkInput.match(/t\.me\/nft\/([a-zA-Z0-9_-]+)/);
-            if (!match) {
-                statusDiv.className = 'error';
-                statusDiv.innerHTML = '🛑 Link မှား နေပါတယ်ပြထားတဲ့ link format အတိုင်းထည့်ပါ။`t.me/nft/NFT-ID`.';
-                return;
-            }
-
-            currentNftId = match[1];
-            currentLottieUrl = `https://nft.fragment.com/gift/${currentNftId}.lottie.json`;
-
-            try {
-                const lottieJsonData = await fetchLottieData(currentNftId, currentLottieUrl);
-                if (!lottieJsonData) return;
-                
-                fetchedLottieJson = lottieJsonData;
-
-                updateProgress(2, 3, `⏳ **Step 2/3:** Compressing Lottie JSON to **.tgs** format and checking size...`);
-
-                if (!fetchedLottieJsonText) {
-                    throw new Error("Compression error: Raw JSON text not found.");
-                }
-                const lottieJsonText = fetchedLottieJsonText; 
-                
-                const jsonBytes = new TextEncoder().encode(lottieJsonText);
-                const tgsBytes = pako.gzip(jsonBytes);
-                const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
-                
-                if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
-                    document.getElementById('convertButton').style.display = 'none';
-                    document.getElementById('downloadJsonButton').style.display = 'block';
-                    document.getElementById('optimizeButton').style.display = 'block';
-
-                    statusDiv.className = 'error';
-                    statusDiv.innerHTML = `
-                        ❌ File Size အရမ်းကြီးနေပါတယ်။<br>
-                        Sticker size က **${tgsSizeKB} KB** (Limit: ${TELEGRAM_TGS_LIMIT_KB} KB).<br>
-                        Telegram ဘက်ကလက်မခံတဲ့အတွက်ကြောင့် အောက်ကခလုတ်ကိုနှိပ်ပြီးပြင်ပါ။
-                    `;
-                    return; 
-                }
-
-                updateProgress(3, 3, `🚀 Step 3/3: Size စစ်ဆေးမှု့အောင်မြင်ပါတယ်။🥳 (${tgsSizeKB} KB). စတင်download ဆွဲနေပါပြီ။`);
-
-                const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
-                const downloadLink = document.createElement('a');
-                downloadLink.href = URL.createObjectURL(tgsBlob);
-                downloadLink.download = `${currentNftId}.tgs`;
-                
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                
-                statusDiv.className = 'success';
-                statusDiv.innerHTML = `
-                    ✅ အောင်အောင်မြင်မြင်  ${currentNftId} sticker ကို Downloadဆွဲပြီးပါပြီ။🥰<br>
-                    Size ${tgsSizeKB} KB.
-                `;
-
-            } catch (error) {
-                resetUI(); 
-                statusDiv.className = 'error';
-                statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
-                console.error(error);
-            }
+        
+        function openOptimizationTool() {
+            const editorBaseUrl = 'https://t.me/Magic_Mall_GameShop'; 
+            window.open(editorBaseUrl, '_blank');
         }
         
-        
-        // ===================================
-        // PARTICLE LOGIC
-        // ===================================
-        
+        function applyTheme(isDarkMode) {
+            const body = document.body;
+            const toggleIcon = document.getElementById('themeIcon');
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                toggleIcon.innerHTML = '☀️';
+            } else {
+                body.classList.remove('dark-mode');
+                toggleIcon.innerHTML = '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const newMode = !isDarkMode;
+            applyTheme(newMode);
+            localStorage.setItem('darkMode', newMode ? 'true' : 'false');
+        }
+
+        function validateInput() {
+            const inputElement = document.getElementById('nftLink');
+            const linkInput = inputElement.value.trim();
+            const isValid = LINK_REGEX.test(linkInput);
+            const validationIcon = document.getElementById('validationIcon');
+            const convertButton = document.getElementById('convertButton');
+
+            if (linkInput === '') {
+                inputElement.removeAttribute('data-valid');
+                validationIcon.style.opacity = 0;
+                convertButton.disabled = true;
+                resetUI(); // Reset if empty
+                return false;
+            }
+            
+            inputElement.setAttribute('data-valid', isValid ? 'true' : 'false');
+            validationIcon.innerHTML = isValid ? '✅' : '❌';
+            validationIcon.style.opacity = 1;
+            
+            convertButton.disabled = !isValid;
+            
+            if (!isValid) {
+                // Only show a specific error message for invalid format
+                document.getElementById('status').className = 'error';
+                document.getElementById('status').innerHTML = '🛑 Link မှား နေပါတယ်။ <code>t.me/nft/NFT-ID</code>.';
+                resetPreview(); // Clear preview on invalid input
+            } else {
+                // If valid, auto-load will handle the loading status
+            }
+
+            return isValid;
+        }
+
         (function() {
             const canvas = document.getElementById('particle-canvas');
             const ctx = canvas.getContext('2d');
@@ -666,7 +899,6 @@
                     this.x += this.vx;
                     this.y += this.vy;
 
-                    // Simple boundary check: wrap particles around
                     if (this.x < 0) this.x = w;
                     if (this.x > w) this.x = 0;
                     if (this.y < 0) this.y = h;
@@ -703,4 +935,3 @@
     </script>
 </body>
 </html>
-
