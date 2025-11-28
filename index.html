@@ -486,7 +486,7 @@
         });
         
         // ===================================
-        // NEW AUTO-LOAD LOGIC
+        // NEW AUTO-LOAD LOGIC (UPDATED)
         // ===================================
         async function handleAutoLoad() {
             const inputElement = document.getElementById('nftLink');
@@ -494,8 +494,7 @@
             const match = linkInput.match(LINK_REGEX);
             
             if (!match) {
-                // Do not call resetUI() here if validation shows an error.
-                // It's handled by validateInput() to keep the error message visible.
+                // If input is not a valid link, the regular flow calls resetUI() via validateInput if cleared.
                 if (linkInput === '') resetUI();
                 return;
             }
@@ -503,6 +502,8 @@
             const newNftId = match[1];
             
             if (newNftId === lastLoadedNftId) {
+                // If data is already loaded and valid, ensure JSON button is shown
+                document.getElementById('downloadJsonButton').style.display = 'block';
                 return;
             }
             
@@ -515,7 +516,7 @@
             currentLottieUrl = `https://nft.fragment.com/gift/${currentNftId}.lottie.json`;
             
             // Reset state for new fetch
-            document.getElementById('downloadJsonButton').style.display = 'none';
+            document.getElementById('downloadJsonButton').style.display = 'none'; // Hide while fetching
             document.getElementById('optimizeButton').style.display = 'none';
             fetchedLottieJsonText = null;
             
@@ -532,9 +533,12 @@
                     lastLoadedNftId = currentNftId; 
                     document.getElementById('status').innerHTML = '';
                     document.getElementById('status').className = '';
+                    
+                    // 🔥 SHOW JSON BUTTON ON SUCCESSFUL PREVIEW LOAD
+                    document.getElementById('downloadJsonButton').style.display = 'block'; 
                 } else {
                      lastLoadedNftId = null; 
-                     resetUI();
+                     document.getElementById('downloadJsonButton').style.display = 'none'; 
                 }
             } catch (error) {
                 if (error.name === 'AbortError') {
@@ -542,6 +546,7 @@
                     return;
                 }
                 lastLoadedNftId = null;
+                document.getElementById('downloadJsonButton').style.display = 'none'; 
                 // If auto-load fails, keep the preview box active but show error
                 document.getElementById('lottie-preview').innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error: Gift not found or network failed.</div>';
                 console.error("Auto-load failed:", error);
@@ -552,7 +557,7 @@
         }
 
         // ===================================
-        // UTILITY FUNCTIONS 
+        // UTILITY FUNCTIONS (UPDATED)
         // ===================================
 
         function updateProgress(step, totalSteps, message) {
@@ -579,12 +584,14 @@
             previewBox.classList.remove('active');
         }
 
+        // 🔥 UPDATED: Ensure JSON button is hidden on reset/invalid input
         function resetUI() {
             // Check if the input is currently showing a *valid* status before resetting everything
             const inputElement = document.getElementById('nftLink');
             if (inputElement.getAttribute('data-valid') !== 'false') {
                 document.getElementById('convertButton').style.display = 'block';
-                document.getElementById('downloadJsonButton').style.display = 'none';
+                // HIDE JSON button when resetting UI
+                document.getElementById('downloadJsonButton').style.display = 'none'; 
                 document.getElementById('optimizeButton').style.display = 'none';
                 document.getElementById('status').innerHTML = '';
                 document.getElementById('status').className = '';
@@ -644,7 +651,7 @@
         }
 
         // ===================================
-        // FETCH & CONVERT LOGIC
+        // FETCH & CONVERT LOGIC (UPDATED)
         // ===================================
 
         async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false) {
@@ -721,6 +728,7 @@
                 
                 if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
                     document.getElementById('convertButton').style.display = 'none';
+                    // 🔥 KEEP JSON button VISIBLE (already visible from handleAutoLoad, but ensure it is here)
                     document.getElementById('downloadJsonButton').style.display = 'block';
                     document.getElementById('optimizeButton').style.display = 'block';
 
@@ -758,6 +766,10 @@
                     Size ${tgsSizeKB} KB.
                 `;
 
+                // 🔥 KEEP JSON button VISIBLE after successful TGS download
+                document.getElementById('downloadJsonButton').style.display = 'block'; 
+                document.getElementById('optimizeButton').style.display = 'none';
+
             } catch (error) {
                 resetUI(); 
                 statusDiv.className = 'error';
@@ -768,7 +780,7 @@
             }
         }
         
-        // --- Remaining Helper Functions (Download JSON, Optimization Link, Theme, Validation, Particles) ---
+        // --- Remaining Helper Functions ---
         
         async function downloadRawJson() {
              const linkInput = document.getElementById('nftLink').value.trim();
@@ -866,8 +878,9 @@
                 document.getElementById('status').className = 'error';
                 document.getElementById('status').innerHTML = '🛑 Link မှား နေပါတယ်။ <code>t.me/nft/NFT-ID</code>.';
                 resetPreview(); // Clear preview on invalid input
+                document.getElementById('downloadJsonButton').style.display = 'none'; // Ensure hidden on error
             } else {
-                // If valid, auto-load will handle the loading status
+                // If valid, auto-load will handle the loading status and button visibility
             }
 
             return isValid;
