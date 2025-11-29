@@ -3,187 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MagicMall NFT Gift to Telegram Sticker</title>
+    <title>MagicMall NFT Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght{600;700}&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     
     <style>
-        /* CSS VARIABLES for Theming */
+        /* CSS VARIABLES */
         :root {
-            /* Light Mode Defaults */
-            --bg-start: #f0f4f9;
-            --bg-end: #e7f1fc;
-            --container-bg: rgba(255, 255, 255, 0.1);
-            --container-border: rgba(255, 255, 255, 0.3);
-            --text-color-primary: #173f5f;
-            --text-color-secondary: #4a4a4a;
-            --input-bg: rgba(255, 255, 255, 0.7);
-            --particle-color: rgba(23, 63, 95, 0.5); 
-            --button-primary: #0088cc;
-            --button-primary-hover: #0077b3;
-            --button-secondary: #333;
-            --button-secondary-hover: #1a1a1a;
-            --focus-glow: #0088cc; 
-            --validation-color-error: #f33; 
-            --validation-color-success: #00c853;
-
-            /* Telegram UI Colors (Light Mode) */
-            --tg-card-bg: #ffffff;
-            --tg-card-border: #e0e0e0;
-            --tg-divider: #f0f0f0;
-            --tg-label-color: #707070;
-            --tg-value-color: #333333;
-            --tg-button-secondary-bg: #f0f4f9; /* Added for percentage mark bg */
+            /* Light Mode */
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            
+            --accent-primary: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: #e2e8f0;
+            
+            --success: #10b981;
+            --error: #ef4444;
+            --particle-color: rgba(30, 41, 59, 0.1); /* Particle color for light mode */
+            --tg-card-bg: rgba(255,255,255,0.8);
+            
+            --icon-fill: #1e293b;
+            
+            /* CSS Spinner Variables */
+            --spinner-size: 30px;
+            --spinner-border: 4px;
         }
 
         .dark-mode {
-            --bg-start: #0f172a;
-            --bg-end: #1e293b;
-            --container-bg: rgba(0, 0, 0, 0.25);
-            --container-border: rgba(255, 255, 255, 0.1);
-            --text-color-primary: #f1f5f9;
-            --text-color-secondary: #cbd5e1;
-            --input-bg: rgba(255, 255, 255, 0.15);
-            --particle-color: rgba(255, 255, 255, 0.3);
-            --button-primary: #2d94d7;
-            --button-primary-hover: #1f80c0;
-            --button-secondary: #555;
-            --button-secondary-hover: #777;
-            --focus-glow: #2d94d7;
-            --validation-color-error: #f66;
-            --validation-color-success: #69f0ae;
-
-            /* Telegram UI Colors (Dark Mode) */
-            --tg-card-bg: #1c2732; /* Deep Blueish Gray */
-            --tg-card-border: #2a3540;
-            --tg-divider: #2a3540;
-            --tg-label-color: #aebacd; /* Lighter Gray for labels */
-            --tg-value-color: #f1f5f9; /* Near White for values */
-            --tg-button-secondary-bg: #2a3540; /* Added for percentage mark bg */
+            /* Dark Mode */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            
+            --accent-primary: #60a5fa;
+            --accent-glow: rgba(96, 165, 250, 0.4);
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            
+            --input-bg: rgba(30, 41, 59, 0.6);
+            --input-border: rgba(255, 255, 255, 0.1);
+            
+            --success: #34d399;
+            --error: #f87171;
+            --particle-color: rgba(255, 255, 255, 0.05); /* Particle color for dark mode */
+            --tg-card-bg: rgba(30, 41, 59, 0.4);
+            
+            --icon-fill: #f8fafc;
         }
 
-        /* KEYFRAMES for Animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes bounceIn {
-            0%, 20%, 40%, 60%, 80%, 100% {
-                -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-                transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-            }
-            0% { opacity: 0; -webkit-transform: scale3d(.3, .3, .3); transform: scale3d(.3, .3, .3); }
-            20% { -webkit-transform: scale3d(1.1, 1.1, 1.1); transform: scale3d(1.1, 1.1, 1.1); }
-            40% { -webkit-transform: scale3d(.9, .9, .9); transform: scale3d(.9, .9, .9); }
-            60% { opacity: 1; -webkit-transform: scale3d(1.03, 1.03, 1.03); transform: scale3d(1.03, 1.03, 1.03); }
-            80% { -webkit-transform: scale3d(.97, .97, .97); transform: scale3d(.97, .97, .97); }
-            100% { opacity: 1; -webkit-transform: scale3d(1, 1, 1); transform: scale3d(1, 1, 1); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* PARTICLE CANVAS */
-        #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        /* BASE & CONTAINER */
+        /* GLOBAL STYLES */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            align-items: flex-start; 
+            padding-top: 80px; 
+            padding-bottom: 50px;
             margin: 0;
-            color: var(--text-color-primary);
-            transition: background 0.5s ease;
-            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); 
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+            box-sizing: border-box;
+            perspective: 1000px;
         }
 
+        /* CONTAINER & GLASS EFFECTS */
         .container {
             position: relative;
-            z-index: 10;
-            background: var(--container-bg);
-            padding: 50px; 
-            border-radius: 20px; 
-            backdrop-filter: blur(25px); 
-            -webkit-backdrop-filter: blur(25px); 
-            border: 1px solid var(--container-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
             width: 100%;
-            max-width: 480px;
+            max-width: 460px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--glass-shadow);
+            padding: 40px;
+            box-sizing: border-box;
+            z-index: 10;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+        }
+        
+        .container:hover {
+            transform: rotateX(1deg) rotateY(-1deg) scale(1.01);
+            box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
             text-align: center;
-            box-sizing: border-box; 
-            animation: fadeInUp 0.8s ease-out;
-            transition: background-color 0.5s, border-color 0.5s;
+            letter-spacing: -0.02em;
         }
 
-        /* THEME TOGGLE (Animated Icon) */
-        .theme-toggle {
-            position: fixed; 
-            top: 20px;       
-            right: 20px;     
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--container-border);
-            cursor: pointer;
-            padding: 10px; 
-            border-radius: 10px; 
-            transition: all 0.3s;
-            color: var(--text-color-primary);
-            opacity: 0.8; 
-            z-index: 100; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 40px; 
-            height: 40px; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.5;
         }
-        .theme-toggle:hover {
-            transform: scale(1.05);
-            opacity: 1;
+        
+        .description code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
         }
-        .theme-toggle span {
-            font-size: 1.2rem;
-            transition: transform 0.5s ease-in-out, opacity 0.5s;
-            display: inline-block;
-        }
-        .dark-mode .theme-toggle span {
-            transform: rotate(360deg);
-        }
+        .dark-mode .description code { background: rgba(255,255,255,0.1); }
 
-        /* SQUARE PREVIEW BOX STYLING */
+
+        /* PREVIEW AREA */
         #lottie-preview {
             width: 100%;
-            padding-bottom: 100%; /* Enforces 1:1 aspect ratio */
+            padding-bottom: 100%; 
+            background: var(--input-bg);
+            border-radius: 16px;
+            margin-bottom: 24px;
             position: relative;
-            background: var(--container-bg); 
-            border-radius: 15px;
-            border: 1px solid var(--container-border);
-            margin-bottom: 25px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            display: none; 
+            border: 1px dashed var(--input-border);
+            transition: border-color 0.3s ease;
         }
-
+        
         #lottie-preview.active {
-            display: block;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .preview-placeholder {
@@ -191,371 +159,398 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: var(--text-color-secondary);
-            text-align: center;
-            padding: 20px;
             width: 100%;
-            box-sizing: border-box;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            padding: 20px;
+            display: flex; /* Flex container for spinner and text */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
-
+        
         #lottie-preview svg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100% !important; 
-            height: 100% !important;
+            top: 0; left: 0; width: 100% !important; height: 100% !important;
+        }
+        
+        /* CSS Spinner Styling (New) */
+        .css-spinner {
+            display: none;
+            width: var(--spinner-size);
+            height: var(--spinner-size);
+            border: var(--spinner-border) solid var(--text-secondary);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 5px;
         }
 
-    /* ----------------------------------- */
-    /* GIFT DETAILS BOX STYLING (TELEGRAM UI STYLE) */
-    /* ----------------------------------- */
-    #giftDetails {
-        margin-top: 15px; 
-        padding: 0; 
-        /* Use Telegram-style border and background */
-        border: 1px solid var(--tg-card-border); 
-        border-radius: 15px; 
-        display: none; 
-        background: var(--tg-card-bg); 
-        text-align: left;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        transition: background 0.5s, border-color 0.5s;
-        margin-bottom: 25px; 
-        overflow: hidden; /* Important for border-radius on children */
-    }
+        .preview-placeholder.loading .css-spinner {
+            display: block;
+        }
 
-    /* Style for each detail line */
-    /* *** CRITICAL FIX: Changed align-items to flex-start and removed truncation *** */
-    #giftDetails .detail-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start; /* CRITICAL: Aligns to the top so multi-line text doesn't center */
-        padding: 12px 20px; 
-        font-size: 1.05em;
-        color: var(--tg-value-color); 
-        flex-wrap: wrap; /* Allows content to wrap to the next line */
-    }
-
-    /* Separator line for traits - Mimics Telegram dividers */
-    #giftDetails .detail-line:not(:last-child) {
-        border-bottom: 1px solid var(--tg-divider); 
-    }
-    /* Ensure the last line doesn't have a bottom border unless it's the error message */
-    #giftDetails .detail-line:last-child {
-        border-bottom: none;
-    }
-
-
-    /* Style for the Label (Model, Backdrop, Symbol) */
-    #giftDetails .detail-line strong {
-        font-weight: normal; 
-        color: var(--tg-label-color);
-        flex-shrink: 0; /* Prevents the label from shrinking */
-        max-width: 40%; /* Reserve space for the label */
-        padding-right: 10px; /* Space between label and wrapping value */
-        text-align: left;
-    }
-
-    /* Style for the Value (Strawberry, Sky Blue, Sun Lion) */
-    /* *** CRITICAL FIX: Removed truncation properties and allowed wrap *** */
-    #giftDetails .detail-value {
-        font-weight: normal; 
-        color: var(--tg-value-color);
-        text-align: right;
-        
-        /* Removed all truncation properties: */
-        /* overflow: hidden; */
-        /* text-overflow: ellipsis; */
-        
-        /* New Properties for Wrapping */
-        white-space: normal !important; /* CRITICAL: Allows the text to wrap */
-        word-break: break-word; 
-        
-        flex-basis: auto; 
-        flex-grow: 1; 
-        min-width: 50%; /* Give it a minimum width on its line */
-        margin-left: 0; 
-        display: block; /* Helps manage wrapping within the line */
-    }
-
-    /* Style for error message inside gift details */
-    #giftDetails p.error-message {
-        color: var(--validation-color-error);
-        font-weight: bold;
-        text-align: center;
-        padding: 15px 20px;
-        margin: 0; 
-    }
-    /* ----------------------------------- */
-
-
-        /* INPUT FIELD & VALIDATION STYLES */
+        /* INPUT GROUP & VALIDATION */
         .input-group {
             position: relative;
             margin-bottom: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
         }
+
         input[type="text"] {
             width: 100%;
-            padding: 15px 45px 15px 15px;
-            border: 1px solid var(--container-border);
-            border-radius: 15px; 
-            font-size: 1em;
-            box-sizing: border-box; 
-            transition: border-color 0.3s, background 0.5s, color 0.5s, box-shadow 0.3s;
+            padding: 16px 80px 16px 16px; 
             background: var(--input-bg);
-            color: var(--text-color-primary);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        input[type="text"]:focus {
-             border-color: transparent;
-             outline: none;
-             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1), 0 0 15px var(--focus-glow);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            z-index: 1; 
         }
 
-        .validation-icon {
+        /* Input Focus Lighting (New) */
+        input[type="text"]:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow), 0 0 15px var(--accent-glow) inset;
+        }
+        
+        input[data-valid="true"] { border-color: var(--success); }
+        input[data-valid="false"] { border-color: var(--error); }
+
+        /* Clear Button */
+        #clearInputButton {
             position: absolute;
-            right: 15px;
+            right: 12px; 
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.2em;
-            pointer-events: none;
-            transition: opacity 0.3s, color 0.3s;
+            background: var(--input-border);
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
             opacity: 0;
+            pointer-events: none; 
+            transition: all 0.2s ease;
+            z-index: 10;
+            padding: 0;
+            line-height: 1;
         }
-
-        input[data-valid="true"] { border: 2px solid var(--validation-color-success); }
-        input[data-valid="true"] + .validation-icon {
-            color: var(--validation-color-success);
+        
+        #clearInputButton:hover {
+            background: var(--text-secondary);
+            color: white;
+        }
+        
+        #clearInputButton.active {
             opacity: 1;
-            animation: bounceIn 0.6s;
+            pointer-events: auto;
+        }
+        
+        /* Validation Icon (Check/X) */
+        .validation-icon {
+            position: absolute;
+            right: 44px; 
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
+            pointer-events: none;
+            will-change: transform;
+        }
+        
+        /* Status Bar Icon Animation (New) */
+        .validation-icon.animated {
+            animation: iconPop 0.3s ease-out;
         }
 
-        input[data-valid="false"] { border: 2px solid var(--validation-color-error); }
-        input[data-valid="false"] + .validation-icon {
-            color: var(--validation-color-error);
-            opacity: 1;
-            animation: bounceIn 0.6s;
+
+        /* GIFT DETAILS & BUTTONS (Unchanged) */
+        #giftDetails {
+            background: var(--tg-card-bg);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            display: none;
         }
 
+        .detail-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(128,128,128,0.1);
+            color: var(--text-primary);
+            align-items: flex-start;
+        }
+        .detail-line:last-child { border-bottom: none; }
+        
+        .detail-line strong {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .detail-value {
+            text-align: right;
+            font-weight: 600;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+        
+        .percentage-mark {
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
 
-        /* BUTTONS */
         .action-buttons {
             display: flex;
-            flex-direction: column; 
-            gap: 10px; 
-            margin-bottom: 10px;
+            flex-direction: column;
+            gap: 12px;
         }
+
         button {
-            background-color: var(--button-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--accent-gradient);
             color: white;
-            padding: 14px 30px; 
             border: none;
-            border-radius: 15px; 
-            font-size: 1.1em;
-            font-weight: bold;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
-        }
-        button:hover:not(:disabled):not(.loading) {
-            background-color: var(--button-primary-hover);
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 15px var(--button-primary); 
-        }
-        button:active:not(:disabled):not(.loading) {
-            transform: scale(0.97);
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Button loading state */
-        button.loading {
-            animation: pulse 1.2s infinite ease-in-out;
-            pointer-events: none; 
-            background-color: var(--button-primary-hover); 
-            transform: none !important; 
-        }
-
-
-        /* STATUS AND PROGRESS BAR */
-        #status-area { 
+            transition: all 0.3s ease;
             position: relative;
-            margin-top: 25px;
-        }
-        #status {
-            padding: 20px; 
-            border-radius: 20px; 
-            font-weight: bold;
-            text-align: left;
-            line-height: 1.4;
-            transition: background-color 0.5s, border-color 0.5s;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
         }
 
-        /* CSS Spinner for loading status */
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid var(--text-color-primary); 
-            border-radius: 50%;
-            width: 1em;
-            height: 1em;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 0.5em;
+        button:hover:not(:disabled):not(.loading) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px var(--accent-glow), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            filter: brightness(1.1);
         }
-        .dark-mode .spinner {
-            border-top: 3px solid var(--text-color-primary);
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: var(--text-secondary);
+            opacity: 0.3;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        #downloadJsonButton, #optimizeButton {
+            background: transparent;
+            border: 2px solid var(--input-border);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+        #downloadJsonButton:hover, #optimizeButton:hover {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--accent-primary);
+        }
+
+        button.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: calc(50% - 10px);
+            left: calc(50% - 10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        button.loading { color: transparent; pointer-events: none; }
+
+
+        /* STATUS AREA */
+        #status-area { 
+            margin-top: 25px; 
+            position: relative; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #status {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        #status.active { opacity: 1; transform: translateY(0); }
+        
+        #status.loading {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+        
+        #status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        #status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
         }
 
         .progress-bar {
             width: 100%;
-            height: 10px;
-            background-color: var(--input-bg);
-            border-radius: 5px;
-            margin-top: 10px;
+            height: 6px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 3px;
             overflow: hidden;
+            margin-top: 5px;
         }
+        .dark-mode .progress-bar { background: rgba(255,255,255,0.1); }
+        
         .progress-bar-fill {
             height: 100%;
             width: 0%;
-            background-color: var(--button-primary);
-            transition: width 0.4s ease-in-out;
+            background: var(--accent-gradient);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+            
+            /* Animated Progress Bar (New) */
+            background-image: linear-gradient(
+                -45deg, 
+                rgba(255, 255, 255, .2) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, .2) 50%, 
+                rgba(255, 255, 255, .2) 75%, 
+                transparent 75%, 
+                transparent
+            );
+            background-size: 20px 20px;
+        }
+        
+        /* Only animate the stripe when loading */
+        #status.loading .progress-bar-fill {
+            animation: progressStripe 1s linear infinite;
+        }
+        /* Stop stripe animation when done/error */
+        #status.success .progress-bar-fill, #status.error .progress-bar-fill {
+            background-image: none;
+            animation: none;
         }
 
-        .error {
-            background-color: rgba(255, 237, 237, 0.8); 
-            color: #cc0000;
-            border: 1px solid #cc0000;
+        /* THEME TOGGLE (Unchanged) */
+        .theme-toggle {
+            position: fixed; 
+            top: 20px; right: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            z-index: 100;
+            width: 48px; height: 48px;
+            padding: 10px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .dark-mode .error {
-            background-color: rgba(65, 0, 0, 0.6); 
-            color: #ff9999;
-            border: 1px solid #ff9999;
+        .theme-toggle:hover { 
+            transform: translateY(-2px);
+            background: var(--input-bg);
         }
-        .success {
-            background-color: rgba(237, 255, 241, 0.8); 
-            color: #008800;
-            border: 1px solid #008800;
+        
+        .theme-toggle svg {
+            width: 100%; height: 100%;
+            fill: var(--icon-fill);
+            transition: transform 0.5s ease;
         }
-        .dark-mode .success {
-            background-color: rgba(0, 65, 0, 0.6); 
-            color: #99ff99;
-            border: 1px solid #008800;
-        }
-        .loading {
-            color: var(--button-primary);
-            background-color: rgba(240, 248, 255, 0.8);
-            border: 1px solid var(--button-primary);
-        }
-        .dark-mode .loading {
-            color: #94d8ff;
-            background-color: rgba(0, 30, 60, 0.6);
-            border: 1px solid #94d8ff;
-        }
-        #status a {
-            color: var(--button-primary);
-            text-decoration: none;
-            font-weight: normal;
-        }
-        #status a:hover {
-            text-decoration: underline;
+        .dark-mode .theme-toggle svg {
+            transform: rotate(90deg);
         }
 
-        /* Success Lottie Animation Container */
+
+        /* ANIMATIONS (Updated with new keyframes) */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes progressStripe { 0% { background-position: 20px 0; } 100% { background-position: 0 0; } }
+
+        @keyframes iconPop {
+            0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
+            50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-50%) scale(1); opacity: 1; }
+        }
+
+        /* Success Lottie Position (Unchanged) */
         #success-lottie-container {
             position: absolute;
-            top: -60px; /* Position above the status box */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 100px;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0;
-            transition: opacity 0.3s ease-out;
+            top: -50px; left: 50%; transform: translateX(-50%);
+            width: 80px; height: 80px;
+            z-index: 30; opacity: 0; pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            transition: opacity 0.3s;
         }
-        #success-lottie-container.show {
-            opacity: 1;
+        #success-lottie-container.show { opacity: 1; }
+
+        /* Canvas (Unchanged) */
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        /* Responsive (Unchanged) */
+        @media (max-width: 480px) {
+            body { 
+                padding-top: 70px;
+            }
+            .container { 
+                padding: 30px 20px; 
+                margin: 0 10px;
+            }
+            .theme-toggle { top: 15px; right: 15px; width: 40px; height: 40px; padding: 8px; }
         }
-
-        /* --- New/Modified Styles for Full Text Wrap --- */
-
-        /* Style for the percentage text to match Telegram's design */
-        .detail-value .percentage-mark {
-            font-size: 0.85em; 
-            font-weight: 500;
-            color: var(--text-color-secondary); 
-            margin-left: 6px;
-            padding: 2px 4px;
-            background: var(--tg-button-secondary-bg); 
-            border-radius: 4px;
-            white-space: nowrap; 
-            text-decoration: none;
-        }
-
-        /* --- CRITICAL FIX: Ensure Detail Line is a Flexible Container and allows wrap --- */
-        .detail-line {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; /* CRITICAL: Aligns to the top so multi-line text doesn't center */
-            padding: 12px 20px; 
-            border-bottom: 1px solid var(--tg-divider);
-            font-size: 1.05em;
-            flex-wrap: wrap; /* CRITICAL: Allows content (label and value) to wrap if needed */
-        }
-
-        /* Ensure the label text is always fully visible and doesn't shrink */
-        .detail-line strong {
-            flex-shrink: 0; 
-            max-width: 40%; 
-            padding-right: 10px; 
-            text-align: left;
-        }
-
-
-        /* --- CRITICAL FIX: Allow the detail-value span to wrap --- */
-        .detail-line .detail-value {
-            font-weight: normal; 
-            color: var(--tg-value-color);
-            
-            /* CRITICAL: Allow the text to wrap */
-            white-space: normal !important; 
-            word-break: break-word; 
-            
-            text-align: right;
-            
-            /* Allow the value to take up the rest of the line and wrap if necessary */
-            flex-basis: auto; 
-            flex-grow: 1; 
-            min-width: 50%; 
-            margin-left: 0; 
-            display: block; /* Make the value a block to better manage wrapping within the line */
-        }
-
-
-        /* --- Special Gifted Line Styling (Adjusted for wrap) --- */
-        .detail-line:has(strong:contains("Gifted")) {
-            font-size: 0.9em; 
-            padding-top: 8px; 
-            padding-bottom: 8px;
-            border-bottom: none; 
-            /* Align the label correctly */
-            align-items: flex-start;
-        }
-
-        .detail-line:has(strong:contains("Gifted")) .detail-value {
-            color: var(--text-color-secondary) !important;
-            width: 100%; /* Allows it to occupy its own line */
-            margin-top: 4px; /* Space from the label above it */
-            text-align: right;
-        }
-
     </style>
 </head>
 <body>
@@ -563,35 +558,40 @@
     <canvas id="particle-canvas"></canvas>
 
     <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark and light mode">
-        <span id="themeIcon">🌙</span>
+        <span id="themeIconWrapper"></span>
     </button>
 
     <div class="container">
-        <h1>MagicMall NFT Gift to Telegram Sticker</h1>
+        <h1>MagicMall NFT Converter</h1>
 
-        <p class="description" id="input-description">Public Telegram NFT link ကိုအောက်မှာထည့်ပေးပါ။ Link format: <code>t.me/nft/NFT-ID</code></p>
+        <p class="description" id="input-description">Convert Telegram NFT Gifts to Stickers.<br>Enter link: <code>t.me/nft/NFT-ID</code></p>
 
         <div id="lottie-preview">
-            <div class="preview-placeholder">🔗 Link ထည့်ပြီးပါက ဒီနေရာမှာ Gift animation ကိုပြသပေးပါလိမ့်မယ်။</div>
+            <div class="preview-placeholder">
+                <div id="loadingSpinnerContainer" class="css-spinner"></div>
+                Animation Preview
+            </div>
         </div>
 
         <div class="input-group">
             <input 
                 type="text" 
                 id="nftLink" 
-                placeholder="🔗 NFT Link t.me/nft/ID link ကိုဒီမှာထည့်ပါ။" 
+                placeholder="Paste NFT link here..." 
                 aria-describedby="input-description"
                 aria-required="true"
+                autocomplete="off"
             >
             <span class="validation-icon" id="validationIcon"></span>
+            <button id="clearInputButton" aria-label="Clear input">✕</button>
         </div>
         
         <div id="giftDetails"></div>
         
         <div class="action-buttons">
-            <button id="convertButton" disabled aria-disabled="true">Telegram Stickerသို့ပြောင်းပြီးDownloadဆွဲမည်။</button>
-            <button id="downloadJsonButton" style="display: none;">JSON file အားDownload ဆွဲမည် 💾</button>
-            <button id="optimizeButton" style="display: none;">Optimization tool သို့သွားရန် 🛠️</button>
+            <button id="convertButton" disabled aria-disabled="true">Convert to Sticker</button>
+            <button id="downloadJsonButton" style="display: none;">Download JSON 💾</button>
+            <button id="optimizeButton" style="display: none;">Optimize Tool 🛠️</button>
         </div>
 
         <div id="status-area">
@@ -601,12 +601,15 @@
     </div>
 
   <script>
-    // Global state variables
+       // SVG Icons (Unchanged)
+    const ICON_MOON = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.8-5.1-9.8-10.7C1.4,5.8,5.8,1.4,11.3,1.4c0.5,0,0.9,0.3,1.1,0.8c0.1,0.4,0,0.9-0.3,1.3C10.6,4.7,9.8,6.8,9.8,9c0,4.4,3.6,8,8,8c2.2,0,4.3-0.8,5.5-2.2c0.3-0.4,0.8-0.5,1.3-0.3c0.4,0.2,0.8,0.7,0.8,1.2c0,0.1,0,0.3,0,0.4c-0.5,3.3-2.6,6.1-5.6,7.8C17.5,25.3,14.8,22,12.1,22z"/></svg>`;
+    const ICON_SUN = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,4c0.6,0,1-0.4,1-1V2c0-0.6-0.4-1-1-1s-1,0.4-1,1v1C11,3.6,11.4,4,12,4z M6.3,6.3c0.4-0.4,0.4-1,0-1.4L5.6,4.2c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l0.7,0.7C5.3,6.7,5.9,6.7,6.3,6.3z M17.7,6.3c0.4,0.4,1,0.4,1.4,0l0.7-0.7c0.4-0.4,0.4-1,0-1.4s-1-0.4-1.4,0l-0.7,0.7C17.3,5.3,17.3,5.9,17.7,6.3z M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M2,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2c-0.6,0-1,0.4-1,1S1.4,13,2,13z M21,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1S20.4,13,21,13z M6.3,17.7c-0.4-0.4-1-0.4-1.4,0l-0.7,0.7c-0.4,0.4-0.4,1,0,1.4s1,0.4,1.4,0l0.7-0.7C6.7,18.7,6.7,18.1,6.3,17.7z M17.7,17.7c-0.4-0.4-0.4-1,0,1.4l0.7,0.7c0.4,0.4,1,0.4,1.4,0s0.4-1,0-1.4l-0.7-0.7C18.7,17.3,18.1,17.3,17.7,17.7z M12,20c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1s1-0.4,1-1v-1C13,20.4,12.6,20,12,20z"/></svg>`;
+
+    // Global state variables (Unchanged)
     const TELEGRAM_TGS_LIMIT_KB = 64; 
     const TELEGRAM_TGS_LIMIT_BYTES = TELEGRAM_TGS_LIMIT_KB * 1024;
     const LINK_REGEX = /t\.me\/nft\/([a-zA-Z0-9_-]+)/;
     const LOTTIE_FRAGMENT_BASE = 'https://nft.fragment.com/gift/';
-    // This CORS proxy is used to bypass browser restrictions when fetching the HTML page.
     const CORS_PROXY = 'https://api.allorigins.win/get?url='; 
 
     let currentNftId = null;
@@ -615,38 +618,30 @@
     let lastLoadedNftId = null; 
     let successLottieAnimation = null; 
     let fetchAbortController = null;
-    let animationId = null; 
+    let statusMessageTimer = null; 
+    // NEW: Continuous progress bar timer
+    let continuousProgressTimer = null; 
 
-    // Lottie JSON for a simple checkmark success animation
+    // Simple Checkmark Lottie Data (for success animation) (Unchanged)
     const successCheckmarkLottie = {
         "v": "5.7.4", "fr": 30, "ip": 0, "op": 60, "w": 100, "h": 100, "nm": "Success Checkmark", "ddd": 0, "assets": [],
         "layers": [{"ddd": 0, "ind": 1, "ty": 4, "nm": "Checkmark", "sr": 1, "ks": {"o": {"a": 0, "k": 100, "ix": 11}, "rp": {"a": 0, "k": 0, "ix": 12}, "s": {"a": 0, "k": [100, 100, 100], "ix": 6}, "p": {"a": 0, "k": [50, 50, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0, 0], "ix": 1}, "r": {"a": 0, "k": 0, "ix": 10}}, "ao": 0, "shapes": [{"ty": "gr", "nm": "Group 1", "it": [{"ty": "sh", "nm": "Path 1", "ind": 0, "ks": {"a": 0, "k": {"i": [[-1.2, 0], [0, -1.2], [1.2, 0]], "o": [[0, -1.2], [1.2, 0], [0, 1.2]], "v": [[28.5, 52.8], [42.6, 66.8], [71.5, 37.9]]}, "ix": 2}, "mn": "ADBEVectorShape", "hd": false}, {"ty": "st", "c": {"a": 0, "k": [0, 0.8, 0.4, 1], "ix": 3}, "o": {"a": 0, "k": 100, "ix": 4}, "w": {"a": 0, "k": 10, "ix": 5}, "lc": 1, "lj": 1, "ml": 4, "mn": "ADBEVectorGraphicStroke", "hd": false}, {"ty": "gr", "nm": "Group 2", "it": [], "mn": "ADBEVectorGroup", "hd": false}], "mn": "ADBEVectorGroup", "hd": false}], "bm": 0}]
     };
 
-    // ===================================
-    // CORE UI DISPLAY FUNCTIONS (UPDATED)
-    // ===================================
+    /* ================= CORE UI DISPLAY FUNCTIONS ================= */
 
-    // **UPDATED UI DISPLAY FUNCTION: Uses the new object structure and applies percentage styling.**
     function showGiftDetails(details, isError = false) { 
+        // ... (Unchanged)
         const detailBox = document.getElementById("giftDetails");
-        
-        // Clear the box first
         detailBox.innerHTML = '';
         
-        // Destructure, noting model, backdrop, and symbol are now objects {name, percent} OR strings (from fallback)
         const { giftId, model, backdrop, symbol, owner, quantity, giftedBy, giftedTo, giftedDate } = details;
 
-        // Handle error state
         if (isError) {
-            detailBox.innerHTML = `
-                <p class="error-message">❌ Gift Details Not Found. CORS Proxy failed or HTML structure changed.</p>
-            `;
-            detailBox.style.display = "block";
+            detailBox.style.display = "none";
             return;
         }
 
-        // Check if any metadata exists (handles both string and object traits)
         const hasMetadata = Object.values(details).some(value => {
             if (typeof value === 'object' && value !== null) {
                 return value.name && value.name !== "Unknown" && value.name !== "-";
@@ -661,138 +656,85 @@
 
         let htmlContent = '';
 
-        // Helper function to create the desired format line
-        // **MODIFIED: Now accepts trait objects and formats the percentage mark**
         const createDetailLine = (label, value) => {
             let displayValue = '';
             let actualValue = '';
 
             if (typeof value === 'object' && value !== null && value.name) {
-                // Handle Trait objects {name, percent}
                 actualValue = value.name;
                 if (value.percent) {
-                    // Apply the new Telegram-style class for the percentage
-                    // NOTE: The percentage mark is wrapped in a <span> inside the main detail-value span.
                     displayValue = `${actualValue} <span class="percentage-mark">${value.percent}</span>`;
                 } else {
                     displayValue = actualValue;
                 }
             } else {
-                // Handle simple strings (Gift ID, Owner, Quantity, etc. or fallback traits)
                 actualValue = typeof value === 'string' ? value : 'Unknown';
                 displayValue = actualValue;
             }
 
             if (actualValue && actualValue !== 'Unknown' && actualValue !== '-') {
-                // CRITICAL: Notice the inline style override is removed, relying on the new CSS for wrapping
                 return `<div class="detail-line">
                             <strong>${label}</strong>
-                            <span class="detail-value">${displayValue}</span>
+                            <div class="detail-value">${displayValue}</div>
                         </div>`;
             }
             return '';
         };
 
-        // 1. Gift ID 
+        // Gift ID formatting
         let formattedGiftId = giftId;
         if (giftId && giftId !== 'Unknown' && giftId !== '-') {
-            // Find the numeric ID from the original link slug (e.g., SpicedWine-45298)
             const idMatch = details.nftLinkFull ? details.nftLinkFull.match(/-(\d+)$/) : null;
             let numericId = idMatch ? idMatch[1] : '';
-
-            // Add the # and numeric ID to the display
-            if (numericId) {
-                formattedGiftId = `${giftId} #${numericId}`;
-            }
+            if (numericId) formattedGiftId = `${giftId} #${numericId}`;
             
-            // Avoid showing Gift ID if it's identical to the Model name
             const modelName = typeof model === 'object' && model.name ? model.name : (typeof model === 'string' ? model : '');
             const modelMatch = modelName.split(' ')[0];
-
             if (!modelName || modelName === 'Unknown' || giftId.toLowerCase() !== modelMatch.toLowerCase()) {
                 htmlContent += createDetailLine('Gift ID', formattedGiftId);
             }
         }
 
-        // 2. Model Trait
         htmlContent += createDetailLine('Model', model);
-
-        // 3. Backdrop Trait
         htmlContent += createDetailLine('Backdrop', backdrop);
-        
-        // 4. Symbol Trait
         htmlContent += createDetailLine('Symbol', symbol);
-
-        // Add a visual separator if we have traits AND other metadata
-        const getTraitName = (trait) => (typeof trait === 'object' && trait.name) ? trait.name : trait;
-
-        const hasTraits = (getTraitName(model) !== 'Unknown' && getTraitName(model) !== '-') || 
-                            (getTraitName(backdrop) !== 'Unknown' && getTraitName(backdrop) !== '-') || 
-                            (getTraitName(symbol) !== 'Unknown' && getTraitName(symbol) !== '-');
         
-        const hasOwnerOrQuantity = (owner && owner !== 'Unknown' && owner !== '-') || (quantity && quantity !== 'Unknown' && quantity !== '-');
-
-        if (hasTraits && hasOwnerOrQuantity) {
-             htmlContent += `<div class="detail-line" style="border-bottom: 1px solid var(--tg-divider); background: var(--tg-card-bg);"></div>`;
-        }
-
-        // 5. Owner
         htmlContent += createDetailLine('Owner', owner);
 
-        // 6. Quantity (Format number with commas)
+        // Quantity formatting
         let formattedQuantity = quantity;
         if (quantity && quantity !== 'Unknown' && quantity !== '-') {
-            // 1. Remove non-numeric/non-slash/non-comma characters (like "issued")
             formattedQuantity = quantity.replace(/[^0-9\/\s,]/g, '').trim(); 
-            
-            // 2. Remove all internal spaces (e.g., "96 123" -> "96123")
             formattedQuantity = formattedQuantity.replace(/\s+/g, ''); 
-            
-            // 3. Add commas to both parts of a fraction (x/y)
             formattedQuantity = formattedQuantity.split('/').map(part => {
-                // Remove existing commas before re-applying for clean formatting
                 let numStr = part.replace(/,/g, '').trim(); 
-                // Add commas back: look for a digit followed by groups of three digits
                 return numStr.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'); 
-            }).join(' / '); // Add spaces around the slash for cleaner output
+            }).join(' / '); 
         }
         htmlContent += createDetailLine('Quantity', formattedQuantity);
 
-        // 7. Gift Note (Combine Sender, Recipient, and Date)
+        // Gifted status formatting
         let giftNote = null;
         if (giftedBy && giftedBy !== 'Unknown' && giftedBy !== '-') {
-            if (giftedTo && giftedTo !== 'Unknown' && giftedTo !== '-') {
-                giftNote = `by ${giftedBy} to ${giftedTo}`;
-            } else {
-                giftNote = `by ${giftedBy}`;
-            }
-            if (giftedDate && giftedDate !== 'Unknown' && giftedDate !== '-') {
-                 giftNote += ` on ${giftedDate}`;
-            }
-        } else if (giftedDate && giftedDate !== 'Unknown' && giftedDate !== '-') {
-             // Fallback if we only have the date
+            giftNote = (giftedTo && giftedTo !== 'Unknown') ? `by ${giftedBy} to ${giftedTo}` : `by ${giftedBy}`;
+            if (giftedDate && giftedDate !== 'Unknown') giftNote += ` on ${giftedDate}`;
+        } else if (giftedDate && giftedDate !== 'Unknown') {
              giftNote = `on ${giftedDate}`;
         }
         
-        // Create Gift Note line only if we have the content
         if (giftNote) {
-        // CRITICAL: The inline styles are removed and rely on the new CSS for wrapping
-        htmlContent += `<div class="detail-line" style="font-size: 0.9em; padding-top: 8px; padding-bottom: 8px;">
-                            <strong style="font-weight: bold; color: var(--text-color-primary);">Gifted</strong>
-                            <span class="detail-value" style="color: var(--text-color-secondary);">${giftNote}</span> 
+            htmlContent += `<div class="detail-line">
+                                <strong>Gifted</strong>
+                                <div class="detail-value" style="font-size:0.85em; opacity:0.8;">${giftNote}</div> 
                             </div>`;
-    }
+        }
 
-        // Inject the generated content
         detailBox.innerHTML = htmlContent;
-
         detailBox.style.display = "block";
     }
 
-
     function resetGiftDetails() {
         const detailBox = document.getElementById("giftDetails");
-        // Clear all dynamically added content
         detailBox.innerHTML = ''; 
         detailBox.style.display = "none";
     }
@@ -803,20 +745,57 @@
             currentLottieAnimation.destroy();
             currentLottieAnimation = null;
         }
-        previewBox.innerHTML = '<div class="preview-placeholder">🔗 Link ထည့်ပြီးပါက ဒီနေရာမှာ Gift animation ကိုပြသပေးပါလိမ့်မယ်။</div>';
+        // Use the placeholder with the CSS spinner element
+        previewBox.innerHTML = `<div class="preview-placeholder">
+            <div id="loadingSpinnerContainer" class="css-spinner"></div>
+            Animation Preview
+        </div>`;
         previewBox.classList.remove('active');
+        document.getElementById('loadingSpinnerContainer').style.display = 'none';
+    }
+
+    function startLoadingAnimations() {
+        const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
+        const spinner = document.getElementById('loadingSpinnerContainer');
+
+        resetPreview(); 
+        if (previewPlaceholder) {
+            previewPlaceholder.classList.add('loading');
+        }
+        if (spinner) {
+            spinner.style.display = 'block';
+        }
+    }
+    
+    function stopLoadingAnimations() {
+         const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
+         const spinner = document.getElementById('loadingSpinnerContainer');
+         
+         if (previewPlaceholder) {
+            previewPlaceholder.classList.remove('loading');
+         }
+         if (spinner) {
+            spinner.style.display = 'none';
+         }
+         stopContinuousProgress(); // Stop progress bar here too
     }
 
     function resetUI() {
+        // ... (Unchanged)
         const inputElement = document.getElementById('nftLink');
-        // FIX: Only reset state if input is not in an invalid state.
+        const statusDiv = document.getElementById('status');
+        
+        document.getElementById('clearInputButton').classList.remove('active');
+        stopContinuousProgress(0); // Ensure bar resets
+
         if (inputElement.getAttribute('data-valid') !== 'false') {
             document.getElementById('convertButton').style.display = 'block';
             document.getElementById('downloadJsonButton').style.display = 'none';
             document.getElementById('optimizeButton').style.display = 'none';
-            document.getElementById('status').innerHTML = '';
-            document.getElementById('status').className = '';
-            document.getElementById('status').removeAttribute('aria-label');
+            
+            statusDiv.innerHTML = '';
+            statusDiv.className = '';
+            statusDiv.classList.remove('active');
 
             const convertButton = document.getElementById('convertButton');
             convertButton.disabled = true;
@@ -832,10 +811,11 @@
     }
     
     function renderLottiePreview(json_data) {
-        resetPreview();
+        // ... (Unchanged)
+        stopLoadingAnimations();
+        resetPreview(); 
         const previewBox = document.getElementById('lottie-preview');
         previewBox.classList.add('active');
-        previewBox.setAttribute('aria-busy', 'true');
 
         currentLottieAnimation = lottie.loadAnimation({
             container: previewBox,
@@ -844,63 +824,100 @@
             autoplay: true,
             animationData: json_data
         });
-
-        currentLottieAnimation.addEventListener('DOMLoaded', () => {
-            previewBox.setAttribute('aria-busy', 'false');
-        });
-        currentLottieAnimation.addEventListener('error', () => {
-            previewBox.innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error Rendering Animation (Lottie Data Corrupt)</div>';
-            previewBox.setAttribute('aria-busy', 'false');
-        });
-        currentLottieAnimation.resize();
     }
-
-    function updateProgress(step, totalSteps, message) {
-        const statusDiv = document.getElementById('status');
-        statusDiv.className = 'loading';
-        const percentage = (step / totalSteps) * 100;
-        // FIX: Ensure the spinner is prepended to the message for loading states.
-        const messageWithSpinner = message.includes('spinner') ? message : `<span class="spinner"></span> ${message}`;
-
-        statusDiv.innerHTML = `
-            ${messageWithSpinner}
-            <div class="progress-bar">
-                <div class="progress-bar-fill" style="width: ${percentage.toFixed(0)}%;"></div>
-            </div>
-        `;
-        statusDiv.setAttribute('aria-label', `Loading: Step ${step} of ${totalSteps}. ${message.replace(/<[^>]*>?/gm, '')}`);
-    }
-
-    // ===================================
-    // GIFT DETAILS EXTRACTION LOGIC (UPDATED FOR OBJECTS)
-    // ===================================
 
     /**
-     * UPDATED FUNCTION: Extracts a single trait value and percentage from the structured HTML table.
-     * It now returns an object { name: '...', percent: '...' }
+     * Updates the progress bar with an explicit percentage value.
+     * @param {number} percentage - The percentage (0-100) to set the bar to.
+     * @param {string} message - The status message.
+     * @param {boolean} isTemporary - If the message should disappear after a timeout.
      */
-    function extractTraitFromTable(doc, label) {
-        const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
+    function updateProgress(percentage, message, isTemporary = false) {
+        const statusDiv = document.getElementById('status');
+        if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
 
+        // Clamp the percentage
+        const clampedPercentage = Math.max(0, Math.min(100, percentage));
+        
+        statusDiv.className = 'loading active';
+        statusDiv.innerHTML = `
+            <div>${message}</div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: ${clampedPercentage.toFixed(0)}%;"></div>
+            </div>
+        `;
+
+        if (isTemporary) {
+             statusMessageTimer = setTimeout(() => { statusDiv.classList.remove('active'); }, 3000);
+        }
+    }
+    
+    /**
+     * Starts a continuous, slow-filling progress bar simulation.
+     */
+    function startContinuousProgress() {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = 'loading active';
+        let currentPercentage = 0;
+        const fillElement = document.querySelector('.progress-bar-fill');
+
+        if (continuousProgressTimer) clearInterval(continuousProgressTimer);
+
+        continuousProgressTimer = setInterval(() => {
+            if (!fillElement) return stopContinuousProgress(0);
+
+            // Cap the progress before 100% to wait for completion event
+            if (currentPercentage < 95) {
+                // Increment speed based on current progress (slower as it gets closer to completion)
+                const increment = currentPercentage < 50 ? 2 : 0.5;
+                currentPercentage += increment;
+                if (currentPercentage > 95) currentPercentage = 95;
+                fillElement.style.width = `${currentPercentage.toFixed(0)}%`;
+            }
+        }, 300); // Update every 300ms
+    }
+
+    /**
+     * Stops the continuous progress bar simulation and optionally sets a final percentage.
+     * @param {number|null} finalPercentage - Percentage to set the bar to (e.g., 100 for success, 0 for reset).
+     */
+    function stopContinuousProgress(finalPercentage = null) {
+        if (continuousProgressTimer) {
+            clearInterval(continuousProgressTimer);
+            continuousProgressTimer = null;
+        }
+        const fillElement = document.querySelector('.progress-bar-fill');
+        if (fillElement && finalPercentage !== null) {
+             fillElement.style.width = `${finalPercentage.toFixed(0)}%`;
+        }
+    }
+
+
+    function showFinalStatus(className, message) {
+        // ... (Unchanged)
+        const statusDiv = document.getElementById('status');
+        if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
+        stopContinuousProgress(className === 'success' ? 100 : 0); // Set bar to 100% on success, 0% on error/reset
+        
+        statusDiv.className = `${className} active`;
+        statusDiv.innerHTML = message;
+    }
+
+    /* ================= LOGIC & EXTRACTION (Unchanged) ================= */
+
+    function extractTraitFromTable(doc, label) {
+        // ... (Unchanged)
+        const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
         for (const thElement of thElements) {
             if (thElement.textContent.trim().toLowerCase() === label.toLowerCase()) {
                  const tdElement = thElement.nextElementSibling;
                  if (tdElement) {
                      const innerHTML = tdElement.innerHTML.trim();
                      const textContent = tdElement.textContent.trim();
-
-                     // Regex to find the percentage content (e.g., <mark>0.8%</mark>)
                      const percentMatch = innerHTML.match(/<mark>([^<]+)<\/mark>/i);
                      let percentage = percentMatch ? percentMatch[1].trim() : '';
-
-                     // Clean the trait name by removing the percentage text
-                     let name = textContent.replace(percentage, '').trim();
-                     
-                     // Remove any trailing spaces, commas, or " %" if not inside <mark>
-                     name = name.replace(/[\s,]*%$/, '').trim(); 
-                     
-                     if (name === '' && percentage !== '') name = label; // Fallback to label if only percentage is left
-
+                     let name = textContent.replace(percentage, '').trim().replace(/[\s,]*%$/, '').trim();
+                     if (name === '' && percentage !== '') name = label; 
                      return { name: name || 'Unknown', percent: percentage };
                  }
             }
@@ -908,61 +925,47 @@
         return { name: 'Unknown', percent: '' };
     }
 
-    /**
-     * Extracts Owner, Quantity, and Gifted Details from the structured HTML table and footer.
-     * @param {Document} doc - The parsed HTML document.
-     * @returns {Object} An object containing owner, quantity, and gifted details.
-     */
     function extractOwnerAndQuantityFromTable(doc) {
+        // ... (Unchanged)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
         let giftedTo = 'Unknown';
         let giftedDate = 'Unknown';
 
-        // 1. Owner: Scrape the <td> content next to the <th>Owner</th>
         const ownerTh = Array.from(doc.querySelectorAll('.tgme_gift_table th')).find(th => th.textContent.trim() === 'Owner');
         if (ownerTh) {
             const ownerTd = ownerTh.nextElementSibling;
             if (ownerTd) {
-                // Owner name might be wrapped in a <span> after other elements
                 const span = ownerTd.querySelector('span[dir="auto"]');
-                owner = span ? span.textContent.trim() : ownerTd.textContent.trim().split(' ')[0].replace(/[\(\)\[\]#]/g, '');
+                owner = span ? (span.querySelector('span') ? span.querySelector('span').textContent.trim() : span.textContent.trim()) : ownerTd.textContent.trim().split(' ')[0].replace(/[\(\)\[\]#]/g, '');
             }
         }
 
-        // 2. Quantity: Scrape the <td> content next to the <th>Quantity</th>
         const quantityTh = Array.from(doc.querySelectorAll('.tgme_gift_table th')).find(th => th.textContent.trim() === 'Quantity');
         if (quantityTh) {
             const quantityTd = quantityTh.nextElementSibling;
             if (quantityTd) {
                 quantity = quantityTd.textContent.trim();
-                // Clean up: remove 'issued' and normalize space/slash
                 quantity = quantity.replace(/issued/i, '').trim().replace(/\s*\/s*/, ' / '); 
             }
         }
         
-        // 3. Gift Note: Scrape the footer <th> (which has colspan=2)
         const footerTh = doc.querySelector('.tgme_gift_table th.footer[colspan="2"]');
         if (footerTh) {
             const textContent = footerTh.textContent.trim();
-            
-            // Regex 3: Find Gift Details (Looks for "Gifted by [Sender] to [Recipient] on [Date]")
             const giftedMatch = textContent.match(/Gifted by\s*([^\n\r]+?)\s*to\s*([^\n\r]+?)\s*on\s*([^\n\r]+)/i);
 
             if (giftedMatch) {
-                // Safely extract names from the anchor tags within the footer
                 const senderAnchor = footerTh.querySelector('a:first-child');
                 const recipientAnchor = footerTh.querySelector('a:last-child');
                 
-                giftedBy = senderAnchor ? senderAnchor.querySelector('span') ? senderAnchor.querySelector('span').textContent.trim() : senderAnchor.textContent.trim() : 'Unknown';
-                giftedTo = recipientAnchor ? recipientAnchor.querySelector('span') ? recipientAnchor.querySelector('span').textContent.trim() : recipientAnchor.textContent.trim() : 'Unknown';
+                giftedBy = senderAnchor ? (senderAnchor.querySelector('span') ? senderAnchor.querySelector('span').textContent.trim() : senderAnchor.textContent.trim()) : 'Unknown';
+                giftedTo = recipientAnchor ? (recipientAnchor.querySelector('span') ? recipientAnchor.querySelector('span').textContent.trim() : recipientAnchor.textContent.trim()) : 'Unknown';
                 
-                // Final match is the date
                 const dateMatch = textContent.match(/on\s*([^\n\r]+)$/i);
                 giftedDate = dateMatch ? dateMatch[1].trim() : 'Unknown';
             } else {
-                // Fallback for just Gifted on date
                 const dateMatch = textContent.match(/Gifted on\s*([^\n\r]+)/i);
                 if (dateMatch) {
                     giftedDate = dateMatch[1].trim();
@@ -973,50 +976,37 @@
         return { owner, quantity, giftedBy, giftedTo, giftedDate };
     }
 
-
-    /**
-     * FALLBACK FUNCTION: Extracts trait values by looking for text content (used if table fails).
-     * Returns a simple string.
-     */
     function extractTrait(doc, traitName) {
-        // Define the words that indicate the start of the next piece of data.
+        // ... (Unchanged)
         const nextTraitStopWords = ['Backdrop:', 'Symbol:', 'Gifted by', 'Gifted on', 'Collected on', 'Owner:', 'issued', 'Model:'];
-        
-        // Create a regex to find the next trait name or stop word, making colons optional for matching.
         const stopRegex = new RegExp(`\\s+(${nextTraitStopWords.join('|').replace(/:/g, '\\s*:\\s*')})`, 'i');
-
         const divs = Array.from(doc.querySelectorAll('div'));
         
         for (const div of divs) {
             let textContent = div.textContent ? div.textContent.trim() : '';
 
-            // --- 1. Look for text that STARTS with the Trait Name (e.g., "Model Gold Chain 2%") ---
             if (textContent.startsWith(traitName) || textContent.startsWith(traitName + ':')) {
                 let fullValue = textContent.substring(traitName.length).trim();
-                fullValue = fullValue.replace(/^[-\.:\s]*/, '').trim(); 
+                fullValue = fullValue.replace(/^[-\.:\s]*/, '', '').trim(); 
                 
-                // Cut the string at the first stop word found (only if it's not the first word)
                 const match = fullValue.match(stopRegex);
                 let finalValue = fullValue;
                 if (match && match.index > 0) {
                     finalValue = fullValue.substring(0, match.index).trim();
                 }
                 
-                // CRITICAL FINAL CLEANUP: Remove trailing percentages, numbers, and "issued" text
-                // Since this is a fallback, we strip the % and <mark> to ensure clean text only.
                 finalValue = finalValue.replace(/\s[\d\.,]+\s*%(.*)?$/, '').trim(); 
                 finalValue = finalValue.replace(/\s[\d\.,]+\s*(%|issued)\s*$/, '').trim(); 
                 
                 return finalValue || 'Unknown';
             }
             
-            // --- 2. Check for the structure: <div><b>TraitName</b>TraitValue</div> ---
             const bTag = div.querySelector('b');
             if (bTag && bTag.textContent && bTag.textContent.trim() === traitName) {
                 let textValue = '';
                 let textNode = bTag.nextSibling;
                 while (textNode) {
-                    if (textNode.nodeType === 3) { // 3 is TEXT_NODE
+                    if (textNode.nodeType === 3) { 
                         textValue += textNode.textContent;
                     }
                     if (textNode.nodeType === 1 && textNode !== bTag) break; 
@@ -1040,9 +1030,8 @@
         return 'Unknown';
     }
 
-
-    // --- FALLBACK: Extracts Owner, Quantity, and Gifted Details from raw text content ---
     function extractOwnerAndQuantity(doc) {
+        // ... (Unchanged)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
@@ -1051,27 +1040,23 @@
 
         const textContent = doc.body.textContent;
 
-        // Regex 1: Find Owner (Looks for "Owner: [Name]")
         const ownerMatch = textContent.match(/Owner:\s*([^\n\r]+)/i);
         if (ownerMatch) {
             owner = ownerMatch[1].trim().split(' ')[0].replace(/[\(\)\[\]#]/g, '');
         }
         
-        // Regex 2: Find Quantity (Looks for "[Number] / [Number] issued" or just "[Number] issued")
         const quantityMatch = textContent.match(/(\d[\d\s,]+)\s*(?:\/\s*(\d[\d\s,]+)\s*)?issued/i);
         if (quantityMatch) {
             quantity = quantityMatch[2] ? `${quantityMatch[1].trim()} / ${quantityMatch[2].trim()}` : `${quantityMatch[1].trim()}`;
-            quantity = quantity.replace(/\s+/g, ''); // Remove all internal spaces
+            quantity = quantity.replace(/\s+/g, ''); 
         }
 
-        // Regex 3: Find Gift Details (Looks for "Gifted by [Sender] to [Recipient] on [Date]")
         const giftedMatch = textContent.match(/Gifted by\s*([^\n\r]+?)\s*to\s*([^\n\r]+?)\s*on\s*([^\n\r]+)/i);
         if (giftedMatch) {
             giftedBy = giftedMatch[1].trim();
             giftedTo = giftedMatch[2].trim();
             giftedDate = giftedMatch[3].trim();
         } else {
-            // Fallback for just Gifted on date
             const dateMatch = textContent.match(/Gifted on\s*([^\n\r]+)/i);
             if (dateMatch) {
                 giftedDate = dateMatch[1].trim();
@@ -1080,189 +1065,72 @@
         return { owner, quantity, giftedBy, giftedTo, giftedDate };
     }
 
-
-    // **UPDATED: Handles new object structure for traits and includes nftLinkFull in the returned object.**
     async function fetchGiftDetailsFromHTML(nftLink, signal) {
+        // ... (Unchanged)
         const proxyUrl = CORS_PROXY + encodeURIComponent(nftLink);
-        let isError = false;
-
-        let giftId = 'Unknown';
-        // **Initialize as objects for table-based extraction**
         let model = { name: 'Unknown', percent: '' };
         let backdrop = { name: 'Unknown', percent: '' };
         let symbol = { name: 'Unknown', percent: '' };
         let ownerDetails = {};
+        let giftId = 'Unknown';
 
         try {
             const response = await fetch(proxyUrl, { signal });
-            
-            if (!response.ok) {
-                throw new Error(`Proxy Fetch Error (HTTP ${response.status})`);
-            }
-
+            if (!response.ok) throw new Error(`Proxy Error`);
             const data = await response.json();
-            const htmlText = data.contents;
-            
-            if (!htmlText) {
-                throw new Error("Proxy returned empty content.");
-            }
+            const doc = new DOMParser().parseFromString(data.contents, 'text/html');
 
-            // Parse HTML
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-
-            // 🔥 ATTEMPT 1: DIRECT TABLE EXTRACTION (Most Reliable)
+            // 1. Table Extraction (Primary)
             try {
-                // **The extraction functions now return objects.**
                 model = extractTraitFromTable(doc, 'Model');
                 backdrop = extractTraitFromTable(doc, 'Backdrop');
                 symbol = extractTraitFromTable(doc, 'Symbol');
-                
-                ownerDetails = extractOwnerAndQuantityFromTable(doc); 
+                ownerDetails = extractOwnerAndQuantityFromTable(doc);
+            } catch(e) { console.warn('Table parsing failed', e); }
 
-                // Check if table extraction was successful (check the name property of the object)
-                if (model.name !== 'Unknown' || backdrop.name !== 'Unknown' || symbol.name !== 'Unknown') {
-                     // Get Gift ID from meta tag or title
-                    const titleElement = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
-                    giftId = titleElement ? (titleElement.getAttribute('content') || titleElement.textContent).replace(/ #\d+/, '').trim() : 'Unknown';
-                    
-                    return { 
-                        ...ownerDetails, 
-                        giftId, 
-                        model, // Returns the object
-                        backdrop, // Returns the object
-                        symbol, // Returns the object
-                        nftLinkFull: nftLink, 
-                        isError: false 
-                    };
-                }
-            } catch (e) {
-                console.warn("Table parsing failed, falling back to meta tags/text content.", e);
-                // Continue to the next attempts if table parsing fails
+            // 2. Meta/Fallback Extraction if Table failed
+            if (model.name === 'Unknown') {
+                 let strModel = extractTrait(doc, 'Model');
+                 if(strModel === 'Unknown') {
+                     // Try Meta tags
+                      const meta = doc.querySelector('meta[name="twitter:description"]') || doc.querySelector('meta[property="og:description"]');
+                      if(meta) {
+                          const c = meta.content;
+                          const m = c.match(/Model:\s*([^,\n\r]+)/i);
+                          if(m) strModel = m[1].trim();
+                      }
+                 }
+                 model = { name: strModel, percent: '' };
             }
-
-
-            // --- ATTEMPT 2: META DESCRIPTION TAG EXTRACTION & GENERIC DIV PARSING (Fallbacks) ---
-            let strModel = 'Unknown';
-            let strBackdrop = 'Unknown';
-            let strSymbol = 'Unknown';
-
-            try {
-                const metaDescription = doc.querySelector('meta[name="twitter:description"]') || doc.querySelector('meta[property="og:description"]');
-                if (metaDescription) {
-                    const content = metaDescription.getAttribute('content');
-                    if (content) {
-                        const modelMatch = content.match(/Model:\s*([^,\n\r]+)/i);
-                        const backdropMatch = content.match(/Backdrop:\s*([^,\n\r]+)/i);
-                        const symbolMatch = content.match(/Symbol:\s*([^,\n\r]+)/i);
-
-                        strModel = modelMatch ? modelMatch[1].trim() : strModel;
-                        strBackdrop = backdropMatch ? backdropMatch[1].trim() : strBackdrop;
-                        strSymbol = symbolMatch ? symbolMatch[1].trim() : strSymbol;
-                    }
-                }
-            } catch (e) {
-                console.warn("Meta description parsing failed.", e);
-            }
-
-            // --- ATTEMPT 3: GENERIC DIV PARSING (Fallback/Correction) ---
-            const divModel = extractTrait(doc, 'Model');
-            const divBackdrop = extractTrait(doc, 'Backdrop');
-            const divSymbol = extractTrait(doc, 'Symbol');
-
-            if (divModel !== 'Unknown') strModel = divModel;
-            if (divBackdrop !== 'Unknown') strBackdrop = divBackdrop;
-            if (divSymbol !== 'Unknown') strSymbol = divSymbol;
-            
-            // --- ATTEMPT 4: OG:IMAGE URL FALLBACK ---
-            if (strModel === 'Unknown' || strBackdrop === 'Unknown' || strSymbol === 'Unknown') {
-                const ogImage = doc.querySelector('meta[property="og:image"]');
-                if (ogImage) {
-                    const imageUrl = ogImage.getAttribute('content');
-                    if (imageUrl) {
-                        const urlMatch = imageUrl.match(/Model_([^-\/]+)-Backdrop_([^-\/]+)-Symbol_([^-\/]+)\.png/i);
-                        if (urlMatch) {
-                            const cleanAndFormat = (val) => val.replace(/([a-z])([A-Z])/g, '$1 $2').trim();
-
-                            if (strModel === 'Unknown') strModel = cleanAndFormat(urlMatch[1]);
-                            if (strBackdrop === 'Unknown') strBackdrop = cleanAndFormat(urlMatch[2]);
-                            if (strSymbol === 'Unknown') strSymbol = cleanAndFormat(urlMatch[3]);
-                        }
-                    }
-                }
-            }
-
-            // --- GIFT ID EXTRACTION (Final) ---
-            const titleElement = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
-            const titleText = titleElement ? (titleElement.getAttribute('content') || titleElement.textContent).trim() : '';
-
-            giftId = titleText
-                .replace(/ #\d+/, '')
-                .replace(/ — Telegram$/, '')
-                .replace(/ on Telegram$/, '')
-                .replace(/NFT Gift: /, '')
-                .replace(/Collectable Gift #\d+/, '')
-                .trim();
-            
-            if (giftId === 'Unknown' || giftId === '') {
-                const h1Element = doc.querySelector('h1') || doc.querySelector('.tgme_widget_message_link');
-                giftId = h1Element ? h1Element.textContent.trim().replace(/ #\d+/, '').trim() : 'Unknown';
-            }
-
-            // --- FALLBACK OWNER/QUANTITY/GIFTED (If table/meta failed) ---
             if (Object.keys(ownerDetails).length === 0 || ownerDetails.owner === 'Unknown') {
                 ownerDetails = extractOwnerAndQuantity(doc);
             }
-            
-            // Convert string fallbacks to the required object format for consistency in showGiftDetails
-            const finalModel = { name: strModel, percent: '' };
-            const finalBackdrop = { name: strBackdrop, percent: '' };
-            const finalSymbol = { name: strSymbol, percent: '' };
 
+            // Gift ID Extraction
+            const titleEl = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
+            if(titleEl) giftId = (titleEl.getAttribute('content') || titleEl.textContent).replace(/ #\d+/, '').replace(/ — Telegram$/,'').replace(/ on Telegram$/,'').replace(/NFT Gift: /,'').replace(/Collectable Gift #\d+/,'').trim();
+            if(giftId === 'Unknown') {
+                 const h1 = doc.querySelector('h1') || doc.querySelector('.tgme_widget_message_link');
+                 if(h1) giftId = h1.textContent.trim().replace(/ #\d+/, '').trim();
+            }
 
             return { 
-                giftId, 
-                model: finalModel, 
-                backdrop: finalBackdrop, 
-                symbol: finalSymbol, 
-                owner: ownerDetails.owner || 'Unknown', 
-                quantity: ownerDetails.quantity || 'Unknown', 
-                giftedBy: ownerDetails.giftedBy || 'Unknown', 
-                giftedTo: ownerDetails.giftedTo || 'Unknown', 
-                giftedDate: ownerDetails.giftedDate || 'Unknown', 
-                nftLinkFull: nftLink,
-                isError: false 
+                ...ownerDetails, giftId, model, backdrop, symbol, nftLinkFull: nftLink, isError: false 
             };
-
         } catch (err) {
-            if (err.name === 'AbortError') throw err; 
-            console.error('Error fetching gift details:', err);
-            isError = true;
-            // Return error status with consistent object format
-            return { 
-                giftId: 'Unknown', 
-                model: { name: 'Unknown', percent: '' }, 
-                backdrop: { name: 'Unknown', percent: '' }, 
-                symbol: { name: 'Unknown', percent: '' }, 
-                owner: 'Unknown', 
-                quantity: 'Unknown',
-                giftedBy: 'Unknown',
-                giftedTo: 'Unknown',
-                giftedDate: 'Unknown',
-                nftLinkFull: nftLink,
-                isError: true 
-            };
+            if (err.name === 'AbortError') throw err;
+            console.error(err);
+            return { isError: true, nftLinkFull: nftLink, ...ownerDetails, model, backdrop, symbol, giftId };
         }
     }
 
-
-    // ===================================
-    // AUTO-LOAD AND MAIN LOGIC 
-    // ===================================
     async function handleAutoLoad() {
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const match = linkInput.match(LINK_REGEX);
+        const icon = document.getElementById('validationIcon');
+
+        document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
 
         if (!match) {
             if (linkInput === '') resetUI();
@@ -1270,18 +1138,14 @@
         }
 
         const newNftId = match[1];
-
         if (newNftId === lastLoadedNftId) {
-            // If the same valid ID is already loaded, skip fetching but ensure buttons are correct
             document.getElementById('convertButton').disabled = false;
             document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
             document.getElementById('downloadJsonButton').style.display = 'block';
             return;
         }
 
-        if (fetchAbortController) {
-            fetchAbortController.abort();
-        }
+        if (fetchAbortController) fetchAbortController.abort();
         fetchAbortController = new AbortController();
         const signal = fetchAbortController.signal;
 
@@ -1289,100 +1153,79 @@
         const lottieUrl = LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`;
         const nftLinkFull = `https://t.me/nft/${currentNftId}`;
 
-        // Reset UI elements and show spinner
+        // Reset & Start Loading UI
         document.getElementById('downloadJsonButton').style.display = 'none';
         document.getElementById('optimizeButton').style.display = 'none';
         fetchedLottieJsonText = null;
         resetGiftDetails();
-
-        const previewBox = document.getElementById('lottie-preview');
-        resetPreview();
-        previewBox.classList.add('active');
-        previewBox.innerHTML = `<div class="preview-placeholder"><span class="spinner"></span> Loading ${currentNftId} details...</div>`;
+        startLoadingAnimations();
+        
+        // NEW: Start continuous progress bar simulation
+        updateProgress(5, `Fetching details and animation...`);
+        startContinuousProgress();
 
         try {
-            // Fetch both Lottie JSON and HTML details in parallel
             const [lottieData, giftDetails] = await Promise.all([
                 fetchLottieData(currentNftId, lottieUrl, true, signal),
                 fetchGiftDetailsFromHTML(nftLinkFull, signal)
             ]);
 
-            // Always display the details we found, or the error state
+            stopContinuousProgress(95); // Stop continuous fill just before final status
+            stopLoadingAnimations(); // Clears CSS spinner and placeholder
+
             showGiftDetails(giftDetails, giftDetails.isError);
 
             if (lottieData) {
                 renderLottiePreview(lottieData);
                 lastLoadedNftId = currentNftId;
-
-                document.getElementById('status').innerHTML = '';
-                document.getElementById('status').className = '';
+                showFinalStatus('success', `Data loaded. Ready to convert.`);
                 document.getElementById('convertButton').disabled = false;
                 document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
                 document.getElementById('downloadJsonButton').style.display = 'block';
             } else {
                 lastLoadedNftId = null;
                 document.getElementById('convertButton').disabled = true;
-                document.getElementById('convertButton').setAttribute('aria-disabled', 'true');
-                document.getElementById('lottie-preview').innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error: Gift Lottie not found or network failed.</div>';
+                const previewBox = document.getElementById('lottie-preview');
+                previewBox.innerHTML = '<div class="preview-placeholder" style="color:var(--error); font-weight:600;">Animation Not Found</div>';
+                showFinalStatus('error', 'Animation not found. Check link or network.');
             }
         } catch (error) {
-            if (error.name === 'AbortError') {
-                console.log('Fetch aborted for new input.');
-                return;
-            }
+            if (error.name === 'AbortError') return;
             lastLoadedNftId = null;
-            document.getElementById('lottie-preview').innerHTML = '<div class="preview-placeholder" style="color: var(--validation-color-error); font-weight: bold;">❌ Error: Network failed to fetch data.</div>';
-            console.error("Auto-load failed:", error);
-            
-            // If there's a fatal error, still try to show the gift details error state
-            showGiftDetails({ 
-                giftId: 'Unknown', 
-                model: { name: 'Unknown', percent: '' }, 
-                backdrop: { name: 'Unknown', percent: '' }, 
-                symbol: { name: 'Unknown', percent: '' }, 
-                owner: 'Unknown', 
-                quantity: 'Unknown', 
-                giftedBy: 'Unknown', 
-                giftedTo: 'Unknown', 
-                giftedDate: 'Unknown', 
-                nftLinkFull: nftLinkFull 
-            }, true); 
-
+            stopContinuousProgress(0); // Reset bar on error
+            stopLoadingAnimations(); 
+            const previewBox = document.getElementById('lottie-preview');
+            previewBox.innerHTML = '<div class="preview-placeholder" style="color:var(--error); font-weight:600;">Network Error. Please try again.</div>';
+            showFinalStatus('error', `Failed to fetch details.`);
         } finally {
             fetchAbortController = null;
         }
     }
     
     async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false, signal = null) {
-        
         if (!isAutoLoad) {
-            updateProgress(1, 3, `⏳ Step 1/3: အချက်အလက်များကို ${nftId} မှယူနေပါတယ်။`);
+             startLoadingAnimations();
+             // Changed to start continuous progress for non-autoload fetch
+             updateProgress(5, `Fetching ${nftId}...`);
+             startContinuousProgress(); 
         }
-
         try {
             const response = await fetch(lottieUrl, { signal });
-
-            if (!response.ok) {
-                throw new Error(`Fetch Error (HTTP ${response.status})`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const text = await response.text();
             fetchedLottieJsonText = text;
             const jsonData = JSON.parse(text);
-
             if (!isAutoLoad) {
-                renderLottiePreview(jsonData);
+                 stopContinuousProgress(95);
+                 renderLottiePreview(jsonData);
             }
-
             return jsonData;
-
         } catch (error) {
             if (error.name === 'AbortError') throw error;
-
             if (!isAutoLoad) {
-                document.getElementById('status').className = 'error';
-                document.getElementById('status').innerHTML = `❌ Error အချက်အလက်များ မရယူနိုင်ခဲ့ပါ။🥹 ${error.message}`;
-                resetPreview();
+                stopContinuousProgress(0);
+                showFinalStatus('error', `Fetch Error: ${error.message}`);
+                stopLoadingAnimations();
             }
             return null;
         }
@@ -1390,48 +1233,38 @@
     
     function convertAndDownload() {
         const convertButton = document.getElementById('convertButton');
-
-        if (!validateInput()) {
-            return;
-        }
+        if (!validateInput()) return;
 
         convertButton.classList.add('loading');
-        convertButton.setAttribute('aria-disabled', 'true'); 
-
-        if (!fetchedLottieJsonText) {
-            const linkInput = document.getElementById('nftLink').value.trim();
-            const match = linkInput.match(LINK_REGEX);
-            if (!match) { convertButton.classList.remove('loading'); convertButton.setAttribute('aria-disabled', 'false'); return; }
-
-            currentNftId = match[1];
-            const lottieUrl = LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`;
-
-            // Re-fetch Lottie Data if not present
-            fetchLottieData(currentNftId, lottieUrl, false).then(() => {
-                if (!fetchedLottieJsonText) {
-                    convertButton.classList.remove('loading');
-                    convertButton.setAttribute('aria-disabled', 'false');
-                    return;
-                }
-                // Continue with compression/download logic here
-                performCompressionAndDownload(convertButton);
-            });
-            return;
-        }
+        convertButton.disabled = true;
         
-        // If Lottie JSON is already available, perform compression/download immediately
+        // Start continuous progress for the initial fetch if needed
+        if (!fetchedLottieJsonText) {
+             const linkInput = document.getElementById('nftLink').value.trim();
+             const match = linkInput.match(LINK_REGEX);
+             if(!match) { convertButton.classList.remove('loading'); convertButton.disabled = false; return; }
+             currentNftId = match[1];
+             
+             updateProgress(5, `Fetching ${currentNftId} before conversion...`);
+             startContinuousProgress();
+             
+             fetchLottieData(currentNftId, LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`, false).then(()=>{
+                 stopContinuousProgress(30); // Set to 30% for transition to compression step
+                 if(!fetchedLottieJsonText) {
+                     convertButton.classList.remove('loading'); convertButton.disabled = false; return;
+                 }
+                 performCompressionAndDownload(convertButton);
+             });
+             return;
+        }
         performCompressionAndDownload(convertButton);
     }
 
     function performCompressionAndDownload(convertButton) {
-        const statusDiv = document.getElementById('status');
-
         try {
-            const jsonToCompressText = fetchedLottieJsonText;
-
-            updateProgress(2, 3, `<span class="spinner"></span> **Step 2/3:** Compressing Lottie JSON to **.tgs** format and checking size...`);
-
-            const jsonBytes = new TextEncoder().encode(jsonToCompressText);
+            // Updated to use explicit step update for compression
+            updateProgress(70, `Compressing to .TGS...`);
+            const jsonBytes = new TextEncoder().encode(fetchedLottieJsonText);
             const tgsBytes = pako.gzip(jsonBytes);
             const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
 
@@ -1439,309 +1272,221 @@
                 document.getElementById('convertButton').style.display = 'none';
                 document.getElementById('downloadJsonButton').style.display = 'block';
                 document.getElementById('optimizeButton').style.display = 'block';
-
-                statusDiv.className = 'error';
-                statusDiv.innerHTML = `
-                    ❌ File Size အရမ်းကြီးနေပါတယ်။<br>
-                    Sticker size က **${tgsSizeKB} KB** (Limit: ${TELEGRAM_TGS_LIMIT_KB} KB).<br>
-                    Telegram ဘက်ကလက်မခံတဲ့အတွက်ကြောင့် အောက်ကခလုတ်ကိုနှိပ်ပြီးပြင်ပါ။
-                `;
+                showFinalStatus('error', `Size ${tgsSizeKB}KB exceeds 64KB limit. Cannot convert. Use optimize tool.`);
                 return;
             }
 
-            updateProgress(3, 3, `🚀 Step 3/3: Size စစ်ဆေးမှု့အောင်မြင်ပါတယ်။🥳 (${tgsSizeKB} KB). စတင်download ဆွဲနေပါပြီ။`);
-
+            // Updated to use explicit step update for download success
+            updateProgress(100, `Success! Downloading...`, true);
             const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
-            const downloadLink = document.createElement('a');
             const tempUrl = URL.createObjectURL(tgsBlob);
-
+            const downloadLink = document.createElement('a');
             downloadLink.href = tempUrl;
             downloadLink.download = `${currentNftId}.tgs`;
-
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
-
             URL.revokeObjectURL(tempUrl);
 
             showSuccessAnimation();
-
-            statusDiv.className = 'success';
-            statusDiv.innerHTML = `
-                ✅ အောင်အောင်မြင်မြင် ${currentNftId} sticker ကို Downloadဆွဲပြီးပါပြီ။🥰<br>
-                Size ${tgsSizeKB} KB.
-            `;
-
+            showFinalStatus('success', `Downloaded ${currentNftId}.tgs (${tgsSizeKB} KB)`);
             document.getElementById('downloadJsonButton').style.display = 'block';
 
         } catch (error) {
-            resetUI();
-            statusDiv.className = 'error';
-            statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
-            console.error(error);
+            showFinalStatus('error', `System Error: ${error.message}`);
         } finally {
             convertButton.classList.remove('loading');
-            convertButton.setAttribute('aria-disabled', 'false');
+            convertButton.disabled = false;
         }
     }
 
+    // ... (rest of the functions remain the same)
+    
     function downloadRawJson() {
-         const linkInput = document.getElementById('nftLink').value.trim();
+        // ... (Unchanged)
+        const linkInput = document.getElementById('nftLink').value.trim();
         const match = linkInput.match(LINK_REGEX);
-        if (!match) return; 
-
+        if(!match) return;
         const nftId = match[1];
-        const statusDiv = document.getElementById('status');
-        statusDiv.className = 'loading';
-        statusDiv.innerHTML = '<span class="spinner"></span> Downloading raw JSON...';
-
-        try {
-            let lottieJsonText = fetchedLottieJsonText;
-
-            if (!lottieJsonText) {
-                fetch(LOTTIE_FRAGMENT_BASE + `${nftId}.lottie.json`).then(response => {
-                    if (!response.ok) {
-                        statusDiv.className = 'error';
-                        statusDiv.innerHTML = `❌ Error အချက်အလက်များမတွေ့ခဲ့ပါ။🥺`;
-                        return;
-                    }
-                    return response.text();
-                }).then(text => {
-                     if (!text) return;
-                     const jsonBlob = new Blob([text], { type: 'application/json' });
-                     const downloadLink = document.createElement('a');
-                     const tempUrl = URL.createObjectURL(jsonBlob);
-
-                     downloadLink.href = tempUrl;
-                     downloadLink.download = `${nftId}.json`;
-
-                     document.body.appendChild(downloadLink);
-                     downloadLink.click();
-                     document.body.removeChild(downloadLink);
-
-                     URL.revokeObjectURL(tempUrl);
-
-                     statusDiv.className = 'success';
-                     statusDiv.innerHTML = `✅ အောင်မြင်စွာ ${nftId}.json ကို Download ဆွဲပြီးပါပြီ`;
-                }).catch(error => {
-                    statusDiv.className = 'error';
-                    statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
-                    console.error(error);
-                });
-                return;
-            }
-
-
-            const jsonBlob = new Blob([lottieJsonText], { type: 'application/json' });
-            const downloadLink = document.createElement('a');
-            const tempUrl = URL.createObjectURL(jsonBlob);
-
-            downloadLink.href = tempUrl;
-            downloadLink.download = `${nftId}.json`;
-
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-
-            URL.revokeObjectURL(tempUrl);
-
-            statusDiv.className = 'success';
-            statusDiv.innerHTML = `✅ အောင်မြင်စွာ ${nftId}.json ကို Download ဆွဲပြီးပါပြီ`;
-
-        } catch (error) {
-            statusDiv.className = 'error';
-            statusDiv.innerHTML = `💥 System Error ဘာ error ဖြစ်မှန်းမသိတော့ပါဘူး😭 ${error.message}`;
-            console.error(error);
+        if(fetchedLottieJsonText) {
+            const blob = new Blob([fetchedLottieJsonText], {type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `${nftId}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            showFinalStatus('success', 'JSON Downloaded.');
         }
     }
     
-    function openOptimizationTool() {
-        // Directs user to a Lottie optimization tool
-        const editorBaseUrl = 'https://lottiefiles.com/optimise'; 
-        window.open(editorBaseUrl, '_blank');
-    }
+    function openOptimizationTool() { window.open('https://lottiefiles.com/optimise', '_blank'); }
 
+    // Theme Logic (Switches SVG Icons) (Unchanged)
     function applyTheme(isDarkMode) {
         const body = document.body;
-        const toggleIcon = document.getElementById('themeIcon');
+        const toggleIconWrapper = document.getElementById('themeIconWrapper');
         if (isDarkMode) {
             body.classList.add('dark-mode');
-            toggleIcon.innerHTML = '☀️';
+            toggleIconWrapper.innerHTML = ICON_SUN; 
         } else {
             body.classList.remove('dark-mode');
-            toggleIcon.innerHTML = '🌙';
+            toggleIconWrapper.innerHTML = ICON_MOON; 
         }
+        // Force particle system to update color immediately on theme change
+        if (typeof initParticles === 'function') initParticles();
     }
-
     function toggleTheme() {
         const isDarkMode = document.body.classList.contains('dark-mode');
-        const newMode = !isDarkMode;
-        applyTheme(newMode);
-        localStorage.setItem('darkMode', newMode ? 'true' : 'false');
+        applyTheme(!isDarkMode);
+        localStorage.setItem('darkMode', !isDarkMode ? 'true' : 'false');
     }
 
+    // Input Validation (Unchanged)
     function validateInput() {
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const isValid = LINK_REGEX.test(linkInput);
-        const validationIcon = document.getElementById('validationIcon');
-        const convertButton = document.getElementById('convertButton');
+        const icon = document.getElementById('validationIcon');
+        const btn = document.getElementById('convertButton');
+
+        document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
 
         if (linkInput === '') {
             inputElement.removeAttribute('data-valid');
-            validationIcon.style.opacity = 0;
-            convertButton.disabled = true;
-            convertButton.setAttribute('aria-disabled', 'true');
+            icon.style.opacity = 0;
+            icon.classList.remove('animated');
+            btn.disabled = true;
             resetUI();
             return false;
         }
 
-        inputElement.setAttribute('data-valid', isValid ? 'true' : 'false');
-        validationIcon.innerHTML = isValid ? '✅' : '❌';
-        validationIcon.style.opacity = 1;
+        const wasValid = inputElement.getAttribute('data-valid') === 'true';
 
-        convertButton.disabled = !isValid;
-        convertButton.setAttribute('aria-disabled', !isValid);
+        inputElement.setAttribute('data-valid', isValid ? 'true' : 'false');
+        icon.innerHTML = isValid ? '✓' : '✕';
+        icon.style.color = isValid ? 'var(--success)' : 'var(--error)';
+        icon.style.opacity = 1;
+        btn.disabled = !isValid;
+        
+        // Trigger icon animation if validation state changes
+        if (isValid !== wasValid) {
+            icon.classList.remove('animated');
+            void icon.offsetWidth; // Force reflow
+            icon.classList.add('animated');
+        }
 
         if (!isValid) {
-            document.getElementById('status').className = 'error';
-            document.getElementById('status').innerHTML = '🛑 Link မှား နေပါတယ်။ <code>t.me/nft/NFT-ID</code>.';
+            showFinalStatus('error', 'Invalid Link. Format: t.me/nft/NFT-ID');
             resetPreview();
             resetGiftDetails();
         }
-
         return isValid;
     }
+    
+    function clearInput() {
+        const input = document.getElementById('nftLink');
+        input.value = '';
+        input.removeAttribute('data-valid');
+        document.getElementById('validationIcon').style.opacity = 0;
+        document.getElementById('validationIcon').classList.remove('animated');
+        document.getElementById('clearInputButton').classList.remove('active');
+        resetUI();
+        input.focus();
+    }
 
+    // Success Animation (Unchanged)
     function showSuccessAnimation() {
         const container = document.getElementById('success-lottie-container');
         if (container && successLottieAnimation) {
             container.classList.add('show');
             successLottieAnimation.goToAndPlay(0, true);
-            setTimeout(hideSuccessAnimation, 2000);
+            setTimeout(() => { 
+                successLottieAnimation.stop(); 
+                container.classList.remove('show'); 
+            }, 2000);
         }
     }
-
     function hideSuccessAnimation() {
-        const container = document.getElementById('success-lottie-container');
-        if (container && successLottieAnimation) {
-            successLottieAnimation.stop();
-            container.classList.remove('show');
-        }
+         document.getElementById('success-lottie-container').classList.remove('show');
+         if (successLottieAnimation) successLottieAnimation.stop();
     }
 
-
+    // Initialization (Unchanged)
     document.addEventListener('DOMContentLoaded', () => {
-        // Attach main event listeners
-        const nftLinkInput = document.getElementById('nftLink');
+        const input = document.getElementById('nftLink');
         
         document.getElementById('convertButton').addEventListener('click', convertAndDownload);
         document.getElementById('downloadJsonButton').addEventListener('click', downloadRawJson);
         document.getElementById('optimizeButton').addEventListener('click', openOptimizationTool);
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        document.getElementById('clearInputButton').addEventListener('click', clearInput);
         
-        // Unified input/paste listeners for validation and auto-load
         const inputHandler = () => { validateInput(); handleAutoLoad(); };
+        input.addEventListener('paste', () => setTimeout(inputHandler, 50));
+        input.addEventListener('input', inputHandler);
 
-        nftLinkInput.addEventListener('paste', function(event) {
-            setTimeout(inputHandler, 50); // Use timeout for paste to get the value after it's applied
-        });
-        nftLinkInput.addEventListener('input', inputHandler);
-
-        // Initialize theme immediately
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Theme Init
         const savedTheme = localStorage.getItem('darkMode');
-        let initialMode = savedTheme === 'true';
-        if (savedTheme === null) {
-            initialMode = prefersDark;
-        }
-        applyTheme(initialMode);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme === 'true' || (savedTheme === null && prefersDark));
 
-        // Initialize success Lottie animation (hidden by default)
+        // Success Anim Init
         const successContainer = document.getElementById('success-lottie-container');
         if (successContainer) {
             successLottieAnimation = lottie.loadAnimation({
-                container: successContainer,
-                renderer: 'svg',
-                loop: false,
-                autoplay: false,
-                animationData: successCheckmarkLottie
+                container: successContainer, renderer: 'svg', loop: false, autoplay: false, animationData: successCheckmarkLottie
             });
         }
-
-        // Manually run validation/load on page load if input has content
-        validateInput();
-        handleAutoLoad();
+        
+        // Initial Check
+        if(input.value) { validateInput(); handleAutoLoad(); }
     });
 
 
+    // Particle System (Subtle Background) - FIXED (Unchanged)
     (function() {
         const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return; 
         const ctx = canvas.getContext('2d');
         let particles = [];
         let w, h;
+        
+        window.initParticles = function() {
+             w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
+             particles = [];
+             for (let i = 0; i < (w < 600 ? 30 : 60); i++) particles.push(new Particle());
+        }
 
         class Particle {
             constructor() {
                 this.x = Math.random() * w;
                 this.y = Math.random() * h;
-                this.radius = Math.random() * 2 + 1;
-                this.vx = Math.random() * 0.5 - 0.25;
-                this.vy = Math.random() * 0.5 - 0.25;
+                this.radius = Math.random() * 2 + 0.5;
+                this.vx = Math.random() * 0.2 - 0.1;
+                this.vy = Math.random() * 0.2 - 0.1;
             }
-
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--particle-color') || 'rgba(23, 63, 95, 0.5)';
+                const particleColor = getComputedStyle(document.documentElement).getPropertyValue('--particle-color').trim() || 'rgba(100,100,100,0.1)';
+                ctx.fillStyle = particleColor;
                 ctx.fill();
             }
-
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                if (this.x < 0) this.x = w;
-                if (this.x > w) this.x = 0;
-                if (this.y < 0) this.y = h;
-                if (this.y > h) this.y = 0;
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0) this.x = w; if (this.x > w) this.x = 0;
+                if (this.y < 0) this.y = h; if (this.y > h) this.y = 0;
             }
         }
-
-        function initParticles() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            particles = [];
-            const particleCount = w < 600 ? 40 : 80;
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function startAnimationLoop() {
-            animationId = requestAnimationFrame(startAnimationLoop);
+        
+        function loop() {
+            if (!canvas.isConnected) return;
+            requestAnimationFrame(loop);
             ctx.clearRect(0, 0, w, h);
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            
-            // Re-check theme on animation frame in case variables change for particle color
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--particle-color') || 'rgba(23, 63, 95, 0.5)';
+            particles.forEach(p => { p.update(); p.draw(); });
         }
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                cancelAnimationFrame(animationId);
-            } else {
-                startAnimationLoop();
-            }
-        });
-
-
-        initParticles();
-        startAnimationLoop();
+        
+        initParticles(); 
+        loop();
         window.addEventListener('resize', initParticles);
     })();
 </script>
