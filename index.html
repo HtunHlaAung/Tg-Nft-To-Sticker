@@ -12,6 +12,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     
    <style>
+    /* CSS is unchanged */
+    /* ... (Your original CSS) ... */
     /* CSS VARIABLES */
     :root {
         /* Light Mode */
@@ -777,8 +779,6 @@
     /* FIX 4: Ensure no default spacing or display issues on the SVG element */
     display: block;
 }
-
-
 </style>
 </head>
 <body>
@@ -836,7 +836,6 @@
             <div id="status" role="alert" aria-live="polite"></div>
         </div>
         
-        <!-- NEW: Firestore Conversion History -->
         <div id="history-section">
             <h3 id="history-title">Conversion History <span id="user-id-display">N/A</span></h3>
             <ul id="history-list">
@@ -845,15 +844,20 @@
         </div>
     </div>
 <script>
-    // CRITICAL: Replace the placeholder string with the config object you copied.
-    // Ensure the entire object is wrapped in single quotes and correctly escaped/formatted 
-    // to be parsed as a JSON string when the main script runs.
-    window.__firebase_config = '{"apiKey": "AIzaSyBkZ8a9q82725NoLzdLqQ0i0VQB1QF9jOQ", "authDomain": "magicmall-nft-gift-to-sticker.firebaseapp.com", "projectId": "magicmall-nft-gift-to-sticker", "storageBucket": "magicmall-nft-gift-to-sticker.firebasestorage.app", "messagingSenderId": "988637453904", "appId": "1:988637453904:web:13209e8b5b3deb49497b55", "measurementId": "G-EN5FBRERWQ"}';
+    // CRITICAL: INSERT YOUR FIREBASE CONFIGURATION HERE
+    // Replace the object below with the exact config you copied from your Firebase project settings.
+    window.__firebase_config = {
+        apiKey: "AIzaSyBkZ8a9q82725NoLzdLqQ0i0VQB1QF9jOQ",
+        authDomain: "magicmall-nft-gift-to-sticker.firebaseapp.com",
+        projectId: "magicmall-nft-gift-to-sticker",
+        storageBucket: "magicmall-nft-gift-to-sticker.firebasestorage.app",
+        messagingSenderId: "988637453904",
+        appId: "1:988637453904:web:13209e8b5b3deb49497b55",
+        measurementId: "G-EN5FBRERWQ"
+    };
     
-    // You may also need to define a simple placeholder for the token and app ID 
-    // if your environment doesn't provide them, to avoid undefined errors.
-    window.__app_id = 'magicmall-converter'; // Use your Project ID or a custom ID
-    window.__initial_auth_token = null; // Use null if you are relying on anonymous sign-in
+    window.__app_id = 'magicmall-converter'; 
+    window.__initial_auth_token = null; 
 </script> 
 
     <script type="module">
@@ -892,7 +896,8 @@
     let isAuthReady = false;
     // Safely retrieve global variables
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    // Access the object directly
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 
@@ -910,28 +915,47 @@
         return collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
     }
 
-    async function logConversionAttempt(nftId, sizeKB, status, message) {
-        if (!isAuthReady || !db || !userId) {
-            console.warn("Firestore not ready or user not authenticated for logging.");
-            return;
-        }
-        const logsRef = getConversionLogCollectionRef();
-        if (!logsRef) return;
+// --- MODIFIED logConversionAttempt ---
+async function logConversionAttempt(nftId, sizeKB, status, message) {
+    if (!isAuthReady || !db || !userId) {
+        console.warn("Firestore not ready or user not authenticated for logging.");
+        return;
+    }
+    const timestamp = serverTimestamp();
+    const logData = {
+        nftId,
+        sizeKB: sizeKB ? parseFloat(sizeKB) : null,
+        status, // 'SUCCESS', 'SIZE_EXCEEDED', 'ERROR'
+        message,
+        timestamp: timestamp,
+        userId,
+        appId,
+    };
+    
+    // 1. Write to PRIVATE History (Your current implementation)
+    const privateLogsRef = collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
+    try {
+        await addDoc(privateLogsRef, logData);
+    } catch (e) {
+        console.error("Error adding to private log:", e);
+    }
 
+    // 2. Write to PUBLIC Feed (NEW)
+    if (status === 'SUCCESS') {
+        const publicFeedRef = collection(db, `public_feeds/${appId}/latest_conversions`);
         try {
-            await addDoc(logsRef, {
+            await addDoc(publicFeedRef, {
                 nftId,
-                sizeKB: sizeKB ? parseFloat(sizeKB) : null,
-                status, // 'SUCCESS', 'SIZE_EXCEEDED', 'ERROR'
-                message,
-                timestamp: serverTimestamp(),
-                userId,
-                appId,
+                sizeKB: logData.sizeKB,
+                timestamp: timestamp,
+                // Do NOT include userId for a truly anonymous public feed
             });
         } catch (e) {
-            console.error("Error adding document to Firestore: ", e);
+            console.error("Error adding to public feed:", e);
         }
     }
+}
+
     
   // --- Replace your existing renderConversionHistory function ---
 function renderConversionHistory(logs) {
@@ -987,28 +1011,37 @@ function renderConversionHistory(logs) {
 }
 
 
+// --- MODIFIED setupConversionLogListener ---
 function setupConversionLogListener() {
-    if (!isAuthReady || !db || !userId) return;
-    const logsRef = getConversionLogCollectionRef();
-    if (!logsRef) return;
+    if (!isAuthReady || !db) return; // Note: We no longer need userId here
 
-    // Query for the latest 5 logs, ordered by timestamp
+    // Query for the latest 12 logs (more for a public grid), ordered by timestamp
+    // NEW PUBLIC PATH: public_feeds/{appId}/latest_conversions
     const q = query(
-        logsRef, 
+        collection(db, `public_feeds/${appId}/latest_conversions`), 
         orderBy('timestamp', 'desc'), 
-        limit(5)
+        limit(12) // Show more items in the public feed
     );
+
+    const historyList = document.getElementById('history-list');
 
     onSnapshot(q, (snapshot) => {
         const logs = [];
         snapshot.forEach((doc) => {
             logs.push({ id: doc.id, ...doc.data() });
         });
-        // This line calls the new function which will render the previews
+        // Render the public feed
         renderConversionHistory(logs); 
+        
+        // Update the title to reflect a public feed
+        document.getElementById('history-title').textContent = 'Public Conversion Feed (Live)';
+        document.getElementById('user-id-display').style.display = 'none'; // Hide private user ID
+        
     }, (error) => {
-        console.error("Error listening to conversion logs:", error);
-        document.getElementById('history-list').innerHTML = `<li class="log-placeholder log-error">Failed to load history. (Check Console)</li>`;
+        console.error("Error listening to public conversion feed:", error);
+        historyList.innerHTML = `<li class="log-placeholder log-error" style="grid-column: 1 / -1;">
+            Failed to load public history. (Check Firebase Rules)
+        </li>`;
     });
 }
 
@@ -1978,4 +2011,3 @@ function setupConversionLogListener() {
 </script>
 </body>
 </html>
-
