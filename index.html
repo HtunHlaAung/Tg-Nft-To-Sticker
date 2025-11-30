@@ -41,6 +41,13 @@
         /* CSS Spinner Variables */
         --spinner-size: 30px;
         --spinner-border: 4px;
+        
+        /* History Colors */
+        --log-bg: rgba(0, 0, 0, 0.05);
+        --log-border: rgba(0, 0, 0, 0.1);
+        --log-success: #10b981;
+        --log-warning: #fbbf24;
+        --log-error: #ef4444;
     }
 
     .dark-mode {
@@ -67,6 +74,10 @@
         
         /* ADAPTIVE ICON COLOR - LIGHT for Dark Mode */
         --icon-fill: #f8fafc;
+        
+        /* History Colors */
+        --log-bg: rgba(255, 255, 255, 0.05);
+        --log-border: rgba(255, 255, 255, 0.1);
     }
 
     /* GLOBAL STYLES */
@@ -678,18 +689,96 @@
 
     /* Canvas */
     #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-        body { 
-            padding-top: 70px;
-        }
-        .container { 
-            padding: 30px 20px; 
-            margin: 0 10px;
-        }
-        .theme-toggle { top: 15px; right: 15px; width: 40px; height: 40px; padding: 8px; }
+    
+    /* --- FIREBASE HISTORY STYLES --- */
+    #history-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--glass-border);
     }
+
+    #history-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    #user-id-display {
+        font-size: 0.7em;
+        font-weight: 400;
+        opacity: 0.7;
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        direction: rtl; /* Show end of ID */
+        text-align: right;
+    }
+
+   /* --- NEW GRID HISTORY STYLES --- */
+#history-list {
+    display: grid;
+    /* Create columns that fit a minimum size (e.g., 60px wide) */
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 12px; /* Space between the items */
+    padding: 10px;
+    list-style: none; /* Remove bullet points */
+    margin: 0;
+}
+
+.log-item {
+    /* The individual item should now just contain the preview */
+    display: flex;
+    justify-content: center; /* Center the icon */
+    align-items: center;
+    width: 100%; /* Take up the grid cell width */
+    height: 100%;
+    padding: 0; /* Remove internal padding */
+    border: none; /* Remove border from log item */
+    background: transparent; /* Remove background */
+    cursor: pointer; /* Suggests the items are clickable */
+}
+
+/* Make the mini-preview the main visual element, slightly larger */
+.log-mini-preview {
+    width: 60px; 
+    height: 60px;
+    min-width: 60px;
+    
+    /* * FIX 1: Change the background to a dark color. 
+     * If the background is showing through the animation edges, 
+     * it will blend with the surrounding black/dark theme instead of showing white.
+     */
+    background: #1e1e1e; /* Example dark grey color, or use your main background variable */
+    
+    border-radius: 12px; 
+    border: 1px solid var(--log-border);
+    margin: 0; 
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    
+    /* FIX 2: Ensure flex container properties are tight */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* FIX 3: Force the embedded SVG (the Lottie canvas) to fill its parent */
+.log-mini-preview svg {
+    width: 100% !important; 
+    height: 100% !important;
+    /* FIX 4: Ensure no default spacing or display issues on the SVG element */
+    display: block;
+}
+
+
 </style>
 </head>
 <body>
@@ -727,7 +816,7 @@
         
         <div id="giftDetails"></div>
         
-                <div class="action-buttons">
+        <div class="action-buttons">
             <button id="convertButton" disabled aria-disabled="true">Convert to Sticker</button>
             
             <div class="secondary-actions"> 
@@ -746,9 +835,35 @@
             <div id="success-lottie-container"></div>
             <div id="status" role="alert" aria-live="polite"></div>
         </div>
+        
+        <!-- NEW: Firestore Conversion History -->
+        <div id="history-section">
+            <h3 id="history-title">Conversion History <span id="user-id-display">N/A</span></h3>
+            <ul id="history-list">
+                <li class="log-placeholder">Connecting to database...</li>
+            </ul>
+        </div>
     </div>
+<script>
+    // CRITICAL: Replace the placeholder string with the config object you copied.
+    // Ensure the entire object is wrapped in single quotes and correctly escaped/formatted 
+    // to be parsed as a JSON string when the main script runs.
+    window.__firebase_config = '{"apiKey": "AIzaSyBkZ8a9q82725NoLzdLqQ0i0VQB1QF9jOQ", "authDomain": "magicmall-nft-gift-to-sticker.firebaseapp.com", "projectId": "magicmall-nft-gift-to-sticker", "storageBucket": "magicmall-nft-gift-to-sticker.firebasestorage.app", "messagingSenderId": "988637453904", "appId": "1:988637453904:web:13209e8b5b3deb49497b55", "measurementId": "G-EN5FBRERWQ"}';
+    
+    // You may also need to define a simple placeholder for the token and app ID 
+    // if your environment doesn't provide them, to avoid undefined errors.
+    window.__app_id = 'magicmall-converter'; // Use your Project ID or a custom ID
+    window.__initial_auth_token = null; // Use null if you are relying on anonymous sign-in
+</script> 
 
-    <script>
+    <script type="module">
+    // --- FIREBASE IMPORTS ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, setLogLevel 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
     // SVG Icons 
     const ICON_MOON = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.8-5.1-9.8-10.7C1.4,5.8,5.8,1.4,11.3,1.4c0.5,0,0.9,0.3,1.1,0.8c0.1,0.4,0,0.9-0.3,1.3C10.6,4.7,9.8,6.8,9.8,9c0,4.4,3.6,8,8,8c2.2,0,4.3-0.8,5.5-2.2c0.3-0.4,0.8-0.5,1.3-0.3c0.4,0.2,0.8,0.7,0.8,1.2c0,0.1,0,0.3,0,0.4c-0.5,3.3-2.6,6.1-5.6,7.8C17.5,25.3,14.8,22,12.1,22z"/></svg>`;
     const ICON_SUN = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,4c0.6,0,1-0.4,1-1V2c0-0.6-0.4-1-1-1s-1,0.4-1,1v1C11,3.6,11.4,4,12,4z M6.3,6.3c0.4-0.4,0.4-1,0-1.4L5.6,4.2c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l0.7,0.7C5.3,6.7,5.9,6.7,6.3,6.3z M17.7,6.3c0.4,0.4,1,0.4,1.4,0l0.7-0.7c0.4-0.4,0.4-1,0-1.4s-1-0.4-1.4,0l-0.7,0.7C17.3,5.3,17.3,5.9,17.7,6.3z M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M2,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2c-0.6,0-1,0.4-1,1S1.4,13,2,13z M21,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1S20.4,13,21,13z M6.3,17.7c-0.4-0.4-1-0.4-1.4,0l-0.7,0.7c-0.4,0.4-0.4,1,0,1.4s1,0.4,1.4,0l0.7-0.7C6.7,18.7,6.7,18.1,6.3,17.7z M17.7,17.7c-0.4-0.4-0.4-1,0,1.4l0.7,0.7c0.4,0.4,1,0.4,1.4,0s0.4-1,0-1.4l-0.7-0.7C18.7,17.3,18.1,17.3,17.7,17.7z M12,20c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1s1-0.4,1-1v-1C13,20.4,12.6,20,12,20z"/></svg>`;
@@ -768,7 +883,18 @@
     let fetchAbortController = null;
     let statusMessageTimer = null; 
     let continuousProgressTimer = null; 
-    let fullGiftLink = null; // NEW: Store the full gift link
+    let fullGiftLink = null; 
+    
+    // --- FIREBASE STATE VARIABLES ---
+    let db = null;
+    let auth = null;
+    let userId = null;
+    let isAuthReady = false;
+    // Safely retrieve global variables
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
 
     // Simple Checkmark Lottie Data (for success animation) 
     const successCheckmarkLottie = {
@@ -776,9 +902,121 @@
         "layers": [{"ddd": 0, "ind": 1, "ty": 4, "nm": "Checkmark", "sr": 1, "ks": {"o": {"a": 0, "k": 100, "ix": 11}, "rp": {"a": 0, "k": 0, "ix": 12}, "s": {"a": 0, "k": [100, 100, 100], "ix": 6}, "p": {"a": 0, "k": [50, 50, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0, 0], "ix": 1}, "r": {"a": 0, "k": 0, "ix": 10}}, "ao": 0, "shapes": [{"ty": "gr", "nm": "Group 1", "it": [{"ty": "sh", "nm": "Path 1", "ind": 0, "ks": {"a": 0, "k": {"i": [[-1.2, 0], [0, -1.2], [1.2, 0]], "o": [[0, -1.2], [1.2, 0], [0, 1.2]], "v": [[28.5, 52.8], [42.6, 66.8], [71.5, 37.9]]}, "ix": 2}, "mn": "ADBEVectorShape", "hd": false}, {"ty": "st", "c": {"a": 0, "k": [0, 0.8, 0.4, 1], "ix": 3}, "o": {"a": 0, "k": 100, "ix": 4}, "w": {"a": 0, "k": 10, "ix": 5}, "lc": 1, "lj": 1, "ml": 4, "mn": "ADBEVectorGraphicStroke", "hd": false}, {"ty": "gr", "nm": "Group 2", "it": [], "mn": "ADBEVectorGroup", "hd": false}], "mn": "ADBEVectorGroup", "hd": false}], "bm": 0}]
     };
 
+    /* ================= FIREBASE LOGGING FUNCTIONS ================= */
+    
+    function getConversionLogCollectionRef() {
+        if (!db || !userId) return null;
+        // Path: /artifacts/{appId}/users/{userId}/conversion_logs
+        return collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
+    }
+
+    async function logConversionAttempt(nftId, sizeKB, status, message) {
+        if (!isAuthReady || !db || !userId) {
+            console.warn("Firestore not ready or user not authenticated for logging.");
+            return;
+        }
+        const logsRef = getConversionLogCollectionRef();
+        if (!logsRef) return;
+
+        try {
+            await addDoc(logsRef, {
+                nftId,
+                sizeKB: sizeKB ? parseFloat(sizeKB) : null,
+                status, // 'SUCCESS', 'SIZE_EXCEEDED', 'ERROR'
+                message,
+                timestamp: serverTimestamp(),
+                userId,
+                appId,
+            });
+        } catch (e) {
+            console.error("Error adding document to Firestore: ", e);
+        }
+    }
+    
+  // --- Replace your existing renderConversionHistory function ---
+function renderConversionHistory(logs) {
+    const list = document.getElementById('history-list');
+    
+    // NOTE: You might want to keep the user ID display or hide it separately
+    // const userIdDisplay = document.getElementById('user-id-display');
+    // if (userId) { ... }
+
+    if (logs.length === 0) {
+        // Change the placeholder text to fit the new look
+        list.innerHTML = `<li class="log-placeholder" style="grid-column: 1 / -1;">No recent activity.</li>`; 
+        return;
+    }
+
+    const sortedLogs = logs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+    list.innerHTML = ''; // Clear the list before rendering new items
+
+    sortedLogs.forEach((log, index) => {
+        // Status class is still useful for color-coding the border
+        const statusClass = log.status === 'SUCCESS' ? 'log-success' : 
+                            log.status === 'SIZE_EXCEEDED' ? 'log-warning' : 'log-error';
+        
+        const nftId = log.nftId;
+
+        const listItem = document.createElement('li');
+        // We can use the NFT ID as a data attribute if you ever want to click on it
+        listItem.className = `log-item ${statusClass}`;
+        listItem.dataset.nftId = nftId; // Stores the NFT ID
+        
+        // SIMPLIFIED HTML: Only the Lottie container remains visible
+        listItem.innerHTML = `
+            <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.status}"></div>
+        `;
+        
+        list.appendChild(listItem);
+
+        // Load the Lottie animation into the mini-preview container
+        const miniContainer = document.getElementById(`lottie-mini-${index}`);
+        if (miniContainer && nftId) {
+            lottie.loadAnimation({
+                container: miniContainer,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: LOTTIE_FRAGMENT_BASE + `${nftId}.lottie.json`,
+                rendererSettings: {
+                    clearCanvas: true,
+                }
+            });
+        }
+    });
+}
+
+
+function setupConversionLogListener() {
+    if (!isAuthReady || !db || !userId) return;
+    const logsRef = getConversionLogCollectionRef();
+    if (!logsRef) return;
+
+    // Query for the latest 5 logs, ordered by timestamp
+    const q = query(
+        logsRef, 
+        orderBy('timestamp', 'desc'), 
+        limit(5)
+    );
+
+    onSnapshot(q, (snapshot) => {
+        const logs = [];
+        snapshot.forEach((doc) => {
+            logs.push({ id: doc.id, ...doc.data() });
+        });
+        // This line calls the new function which will render the previews
+        renderConversionHistory(logs); 
+    }, (error) => {
+        console.error("Error listening to conversion logs:", error);
+        document.getElementById('history-list').innerHTML = `<li class="log-placeholder log-error">Failed to load history. (Check Console)</li>`;
+    });
+}
+
+
     /* ================= CORE UI DISPLAY FUNCTIONS ================= */
 
     function showGiftDetails(details, isError = false) { 
+        // ... (existing showGiftDetails function)
         const detailBox = document.getElementById("giftDetails");
         detailBox.innerHTML = '';
         
@@ -921,7 +1159,7 @@
     function resetUI() {
         const inputElement = document.getElementById('nftLink');
         const statusDiv = document.getElementById('status');
-        const tgButton = document.getElementById('openInTelegramButton'); // Get new button
+        const tgButton = document.getElementById('openInTelegramButton'); 
         
         document.getElementById('clearInputButton').classList.remove('active');
         stopContinuousProgress(0); 
@@ -932,7 +1170,6 @@
             document.getElementById('downloadJsonButton').style.display = 'none';
             document.getElementById('optimizeButton').style.display = 'none';
             
-            // NEW: Reset Telegram button state and link
             tgButton.disabled = true;
             tgButton.setAttribute('aria-disabled', 'true');
             fullGiftLink = null; 
@@ -1038,11 +1275,10 @@
         statusDiv.innerHTML = htmlContent;
     }
 
-    /* ================= LOGIC & EXTRACTION ================= */
-    
-    // (Existing extraction functions: extractTraitFromTable, extractOwnerAndQuantityFromTable, extractTrait, extractOwnerAndQuantity)
+    /* ================= LOGIC & EXTRACTION (Unchanged) ================= */
     
     function extractTraitFromTable(doc, label) {
+        // ... (function body)
         const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
         for (const thElement of thElements) {
             if (thElement.textContent.trim().toLowerCase() === label.toLowerCase()) {
@@ -1062,6 +1298,7 @@
     }
 
     function extractOwnerAndQuantityFromTable(doc) {
+        // ... (function body)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
@@ -1112,6 +1349,7 @@
     }
 
     function extractTrait(doc, traitName) {
+        // ... (function body)
         const nextTraitStopWords = ['Backdrop:', 'Symbol:', 'Gifted by', 'Gifted on', 'Collected on', 'Owner:', 'issued', 'Model:'];
         const stopRegex = new RegExp(`\\s+(${nextTraitStopWords.join('|').replace(/:/g, '\\s*:\\s*')})`, 'i');
         const divs = Array.from(doc.querySelectorAll('div'));
@@ -1165,6 +1403,7 @@
     }
 
     function extractOwnerAndQuantity(doc) {
+        // ... (function body)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
@@ -1199,6 +1438,7 @@
     }
 
     async function fetchGiftDetailsFromHTML(nftLink, signal) {
+        // ... (function body)
         const proxyUrl = CORS_PROXY + encodeURIComponent(nftLink);
         let model = { name: 'Unknown', percent: '' };
         let backdrop = { name: 'Unknown', percent: '' };
@@ -1252,9 +1492,8 @@
         }
     }
 
-    /* ================= MAIN HANDLERS ================= */
+    /* ================= MAIN HANDLERS (Updated for Logging) ================= */
     
-    // NEW: Function to open the gift link
     function openGiftLinkInTelegram() {
         if (fullGiftLink) {
             window.open(fullGiftLink, '_blank');
@@ -1262,11 +1501,12 @@
     }
 
     async function handleAutoLoad() {
+        // ... (existing handleAutoLoad logic)
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const match = linkInput.match(LINK_REGEX);
         const icon = document.getElementById('validationIcon');
-        const tgButton = document.getElementById('openInTelegramButton'); // Get new button
+        const tgButton = document.getElementById('openInTelegramButton'); 
 
         document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
 
@@ -1278,14 +1518,14 @@
         const newNftId = match[1];
         const nftLinkFull = `https://t.me/nft/${newNftId}`;
         
-        fullGiftLink = nftLinkFull; // NEW: Store the full link
+        fullGiftLink = nftLinkFull; 
 
         if (newNftId === lastLoadedNftId) {
             document.getElementById('convertButton').disabled = false;
             document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
             document.getElementById('downloadJsonButton').style.display = 'block';
             
-            tgButton.disabled = false; // NEW: Enable Telegram button if already loaded
+            tgButton.disabled = false; 
             tgButton.setAttribute('aria-disabled', 'false');
             return;
         }
@@ -1299,7 +1539,7 @@
 
         document.getElementById('downloadJsonButton').style.display = 'none';
         document.getElementById('optimizeButton').style.display = 'none';
-        tgButton.disabled = true; // NEW: Disable button while loading
+        tgButton.disabled = true; 
 
         fetchedLottieJsonText = null;
         resetGiftDetails();
@@ -1327,7 +1567,7 @@
                 document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
                 document.getElementById('downloadJsonButton').style.display = 'block';
                 
-                tgButton.disabled = false; // NEW: Enable Telegram button
+                tgButton.disabled = false; 
                 tgButton.setAttribute('aria-disabled', 'false');
             } else {
                 lastLoadedNftId = null;
@@ -1338,6 +1578,7 @@
                     'Animation not found.',
                     'Check the link for typos or try clearing the input and re-pasting.'
                 );
+                logConversionAttempt(currentNftId, null, 'ERROR', 'Animation data not found.');
             }
         } catch (error) {
             if (error.name === 'AbortError') return;
@@ -1350,12 +1591,14 @@
                 `Failed to fetch details.`,
                 'A network issue occurred. Ensure the link is correct and try again.'
             );
+            logConversionAttempt(currentNftId, null, 'ERROR', 'Network or Fetch Failure during AutoLoad.');
         } finally {
             fetchAbortController = null;
         }
     }
     
     async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false, signal = null) {
+        // ... (existing fetchLottieData logic)
         if (!isAutoLoad) {
              startLoadingAnimations();
              updateProgress(5, `STEP 1/2: Fetching ${nftId} metadata...`);
@@ -1378,12 +1621,14 @@
                 stopContinuousProgress(0);
                 showFinalStatus('error', `Fetch Error: ${error.message}`, 'Could not retrieve animation data from Fragment.');
                 stopLoadingAnimations();
+                logConversionAttempt(nftId, null, 'ERROR', `Lottie Fetch Failed: ${error.message}`);
             }
             return null;
         }
     }
     
     function convertAndDownload() {
+        // ... (existing convertAndDownload logic)
         const convertButton = document.getElementById('convertButton');
         if (!validateInput()) return;
 
@@ -1413,6 +1658,7 @@
     }
 
     function performCompressionAndDownload(convertButton) {
+        // ... (existing performCompressionAndDownload logic, updated with logging)
         convertButton.classList.add('loading');
         convertButton.disabled = true;
 
@@ -1435,6 +1681,7 @@
                             `Size ${tgsSizeKB}KB exceeds 64KB limit. Cannot convert.`,
                             `Click 'Optimize Tool 🛠️' to reduce file size, or download the JSON to optimize externally.`
                         );
+                        logConversionAttempt(currentNftId, tgsSizeKB, 'SIZE_EXCEEDED', `Size limit exceeded (${tgsSizeKB} KB > 64 KB)`);
                         return; 
                     }
 
@@ -1453,6 +1700,8 @@
                     showSuccessAnimation();
                     showFinalStatus('success', `Downloaded ${currentNftId}.tgs (${tgsSizeKB} KB)`);
                     document.getElementById('downloadJsonButton').style.display = 'block';
+                    
+                    logConversionAttempt(currentNftId, tgsSizeKB, 'SUCCESS', `Successfully downloaded .tgs (${tgsSizeKB} KB)`);
                     success = true;
 
                 } catch (error) {
@@ -1461,6 +1710,7 @@
                         `System Error: ${error.message}`,
                         `Check your browser console for technical details, or try clearing the input and re-pasting the link.`
                     );
+                    logConversionAttempt(currentNftId, null, 'ERROR', `Compression/Download Failed: ${error.message}`);
                 } finally {
                     convertButton.classList.remove('loading');
                     convertButton.disabled = success ? false : true; 
@@ -1472,6 +1722,7 @@
              convertButton.classList.remove('loading');
              convertButton.disabled = false;
              showFinalStatus('error', 'Critical setup error occurred.', 'Please try refreshing the page.');
+             logConversionAttempt(currentNftId, null, 'ERROR', 'Critical setup error occurred.');
         }
     }
     
@@ -1513,6 +1764,7 @@
 
     // Input Validation (Updated with shake animation)
     function validateInput() {
+        // ... (existing validateInput logic)
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const isValid = LINK_REGEX.test(linkInput);
@@ -1586,18 +1838,72 @@
          document.getElementById('success-lottie-container').classList.remove('show');
          if (successLottieAnimation) successLottieAnimation.stop();
     }
+    
+    // --- FIREBASE INITIALIZATION ---
+    function initializeFirebase() {
+        const historyList = document.getElementById('history-list');
+        const userIdDisplay = document.getElementById('user-id-display');
+
+        if (!firebaseConfig) {
+             console.error("Firebase config is missing. History will not work.");
+             historyList.innerHTML = `<li class="log-placeholder log-error">Firebase config is missing.</li>`;
+             userIdDisplay.textContent = 'Error';
+             return;
+        }
+
+        setLogLevel('debug');
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        
+        historyList.innerHTML = `<li class="log-placeholder">Authenticating user...</li>`;
+
+
+        // Use onAuthStateChanged for reliable user ID detection
+        const authUnsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in.
+                userId = user.uid;
+                isAuthReady = true;
+                console.log("Firebase Auth Ready. User ID:", userId);
+                userIdDisplay.textContent = `User ID: ${userId.substring(0, 4)}...${userId.substring(userId.length - 4)}`;
+                historyList.innerHTML = `<li class="log-placeholder">Loading history...</li>`;
+                setupConversionLogListener();
+            } else {
+                // No user is signed in, attempt anonymous sign-in or use fallback
+                const signIn = initialAuthToken ? 
+                                signInWithCustomToken(auth, initialAuthToken) : 
+                                signInAnonymously(auth);
+
+                signIn.catch(error => {
+                    console.error("Firebase Authentication Error (Anonymous/Token):", error);
+                    // Fallback to a random ID if auth fails completely
+                    userId = crypto.randomUUID();
+                    isAuthReady = true;
+                    console.log("Using Anonymous/Fallback ID:", userId);
+                    userIdDisplay.textContent = `User ID: FALLBACK`;
+                    historyList.innerHTML = `<li class="log-placeholder log-warning">Auth failed. Logging locally/fallback.</li>`;
+                    setupConversionLogListener();
+                });
+            }
+            // Stop listening to the auth state once we have a user/fallback to prevent re-runs
+            if (isAuthReady) authUnsubscribe(); 
+        });
+    }
+
 
     // Initialization 
     document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('nftLink');
         
+        // Setup Firebase
+        initializeFirebase();
+
         document.getElementById('convertButton').addEventListener('click', convertAndDownload);
         document.getElementById('downloadJsonButton').addEventListener('click', downloadRawJson);
         document.getElementById('optimizeButton').addEventListener('click', openOptimizationTool);
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.getElementById('clearInputButton').addEventListener('click', clearInput);
-        
-        // NEW: Add event listener for the Telegram button
         document.getElementById('openInTelegramButton').addEventListener('click', openGiftLinkInTelegram);
 
         const inputHandler = () => { validateInput(); handleAutoLoad(); };
@@ -1672,3 +1978,4 @@
 </script>
 </body>
 </html>
+
