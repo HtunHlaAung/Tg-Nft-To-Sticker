@@ -6,644 +6,691 @@
     <title>MagicMall NFT Converter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght{600;700}&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     
-    <style>
-        /* CSS VARIABLES */
-        :root {
-            /* Light Mode */
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.8);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            
-            --accent-primary: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.4);
-            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --input-border: #e2e8f0;
-            
-            --success: #10b981;
-            --error: #ef4444;
-            --particle-color: rgba(30, 41, 59, 0.1); 
-            --tg-card-bg: rgba(255,255,255,0.8);
-            
-            --icon-fill: #1e293b;
-            
-            /* CSS Spinner Variables */
-            --spinner-size: 30px;
-            --spinner-border: 4px;
-        }
-
-        .dark-mode {
-            /* Dark Mode */
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-            --glass-bg: rgba(15, 23, 42, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            
-            --accent-primary: #60a5fa;
-            --accent-glow: rgba(96, 165, 250, 0.4);
-            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            
-            --input-bg: rgba(30, 41, 59, 0.6);
-            --input-border: rgba(255, 255, 255, 0.1);
-            
-            --success: #34d399;
-            --error: #f87171;
-            --particle-color: rgba(255, 255, 255, 0.05); 
-            --tg-card-bg: rgba(30, 41, 59, 0.4);
-            
-            --icon-fill: #f8fafc;
-        }
-
-                /* GLOBAL STYLES */
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; 
-            padding-top: 80px; 
-            padding-bottom: 50px;
-            margin: 0;
-            color: var(--text-primary);
-            /* NEW: Smooth transition for background colors */
-            transition: background-color 0.5s ease, color 0.5s ease;
-            box-sizing: border-box;
-            perspective: 1000px;
-        }
-
-        /* CONTAINER & GLASS EFFECTS */
-        .container {
-            position: relative;
-            width: 100%;
-            max-width: 460px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: var(--glass-shadow);
-            padding: 40px;
-            box-sizing: border-box;
-            z-index: 10;
-            /* Updated transition for smoother theme change */
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-style: preserve-3d;
-        }
+   <style>
+    /* CSS VARIABLES */
+    :root {
+        /* Light Mode */
+        --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.8);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         
-        .container:hover {
-            transform: rotateX(1deg) rotateY(-1deg) scale(1.01);
-            box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.2);
-        }
-
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 0 0 10px 0;
-            color: var(--text-primary);
-            text-align: center;
-            letter-spacing: -0.02em;
-        }
-
-        .description {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
         
-        .description code {
-            background: rgba(0,0,0,0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85em;
-        }
-        .dark-mode .description code { background: rgba(255,255,255,0.1); }
-
-
-        /* PREVIEW AREA */
-        #lottie-preview {
-            width: 100%;
-            padding-bottom: 100%; 
-            background: var(--input-bg);
-            border-radius: 16px;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden;
-            border: 1px dashed var(--input-border);
-            /* UPDATED: Smoother transition for 3D flip */
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
-            transform: rotateY(0deg); /* Base state for 3D flip */
-            transform-origin: center center;
-        }
+        --accent-primary: #3b82f6;
+        --accent-glow: rgba(59, 130, 246, 0.4);
+        --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         
-        #lottie-preview.active {
-            border: 1px solid var(--accent-primary);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
+        --input-bg: rgba(255, 255, 255, 0.9);
+        --input-border: #e2e8f0;
         
-        /* NEW: Flip class added on successful load */
-        #lottie-preview.flip {
-            transform: rotateY(360deg);
-        }
-
-        .preview-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            padding: 20px;
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
+        --success: #10b981;
+        --error: #ef4444;
+        --particle-color: rgba(30, 41, 59, 0.1); 
+        --tg-card-bg: rgba(255,255,255,0.8);
         
-        #lottie-preview svg {
-            position: absolute;
-            top: 0; left: 0; width: 100% !important; height: 100% !important;
-        }
-
+        /* ADAPTIVE ICON COLOR - DARK for Light Mode */
+        --icon-fill: #1e293b;
         
-        /* CSS Spinner Styling */
-        .css-spinner {
-            display: none;
-            width: var(--spinner-size);
-            height: var(--spinner-size);
-            border: var(--spinner-border) solid var(--text-secondary);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 5px;
-        }
+        /* CSS Spinner Variables */
+        --spinner-size: 30px;
+        --spinner-border: 4px;
+    }
 
-        .preview-placeholder.loading .css-spinner {
-            display: block;
-        }
-
-        /* INPUT GROUP & VALIDATION */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 16px 80px 16px 16px; 
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-sizing: border-box;
-            z-index: 1; 
-        }
-
-        /* Input Focus Lighting */
-        input[type="text"]:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px var(--accent-glow), 0 0 15px var(--accent-glow) inset;
-        }
+    .dark-mode {
+        /* Dark Mode */
+        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+        --glass-bg: rgba(15, 23, 42, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         
-        input[data-valid="true"] { border-color: var(--success); }
-        input[data-valid="false"] { border-color: var(--error); }
-
-        /* Clear Button */
-        #clearInputButton {
-            position: absolute;
-            right: 12px; 
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--input-border);
-            border: none;
-            color: var(--text-secondary);
-            font-size: 14px;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none; 
-            transition: all 0.2s ease;
-            z-index: 10;
-            padding: 0;
-            line-height: 1;
-        }
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
         
-        #clearInputButton:hover {
-            background: var(--text-secondary);
-            color: white;
-        }
+        --accent-primary: #60a5fa;
+        --accent-glow: rgba(96, 165, 250, 0.4);
+        --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
         
-        #clearInputButton.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        --input-bg: rgba(30, 41, 59, 0.6);
+        --input-border: rgba(255, 255, 255, 0.1);
         
-        /* Validation Icon (Check/X) */
-        .validation-icon {
-            position: absolute;
-            right: 44px; 
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 5;
-            pointer-events: none;
-            will-change: transform;
-        }
+        --success: #34d399;
+        --error: #f87171;
+        --particle-color: rgba(255, 255, 255, 0.05); 
+        --tg-card-bg: rgba(30, 41, 59, 0.4);
         
-        /* Status Bar Icon Animation */
-        .validation-icon.animated {
-            animation: iconPop 0.3s ease-out;
-        }
+        /* ADAPTIVE ICON COLOR - LIGHT for Dark Mode */
+        --icon-fill: #f8fafc;
+    }
 
-        /* GIFT DETAILS & BUTTONS */
-        #giftDetails {
-            background: var(--tg-card-bg);
-            border-radius: 12px;
-            padding: 0;
-            margin-bottom: 20px;
-            border: 1px solid var(--glass-border);
-            overflow: hidden;
-            /* ACCORDION SETUP: Max-height controls the slide down animation */
-            max-height: 0;
-            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-            display: block; /* Ensure the element is part of the flow */
-        }
+    /* GLOBAL STYLES */
+    body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-gradient);
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; 
+        padding-top: 80px; 
+        padding-bottom: 50px;
+        margin: 0;
+        color: var(--text-primary);
+        transition: background-color 0.5s ease, color 0.5s ease;
+        box-sizing: border-box;
+        perspective: 1000px;
+    }
 
-        /* Class to open the accordion, triggering the transition */
-        #giftDetails.open {
-            max-height: 500px; /* Comfortably larger than content to ensure it opens fully */
-            padding: 16px 0; /* Apply vertical padding when open, creating space for content */
-        }
+    /* CONTAINER & GLASS EFFECTS */
+    .container {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: var(--glass-shadow);
+        padding: 40px;
+        box-sizing: border-box;
+        z-index: 10;
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform-style: preserve-3d;
+    }
+    
+    .container:hover {
+        transform: rotateX(1deg) rotateY(-1deg) scale(1.01);
+        box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.2);
+    }
+
+    h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        color: var(--text-primary);
+        text-align: center;
+        letter-spacing: -0.02em;
+    }
+
+    .description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+    
+    .description code {
+        background: rgba(0,0,0,0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.85em;
+    }
+    .dark-mode .description code { background: rgba(255,255,255,0.1); }
+
+
+    /* PREVIEW AREA */
+    #lottie-preview {
+        width: 100%;
+        padding-bottom: 100%; 
+        background: var(--input-bg);
+        border-radius: 16px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        border: 1px dashed var(--input-border);
+        transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+        transform: rotateY(0deg); 
+        transform-origin: center center;
+    }
+    
+    #lottie-preview.active {
+        border: 1px solid var(--accent-primary);
+        box-shadow: 0 0 20px var(--accent-glow);
+    }
+    
+    /* NEW: Flip class added on successful load */
+    #lottie-preview.flip {
+        transform: rotateY(360deg);
+    }
+
+    .preview-placeholder {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        padding: 20px;
+        display: flex; 
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    #lottie-preview svg {
+        position: absolute;
+        top: 0; left: 0; width: 100% !important; height: 100% !important;
+    }
+
+    
+    /* CSS Spinner Styling */
+    .css-spinner {
+        display: none;
+        width: var(--spinner-size);
+        height: var(--spinner-size);
+        border: var(--spinner-border) solid var(--text-secondary);
+        border-top-color: var(--accent-primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: 5px;
+    }
+
+    .preview-placeholder.loading .css-spinner {
+        display: block;
+    }
+
+    /* INPUT GROUP & VALIDATION */
+    .input-group {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 16px 80px 16px 16px; 
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-sizing: border-box;
+        z-index: 1; 
+    }
+
+    /* Input Focus Lighting */
+    input[type="text"]:focus {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--accent-glow), 0 0 15px var(--accent-glow) inset;
+    }
+    
+    input[data-valid="true"] { border-color: var(--success); }
+    input[data-valid="false"] { border-color: var(--error); }
+
+    /* Clear Button */
+    #clearInputButton {
+        position: absolute;
+        right: 12px; 
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--input-border);
+        border: none;
+        color: var(--text-secondary);
+        font-size: 14px;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none; 
+        transition: all 0.2s ease;
+        z-index: 10;
+        padding: 0;
+        line-height: 1;
+    }
+    
+    #clearInputButton:hover {
+        background: var(--text-secondary);
+        color: white;
+    }
+    
+    #clearInputButton.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    /* Validation Icon (Check/X) */
+    .validation-icon {
+        position: absolute;
+        right: 44px; 
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 5;
+        pointer-events: none;
+        will-change: transform;
+    }
+    
+    /* Status Bar Icon Animation */
+    .validation-icon.animated {
+        animation: iconPop 0.3s ease-out;
+    }
+
+    /* GIFT DETAILS & BUTTONS */
+    #giftDetails {
+        background: var(--tg-card-bg);
+        border-radius: 12px;
+        padding: 0;
+        margin-bottom: 20px;
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        /* ACCORDION SETUP: Max-height controls the slide down animation */
+        max-height: 0;
+        transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+        display: block; 
+    }
+
+    /* Class to open the accordion, triggering the transition */
+    #giftDetails.open {
+        max-height: 500px; 
+        padding: 16px 0; 
+    }
+    
+    .detail-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 16px; 
+        font-size: 0.95rem;
+        border-bottom: 1px solid rgba(128,128,128,0.1);
+        color: var(--text-primary);
+        align-items: flex-start;
+    }
+    .detail-line:last-child { border-bottom: none; }
+    
+    .detail-line strong {
+        color: var(--text-secondary);
+        font-weight: 500;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .detail-value {
+        text-align: right;
+        font-weight: 600;
+        max-width: 60%;
+        word-wrap: break-word;
+    }
+    
+    .percentage-mark {
+        background: var(--accent-gradient);
+        color: white;
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 6px;
+        font-weight: 700;
+        vertical-align: middle;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+
+    button {
+        font-family: 'Space Grotesk', sans-serif;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        width: 100%;
+    }
+
+    button:hover:not(:disabled):not(.loading) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px var(--accent-glow), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        filter: brightness(1.1);
+        animation: glowPulse 1.5s infinite ease-in-out; 
+    }
+
+    button:active:not(:disabled) {
+        transform: translateY(0);
+        animation: none;
+    }
+
+    button:disabled {
+        background: var(--text-secondary);
+        opacity: 0.3;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    
+    /* NEW: Secondary Actions Container (to hold the square button) */
+    .secondary-actions {
+        display: flex;
+        justify-content: flex-end; 
+        margin-bottom: 0px; 
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* NEW: Telegram Icon Button Styling */
+    #openInTelegramButton {
+        width: 50px; 
+        height: 50px; 
+        padding: 0;
+        border-radius: 12px;
+        font-size: 0;
+        /* ADAPTIVE COLOR: Uses --icon-fill, which changes with dark-mode class */
+        color: var(--icon-fill); 
+        background: var(--glass-bg); 
+        border: 1px solid var(--glass-border); 
+        box-shadow: var(--glass-shadow);
         
-        .detail-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 16px; /* Slightly adjusted padding */
-            font-size: 0.95rem;
-            border-bottom: 1px solid rgba(128,128,128,0.1);
-            color: var(--text-primary);
-            align-items: flex-start;
-        }
-        .detail-line:last-child { border-bottom: none; }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #openInTelegramButton svg {
+        width: 24px;
+        height: 24px;
+        transition: all 0.3s ease;
+        /* CRITICAL: Fill based on the parent's 'color' property (which is --icon-fill) */
+        fill: currentColor;
+    }
+
+    #openInTelegramButton:hover:not(:disabled) {
+        /* Hover uses Telegram's signature blue for emphasis */
+        color: #0088cc; 
+        transform: translateY(-2px) scale(1.05);
+        background: rgba(0, 136, 204, 0.1); 
+        border-color: #0088cc;
+        box-shadow: 0 4px 10px rgba(0, 136, 204, 0.3);
+        animation: none;
+    }
+
+    #openInTelegramButton:disabled {
+        opacity: 0.3;
+        background: var(--glass-bg);
+        border-color: var(--glass-border);
+        cursor: not-allowed;
+        box-shadow: var(--glass-shadow);
+        transform: none;
+    }
+
+    #downloadJsonButton, #optimizeButton {
+        background: transparent;
+        border: 2px solid var(--input-border);
+        color: var(--text-primary);
+        box-shadow: none;
+    }
+    #downloadJsonButton:hover, #optimizeButton:hover {
+        border-color: var(--accent-primary);
+        background: rgba(59, 130, 246, 0.05);
+        color: var(--accent-primary);
+    }
+
+    button.loading::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: calc(50% - 10px);
+        left: calc(50% - 10px);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    button.loading { color: transparent; pointer-events: none; }
+
+
+    /* STATUS AREA */
+    #status-area { 
+        margin-top: 25px; 
+        position: relative; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    #status {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(10px);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    #status.active { opacity: 1; transform: translateY(0); }
+    
+    #status.loading {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent-primary);
+        border: 1px solid var(--accent-primary);
+    }
+    
+    /* Dedicated Error Card Styling */
+    #status.error {
+        background: rgba(239, 68, 68, 0.2); 
+        color: var(--error);
+        border: 2px solid var(--error); 
+        font-weight: 600; 
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); 
+        padding: 20px; 
+    }
+    
+    .dark-mode #status.error {
+        background: rgba(248, 113, 113, 0.15); 
+        box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
+    }
+
+    .error-action-hint {
+        font-weight: 400; 
+        font-size: 0.9em;
+        opacity: 0.8;
+        margin-top: 5px;
+    }
+    
+    /* Update Success Status for consistency */
+    #status.success {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+        border: 2px solid var(--success);
+        font-weight: 600;
+        padding: 20px;
+    }
+
+    /* --- PROGRESS BAR STYLING (Cooler Design) --- */
+    .progress-bar {
+        width: 100%;
+        height: 10px; /* Thicker bar */
+        background: var(--input-border); /* Subtle background base */
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 8px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inset shadow for depth */
+    }
+    .dark-mode .progress-bar { background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05); }
+    
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent-gradient);
+        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation curve */
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
         
-        .detail-line strong {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .detail-value {
-            text-align: right;
-            font-weight: 600;
-            max-width: 60%;
-            word-wrap: break-word;
-        }
-        
-        .percentage-mark {
-            background: var(--accent-gradient);
-            color: white;
-            font-size: 0.75em;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 6px;
-            font-weight: 700;
-            vertical-align: middle;
-        }
+        /* Add a subtle glow/shadow to the bar itself */
+        box-shadow: 0 0 10px var(--accent-glow);
+    }
+    
+    /* Neon Scanning Animation Overlay */
+    #status.loading .progress-bar-fill:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%; /* Stripe width */
+        height: 100%;
+        background: linear-gradient(
+            to right, 
+            rgba(255, 255, 255, 0) 0%, 
+            rgba(255, 255, 255, 0.4) 50%, 
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: neonScan 1.5s infinite linear;
+        mix-blend-mode: screen; /* Makes the white stripe look like a moving light */
+    }
 
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    /* Stop animation when done/error */
+    #status.success .progress-bar-fill:before, #status.error .progress-bar-fill:before {
+        animation: none;
+        content: none;
+    }
 
+    
+    /* Only animate the stripe when loading */
+    #status.loading .progress-bar-fill {
+        animation: progressStripe 1s linear infinite;
+    }
+    /* Stop stripe animation when done/error */
+    #status.success .progress-bar-fill, #status.error .progress-bar-fill {
+        background-image: none;
+        animation: none;
+    }
 
-        button {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            width: 100%;
-        }
+    /* THEME TOGGLE */
+    .theme-toggle {
+        position: fixed; 
+        top: 20px; right: 20px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        cursor: pointer;
+        z-index: 100;
+        width: 48px; height: 48px;
+        padding: 10px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .theme-toggle:hover { 
+        transform: translateY(-2px);
+        background: var(--input-bg);
+    }
+    
+    .theme-toggle svg {
+        width: 100%; height: 100%;
+        fill: var(--icon-fill);
+        transition: transform 0.5s ease;
+    }
+    .dark-mode .theme-toggle svg {
+        transform: rotate(90deg);
+    }
 
-                button:hover:not(:disabled):not(.loading) {
-            transform: translateY(-2px);
-            /* Standard hover box-shadow and brightness retained */
-            box-shadow: 0 10px 15px -3px var(--accent-glow), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            filter: brightness(1.1);
-            
-            /* ADDED: Glow Pulse Animation */
-            animation: glowPulse 1.5s infinite ease-in-out; 
-        }
-
-        button:active:not(:disabled) {
-            transform: translateY(0);
-            /* ADDED: Ensure the pulse stops when the button is pressed */
-            animation: none;
-        }
-
-        button:disabled {
-            background: var(--text-secondary);
-            opacity: 0.3;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        
-        #downloadJsonButton, #optimizeButton {
-            background: transparent;
-            border: 2px solid var(--input-border);
-            color: var(--text-primary);
-            box-shadow: none;
-        }
-        #downloadJsonButton:hover, #optimizeButton:hover {
-            border-color: var(--accent-primary);
-            background: rgba(59, 130, 246, 0.05);
-            color: var(--accent-primary);
-        }
-
-        button.loading::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: calc(50% - 10px);
-            left: calc(50% - 10px);
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        button.loading { color: transparent; pointer-events: none; }
+    /* --- New/Consolidated Transitions for Smooth Theme Change --- */
+    .container, .theme-toggle, input[type="text"], #downloadJsonButton, #optimizeButton, .secondary-actions, #openInTelegramButton {
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
 
 
-        /* STATUS AREA */
-        #status-area { 
-            margin-top: 25px; 
-            position: relative; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        #status {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(10px);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        #status.active { opacity: 1; transform: translateY(0); }
-        
-        #status.loading {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent-primary);
-            border: 1px solid var(--accent-primary);
-        }
-        
-        /* Dedicated Error Card Styling */
-        #status.error {
-            background: rgba(239, 68, 68, 0.2); 
-            color: var(--error);
-            border: 2px solid var(--error); 
-            font-weight: 600; 
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); 
-            padding: 20px; 
-        }
-        
-        .dark-mode #status.error {
-            background: rgba(248, 113, 113, 0.15); 
-            box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
-        }
+    /* ANIMATIONS */
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* PROGRESS BAR SCANNING KEYFRAME */
+    @keyframes neonScan {
+        0% { transform: translateX(-100%) skewX(-30deg); }
+        100% { transform: translateX(200%) skewX(-30deg); }
+    }
 
-        .error-action-hint {
-            font-weight: 400; 
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        
-        /* Update Success Status for consistency */
-        #status.success {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-            border: 2px solid var(--success);
-            font-weight: 600;
-            padding: 20px;
-        }
+    @keyframes iconPop {
+        0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
+        50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
+        100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    }
 
-                /* --- PROGRESS BAR STYLING (Cooler Design) --- */
-        .progress-bar {
-            width: 100%;
-            height: 10px; /* Thicker bar */
-            background: var(--input-border); /* Subtle background base */
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 8px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inset shadow for depth */
-        }
-        .dark-mode .progress-bar { background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05); }
-        
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--accent-gradient);
-            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation curve */
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
-            
-            /* Add a subtle glow/shadow to the bar itself */
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-        
-        /* Neon Scanning Animation Overlay */
-        #status.loading .progress-bar-fill:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%; /* Stripe width */
-            height: 100%;
-            background: linear-gradient(
-                to right, 
-                rgba(255, 255, 255, 0) 0%, 
-                rgba(255, 255, 255, 0.4) 50%, 
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: translateX(-100%);
-            animation: neonScan 1.5s infinite linear;
-            mix-blend-mode: screen; /* Makes the white stripe look like a moving light */
-        }
+    /* Shake Animation for Invalid Input */
+    @keyframes inputShake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-5px); }
+        40% { transform: translateX(5px); }
+        60% { transform: translateX(-5px); }
+        80% { transform: translateX(5px); }
+        100% { transform: translateX(0); }
+    }
 
-        /* Stop animation when done/error */
-        #status.success .progress-bar-fill:before, #status.error .progress-bar-fill:before {
-            animation: none;
-            content: none;
-        }
+    /* Apply shake to input when it has the 'shake' class */
+    #nftLink.shake {
+        animation: inputShake 0.5s ease-out;
+        border-color: var(--error) !important;
+        box-shadow: 0 0 10px var(--error);
+    }
 
-        
-        /* Only animate the stripe when loading */
-        #status.loading .progress-bar-fill {
-            animation: progressStripe 1s linear infinite;
-        }
-        /* Stop stripe animation when done/error */
-        #status.success .progress-bar-fill, #status.error .progress-bar-fill {
-            background-image: none;
-            animation: none;
-        }
+    /* Success Lottie Position */
+    #success-lottie-container {
+        position: absolute;
+        top: -50px; left: 50%; transform: translateX(-50%);
+        width: 80px; height: 80px;
+        z-index: 30; opacity: 0; pointer-events: none;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        transition: opacity 0.3s;
+    }
+    #success-lottie-container.show { opacity: 1; }
 
-        /* THEME TOGGLE */
-        .theme-toggle {
-            position: fixed; 
-            top: 20px; right: 20px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            z-index: 100;
-            width: 48px; height: 48px;
-            padding: 10px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .theme-toggle:hover { 
-            transform: translateY(-2px);
-            background: var(--input-bg);
-        }
-        
-        .theme-toggle svg {
-            width: 100%; height: 100%;
-            fill: var(--icon-fill);
-            transition: transform 0.5s ease;
-        }
-        .dark-mode .theme-toggle svg {
-            transform: rotate(90deg);
-        }
+    /* Canvas */
+    #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* --- New/Consolidated Transitions for Smooth Theme Change --- */
-        .container, .theme-toggle, input[type="text"], #downloadJsonButton, #optimizeButton {
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Responsive */
+    @media (max-width: 480px) {
+        body { 
+            padding-top: 70px;
         }
-
-
-                /* ANIMATIONS (Add this new keyframe) */
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .container { 
+            padding: 30px 20px; 
+            margin: 0 10px;
         }
-        
-        /* PROGRESS BAR SCANNING KEYFRAME */
-        @keyframes neonScan {
-            0% { transform: translateX(-100%) skewX(-30deg); }
-            100% { transform: translateX(200%) skewX(-30deg); }
-        }
-
-        @keyframes iconPop {
-            0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
-            50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
-            100% { transform: translateY(-50%) scale(1); opacity: 1; }
-        }
-
-        /* Shake Animation for Invalid Input */
-        @keyframes inputShake {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-5px); }
-            40% { transform: translateX(5px); }
-            60% { transform: translateX(-5px); }
-            80% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-
-        /* Apply shake to input when it has the 'shake' class */
-        #nftLink.shake {
-            animation: inputShake 0.5s ease-out;
-            border-color: var(--error) !important;
-            box-shadow: 0 0 10px var(--error);
-        }
-
-        /* Success Lottie Position */
-        #success-lottie-container {
-            position: absolute;
-            top: -50px; left: 50%; transform: translateX(-50%);
-            width: 80px; height: 80px;
-            z-index: 30; opacity: 0; pointer-events: none;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-            transition: opacity 0.3s;
-        }
-        #success-lottie-container.show { opacity: 1; }
-
-        /* Canvas */
-        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            body { 
-                padding-top: 70px;
-            }
-            .container { 
-                padding: 30px 20px; 
-                margin: 0 10px;
-            }
-            .theme-toggle { top: 15px; right: 15px; width: 40px; height: 40px; padding: 8px; }
-        }
-    </style>
+        .theme-toggle { top: 15px; right: 15px; width: 40px; height: 40px; padding: 8px; }
+    }
+</style>
 </head>
 <body>
 
@@ -680,8 +727,17 @@
         
         <div id="giftDetails"></div>
         
-        <div class="action-buttons">
+                <div class="action-buttons">
             <button id="convertButton" disabled aria-disabled="true">Convert to Sticker</button>
+            
+            <div class="secondary-actions"> 
+                <button id="openInTelegramButton" disabled aria-disabled="true" aria-label="Open in Telegram">
+                    <svg id="telegram-icon" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
+                        <path stroke="currentColor" stroke-width="12" d="M23.073 88.132s65.458-26.782 88.16-36.212c8.702-3.772 38.215-15.843 38.215-15.843s13.621-5.28 12.486 7.544c-.379 5.281-3.406 23.764-6.433 43.756-4.54 28.291-9.459 59.221-9.459 59.221s-.756 8.676-7.188 10.185c-6.433 1.509-17.027-5.281-18.919-6.79-1.513-1.132-28.377-18.106-38.214-26.404-2.649-2.263-5.676-6.79.378-12.071 13.621-12.447 29.891-27.913 39.728-37.72 4.54-4.527 9.081-15.089-9.837-2.264-26.864 18.483-53.35 35.835-53.35 35.835s-6.053 3.772-17.404.377c-11.351-3.395-24.594-7.921-24.594-7.921s-9.08-5.659 6.433-11.693Z"/>
+                    </svg>
+                </button>
+            </div>
+
             <button id="downloadJsonButton" style="display: none;">Download JSON 💾</button>
             <button id="optimizeButton" style="display: none;">Optimize Tool 🛠️</button>
         </div>
@@ -693,7 +749,7 @@
     </div>
 
     <script>
-       // SVG Icons 
+    // SVG Icons 
     const ICON_MOON = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.8-5.1-9.8-10.7C1.4,5.8,5.8,1.4,11.3,1.4c0.5,0,0.9,0.3,1.1,0.8c0.1,0.4,0,0.9-0.3,1.3C10.6,4.7,9.8,6.8,9.8,9c0,4.4,3.6,8,8,8c2.2,0,4.3-0.8,5.5-2.2c0.3-0.4,0.8-0.5,1.3-0.3c0.4,0.2,0.8,0.7,0.8,1.2c0,0.1,0,0.3,0,0.4c-0.5,3.3-2.6,6.1-5.6,7.8C17.5,25.3,14.8,22,12.1,22z"/></svg>`;
     const ICON_SUN = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,4c0.6,0,1-0.4,1-1V2c0-0.6-0.4-1-1-1s-1,0.4-1,1v1C11,3.6,11.4,4,12,4z M6.3,6.3c0.4-0.4,0.4-1,0-1.4L5.6,4.2c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l0.7,0.7C5.3,6.7,5.9,6.7,6.3,6.3z M17.7,6.3c0.4,0.4,1,0.4,1.4,0l0.7-0.7c0.4-0.4,0.4-1,0-1.4s-1-0.4-1.4,0l-0.7,0.7C17.3,5.3,17.3,5.9,17.7,6.3z M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M2,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2c-0.6,0-1,0.4-1,1S1.4,13,2,13z M21,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1S20.4,13,21,13z M6.3,17.7c-0.4-0.4-1-0.4-1.4,0l-0.7,0.7c-0.4,0.4-0.4,1,0,1.4s1,0.4,1.4,0l0.7-0.7C6.7,18.7,6.7,18.1,6.3,17.7z M17.7,17.7c-0.4-0.4-0.4-1,0,1.4l0.7,0.7c0.4,0.4,1,0.4,1.4,0s0.4-1,0-1.4l-0.7-0.7C18.7,17.3,18.1,17.3,17.7,17.7z M12,20c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1s1-0.4,1-1v-1C13,20.4,12.6,20,12,20z"/></svg>`;
 
@@ -712,6 +768,7 @@
     let fetchAbortController = null;
     let statusMessageTimer = null; 
     let continuousProgressTimer = null; 
+    let fullGiftLink = null; // NEW: Store the full gift link
 
     // Simple Checkmark Lottie Data (for success animation) 
     const successCheckmarkLottie = {
@@ -735,7 +792,6 @@
         });
                     
         if (isError || !hasMetadata) {
-            // ACCORDION: Close the accordion
             detailBox.classList.remove("open");
             return;
         }
@@ -767,7 +823,6 @@
             return '';
         };
 
-        // Gift ID formatting
         let formattedGiftId = giftId;
         if (giftId && giftId !== 'Unknown' && giftId !== '-') {
             const idMatch = details.nftLinkFull ? details.nftLinkFull.match(/-(\d+)$/) : null;
@@ -787,7 +842,6 @@
         
         htmlContent += createDetailLine('Owner', owner);
 
-        // Quantity formatting
         let formattedQuantity = quantity;
         if (quantity && quantity !== 'Unknown' && quantity !== '-') {
             formattedQuantity = quantity.replace(/[^0-9\/\s,]/g, '').trim(); 
@@ -799,7 +853,6 @@
         }
         htmlContent += createDetailLine('Quantity', formattedQuantity);
 
-        // Gifted status formatting
         let giftNote = null;
         if (giftedBy && giftedBy !== 'Unknown' && giftedBy !== '-') {
             giftNote = (giftedTo && giftedTo !== 'Unknown') ? `by ${giftedBy} to ${giftedTo}` : `by ${giftedBy}`;
@@ -816,14 +869,12 @@
         }
 
         detailBox.innerHTML = htmlContent;
-        // ACCORDION: Open the accordion (will transition due to CSS max-height)
         detailBox.classList.add("open");
     }
 
     function resetGiftDetails() {
         const detailBox = document.getElementById("giftDetails");
         detailBox.innerHTML = ''; 
-        // ACCORDION: Use class removal for transition
         detailBox.classList.remove("open");
     }
 
@@ -833,12 +884,11 @@
             currentLottieAnimation.destroy();
             currentLottieAnimation = null;
         }
-        // Use the placeholder with the CSS spinner element
         previewBox.innerHTML = `<div class="preview-placeholder">
             <div id="loadingSpinnerContainer" class="css-spinner"></div>
             Animation Preview
         </div>`;
-        previewBox.classList.remove('active', 'flip'); // Reset flip class
+        previewBox.classList.remove('active', 'flip');
         document.getElementById('loadingSpinnerContainer').style.display = 'none';
     }
 
@@ -871,16 +921,22 @@
     function resetUI() {
         const inputElement = document.getElementById('nftLink');
         const statusDiv = document.getElementById('status');
+        const tgButton = document.getElementById('openInTelegramButton'); // Get new button
         
         document.getElementById('clearInputButton').classList.remove('active');
         stopContinuousProgress(0); 
-        inputElement.classList.remove('shake'); // Clear shake class on reset
+        inputElement.classList.remove('shake'); 
 
         if (inputElement.getAttribute('data-valid') !== 'false') {
             document.getElementById('convertButton').style.display = 'block';
             document.getElementById('downloadJsonButton').style.display = 'none';
             document.getElementById('optimizeButton').style.display = 'none';
             
+            // NEW: Reset Telegram button state and link
+            tgButton.disabled = true;
+            tgButton.setAttribute('aria-disabled', 'true');
+            fullGiftLink = null; 
+
             statusDiv.innerHTML = '';
             statusDiv.className = '';
             statusDiv.classList.remove('active');
@@ -904,9 +960,8 @@
         const previewBox = document.getElementById('lottie-preview');
         previewBox.classList.add('active');
 
-        // 3D Flip: Trigger the animation
         previewBox.classList.remove('flip');
-        void previewBox.offsetWidth; // Force reflow
+        void previewBox.offsetWidth; 
         previewBox.classList.add('flip');
 
         currentLottieAnimation = lottie.loadAnimation({
@@ -918,9 +973,6 @@
         });
     }
 
-    /**
-     * Updates the progress bar with an explicit percentage value.
-     */
     function updateProgress(percentage, message, isTemporary = false) {
         const statusDiv = document.getElementById('status');
         if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
@@ -940,9 +992,6 @@
         }
     }
     
-    /**
-     * Starts a continuous, slow-filling progress bar simulation for initial fetch.
-     */
     function startContinuousProgress() {
         const statusDiv = document.getElementById('status');
         statusDiv.className = 'loading active';
@@ -963,9 +1012,6 @@
         }, 300); 
     }
 
-    /**
-     * Stops the continuous progress bar simulation and optionally sets a final percentage.
-     */
     function stopContinuousProgress(finalPercentage = null) {
         if (continuousProgressTimer) {
             clearInterval(continuousProgressTimer);
@@ -977,9 +1023,6 @@
         }
     }
 
-    /**
-     * Shows the final status, including error card styling and optional hint.
-     */
     function showFinalStatus(className, message, hint = null) {
         const statusDiv = document.getElementById('status');
         if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
@@ -987,7 +1030,6 @@
         
         statusDiv.className = `${className} active`;
         
-        // Add a hint for actionable errors
         let htmlContent = `<div>${message}</div>`;
         if (className === 'error' && hint) {
             htmlContent += `<div class="error-action-hint">${hint}</div>`;
@@ -997,7 +1039,9 @@
     }
 
     /* ================= LOGIC & EXTRACTION ================= */
-
+    
+    // (Existing extraction functions: extractTraitFromTable, extractOwnerAndQuantityFromTable, extractTrait, extractOwnerAndQuantity)
+    
     function extractTraitFromTable(doc, label) {
         const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
         for (const thElement of thElements) {
@@ -1168,7 +1212,6 @@
             const data = await response.json();
             const doc = new DOMParser().parseFromString(data.contents, 'text/html');
 
-            // 1. Table Extraction (Primary)
             try {
                 model = extractTraitFromTable(doc, 'Model');
                 backdrop = extractTraitFromTable(doc, 'Backdrop');
@@ -1176,11 +1219,9 @@
                 ownerDetails = extractOwnerAndQuantityFromTable(doc);
             } catch(e) { console.warn('Table parsing failed', e); }
 
-            // 2. Meta/Fallback Extraction if Table failed
             if (model.name === 'Unknown') {
                  let strModel = extractTrait(doc, 'Model');
                  if(strModel === 'Unknown') {
-                     // Try Meta tags
                       const meta = doc.querySelector('meta[name="twitter:description"]') || doc.querySelector('meta[property="og:description"]');
                       if(meta) {
                           const c = meta.content;
@@ -1194,7 +1235,6 @@
                 ownerDetails = extractOwnerAndQuantity(doc);
             }
 
-            // Gift ID Extraction
             const titleEl = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
             if(titleEl) giftId = (titleEl.getAttribute('content') || titleEl.textContent).replace(/ #\d+/, '').replace(/ — Telegram$/,'').replace(/ on Telegram$/,'').replace(/NFT Gift: /,'').replace(/Collectable Gift #\d+/,'').trim();
             if(giftId === 'Unknown') {
@@ -1212,11 +1252,21 @@
         }
     }
 
+    /* ================= MAIN HANDLERS ================= */
+    
+    // NEW: Function to open the gift link
+    function openGiftLinkInTelegram() {
+        if (fullGiftLink) {
+            window.open(fullGiftLink, '_blank');
+        }
+    }
+
     async function handleAutoLoad() {
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const match = linkInput.match(LINK_REGEX);
         const icon = document.getElementById('validationIcon');
+        const tgButton = document.getElementById('openInTelegramButton'); // Get new button
 
         document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
 
@@ -1226,10 +1276,17 @@
         }
 
         const newNftId = match[1];
+        const nftLinkFull = `https://t.me/nft/${newNftId}`;
+        
+        fullGiftLink = nftLinkFull; // NEW: Store the full link
+
         if (newNftId === lastLoadedNftId) {
             document.getElementById('convertButton').disabled = false;
             document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
             document.getElementById('downloadJsonButton').style.display = 'block';
+            
+            tgButton.disabled = false; // NEW: Enable Telegram button if already loaded
+            tgButton.setAttribute('aria-disabled', 'false');
             return;
         }
 
@@ -1239,16 +1296,15 @@
 
         currentNftId = newNftId;
         const lottieUrl = LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`;
-        const nftLinkFull = `https://t.me/nft/${currentNftId}`;
 
-        // Reset & Start Loading UI
         document.getElementById('downloadJsonButton').style.display = 'none';
         document.getElementById('optimizeButton').style.display = 'none';
+        tgButton.disabled = true; // NEW: Disable button while loading
+
         fetchedLottieJsonText = null;
         resetGiftDetails();
         startLoadingAnimations();
         
-        // Start continuous progress bar simulation
         updateProgress(5, `STEP 1/2: Fetching details and animation...`);
         startContinuousProgress();
 
@@ -1258,8 +1314,8 @@
                 fetchGiftDetailsFromHTML(nftLinkFull, signal)
             ]);
 
-            stopContinuousProgress(50); // Stop continuous fill when fetch is complete (set to 50% max)
-            stopLoadingAnimations(); // Clears CSS spinner and placeholder
+            stopContinuousProgress(50);
+            stopLoadingAnimations();
 
             showGiftDetails(giftDetails, giftDetails.isError);
 
@@ -1270,6 +1326,9 @@
                 document.getElementById('convertButton').disabled = false;
                 document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
                 document.getElementById('downloadJsonButton').style.display = 'block';
+                
+                tgButton.disabled = false; // NEW: Enable Telegram button
+                tgButton.setAttribute('aria-disabled', 'false');
             } else {
                 lastLoadedNftId = null;
                 document.getElementById('convertButton').disabled = true;
@@ -1328,7 +1387,6 @@
         const convertButton = document.getElementById('convertButton');
         if (!validateInput()) return;
 
-        // If JSON is not loaded, start the fetch process first
         if (!fetchedLottieJsonText) {
              const linkInput = document.getElementById('nftLink').value.trim();
              const match = linkInput.match(LINK_REGEX);
@@ -1342,7 +1400,6 @@
              
              fetchLottieData(currentNftId, LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`, false).then((data)=>{
                  if(!data) {
-                     // Error status already shown in fetchLottieData
                      convertButton.classList.remove('loading'); 
                      convertButton.disabled = true; 
                      return;
@@ -1352,21 +1409,16 @@
              return;
         }
         
-        // If JSON is already loaded, proceed directly
         performCompressionAndDownload(convertButton);
     }
 
-    // UPDATED FOR RESPONSIVENESS AND TWO-STEP PROGRESS
     function performCompressionAndDownload(convertButton) {
-        // Ensure buttons are disabled immediately
         convertButton.classList.add('loading');
         convertButton.disabled = true;
 
         try {
-            // STEP 2: Compression Start (UI Update - Responsive)
             updateProgress(50, `STEP 2/2: Compressing to .TGS...`);
 
-            // Use setTimeout to defer the heavy compression, allowing the UI thread to update the progress bar.
             setTimeout(() => {
                 let success = false;
                 try {
@@ -1374,13 +1426,11 @@
                     const tgsBytes = pako.gzip(jsonBytes);
                     const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
 
-                    // Size Check and Error Handling
                     if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
                         document.getElementById('convertButton').style.display = 'none';
                         document.getElementById('downloadJsonButton').style.display = 'block';
                         document.getElementById('optimizeButton').style.display = 'block';
                         
-                        // Enhanced Error Card with Hint
                         showFinalStatus('error', 
                             `Size ${tgsSizeKB}KB exceeds 64KB limit. Cannot convert.`,
                             `Click 'Optimize Tool 🛠️' to reduce file size, or download the JSON to optimize externally.`
@@ -1388,7 +1438,6 @@
                         return; 
                     }
 
-                    // Successful Conversion and Download
                     updateProgress(90, `Finalizing and preparing download...`);
                     
                     const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
@@ -1407,21 +1456,18 @@
                     success = true;
 
                 } catch (error) {
-                    // General System Error Card with Hint
                     console.error("Compression/Download Error:", error);
                     showFinalStatus('error', 
                         `System Error: ${error.message}`,
                         `Check your browser console for technical details, or try clearing the input and re-pasting the link.`
                     );
                 } finally {
-                    // Re-enable button
                     convertButton.classList.remove('loading');
                     convertButton.disabled = success ? false : true; 
                 }
-            }, 50); // Small delay to allow progress bar to render
+            }, 50);
         
         } catch (error) {
-            // This catch is for errors *before* the setTimeout
              console.error("Initial Compression Setup Error:", error);
              convertButton.classList.remove('loading');
              convertButton.disabled = false;
@@ -1477,7 +1523,7 @@
 
         if (linkInput === '') {
             inputElement.removeAttribute('data-valid');
-            inputElement.classList.remove('shake'); // Clear shake class
+            inputElement.classList.remove('shake'); 
             icon.style.opacity = 0;
             icon.classList.remove('animated');
             btn.disabled = true;
@@ -1500,16 +1546,15 @@
         }
 
         if (!isValid) {
-            // INPUT SHAKE: Trigger the shake animation
             inputElement.classList.remove('shake');
-            void inputElement.offsetWidth; // Force reflow
+            void inputElement.offsetWidth;
             inputElement.classList.add('shake');
             
             showFinalStatus('error', 'Invalid Link.', 'Format must be: t.me/nft/NFT-ID');
             resetPreview();
             resetGiftDetails();
         } else {
-             inputElement.classList.remove('shake'); // Remove shake if it becomes valid
+             inputElement.classList.remove('shake');
         }
         return isValid;
     }
@@ -1552,6 +1597,9 @@
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.getElementById('clearInputButton').addEventListener('click', clearInput);
         
+        // NEW: Add event listener for the Telegram button
+        document.getElementById('openInTelegramButton').addEventListener('click', openGiftLinkInTelegram);
+
         const inputHandler = () => { validateInput(); handleAutoLoad(); };
         input.addEventListener('paste', () => setTimeout(inputHandler, 50));
         input.addEventListener('input', inputHandler);
