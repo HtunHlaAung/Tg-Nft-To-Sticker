@@ -692,93 +692,116 @@
     /* Canvas */
     #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     
-    /* --- FIREBASE HISTORY STYLES --- */
-    #history-section {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid var(--glass-border);
-    }
+/* --- 1. CORE HISTORY SECTION STYLES (GLASS PANEL) --- */
+#history-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid transparent; 
+    max-width: 100%; 
+    overflow: hidden; 
+}
 
-    #history-title {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-top: 0;
-        margin-bottom: 15px;
-        color: var(--text-primary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    #user-id-display {
-        font-size: 0.7em;
-        font-weight: 400;
-        opacity: 0.7;
-        max-width: 60%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        direction: rtl; /* Show end of ID */
-        text-align: right;
-    }
+#history-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
 
-   /* --- NEW GRID HISTORY STYLES --- */
+
+/* --- 2. HORIZONTAL LIST CONTAINER (GLASS PANEL) --- */
 #history-list {
-    display: grid;
-    /* Create columns that fit a minimum size (e.g., 60px wide) */
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 12px; /* Space between the items */
-    padding: 10px;
-    list-style: none; /* Remove bullet points */
-    margin: 0;
-}
-
-.log-item {
-    /* The individual item should now just contain the preview */
+    /* Main container is the "Panel" */
+    background: var(--tg-card-bg); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px; /* Soft rounding on the panel */
+    
     display: flex;
-    justify-content: center; /* Center the icon */
-    align-items: center;
-    width: 100%; /* Take up the grid cell width */
-    height: 100%;
-    padding: 0; /* Remove internal padding */
-    border: none; /* Remove border from log item */
-    background: transparent; /* Remove background */
-    cursor: pointer; /* Suggests the items are clickable */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 12px; 
+    padding: 15px 15px; /* Internal padding */
+    list-style: none; 
+    margin: 0;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
 }
 
-/* Make the mini-preview the main visual element, slightly larger */
-.log-mini-preview {
-    width: 60px; 
-    height: 60px;
-    min-width: 60px;
-    
-    /* * FIX 1: Change the background to a dark color. 
-     * If the background is showing through the animation edges, 
-     * it will blend with the surrounding black/dark theme instead of showing white.
-     */
-    background: #1e1e1e; /* Example dark grey color, or use your main background variable */
-    
+/* Custom, very subtle scrollbar */
+#history-list::-webkit-scrollbar {
+    height: 4px;
+}
+#history-list::-webkit-scrollbar-thumb {
+    background-color: var(--text-secondary);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+
+/* --- 3. INDIVIDUAL LOG ITEM STYLES (SQUARE ITEM) --- */
+.log-item {
+    flex-shrink: 0; 
+    width: 70px; /* Item width */
+    height: 70px; /* Item height */
+    cursor: pointer; 
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease;
+    /* Changed from 50% to square corners */
     border-radius: 12px; 
-    border: 1px solid var(--log-border);
-    margin: 0; 
-    overflow: hidden;
+    background: transparent;
+    padding: 5px; /* Add internal padding */
+}
+
+/* Floating effect on hover */
+.log-item:hover {
+    transform: translateY(-4px) scale(1.1); 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 4. MINI PREVIEW CONTAINER (THE LOTTIE SQUARE) --- */
+.log-mini-preview {
+    width: 100%; 
+    height: 100%;
     position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    overflow: hidden;
+
+    background: var(--input-bg); 
     
-    /* FIX 2: Ensure flex container properties are tight */
+    /* Changed from 50% to square corners to match log-item */
+    border-radius: 8px; 
+    border: 2px solid var(--input-border);
+    
+    transition: all 0.3s ease-in-out;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* FIX 3: Force the embedded SVG (the Lottie canvas) to fill its parent */
+/* --- 5. STATUS INDICATOR DOT REMOVED --- */
+/* The entire .log-item::after block has been removed as requested. */
+
+
+/* Force the embedded SVG (the Lottie canvas) to fill its parent */
 .log-mini-preview svg {
     width: 100% !important; 
     height: 100% !important;
-    /* FIX 4: Ensure no default spacing or display issues on the SVG element */
     display: block;
 }
+
+/* Placeholder for when the list is empty */
+#history-list .log-placeholder {
+    width: 100%;
+    text-align: center;
+    line-height: 70px;
+    flex-shrink: 0;
+    min-width: 100%;
+    color: var(--text-secondary);
+}
+
 </style>
 </head>
 <body>
@@ -860,7 +883,7 @@
     window.__initial_auth_token = null; 
 </script> 
 
-    <script type="module">
+<script type="module">
     // --- FIREBASE IMPORTS ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -915,135 +938,128 @@
         return collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
     }
 
-// --- MODIFIED logConversionAttempt ---
-async function logConversionAttempt(nftId, sizeKB, status, message) {
-    if (!isAuthReady || !db || !userId) {
-        console.warn("Firestore not ready or user not authenticated for logging.");
-        return;
-    }
-    const timestamp = serverTimestamp();
-    const logData = {
-        nftId,
-        sizeKB: sizeKB ? parseFloat(sizeKB) : null,
-        status, // 'SUCCESS', 'SIZE_EXCEEDED', 'ERROR'
-        message,
-        timestamp: timestamp,
-        userId,
-        appId,
-    };
-    
-    // 1. Write to PRIVATE History (Your current implementation)
-    const privateLogsRef = collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
-    try {
-        await addDoc(privateLogsRef, logData);
-    } catch (e) {
-        console.error("Error adding to private log:", e);
-    }
-
-    // 2. Write to PUBLIC Feed (NEW)
-    if (status === 'SUCCESS') {
-        const publicFeedRef = collection(db, `public_feeds/${appId}/latest_conversions`);
+    async function logConversionAttempt(nftId, sizeKB, status, message) {
+        if (!isAuthReady || !db || !userId) {
+            console.warn("Firestore not ready or user not authenticated for logging.");
+            return;
+        }
+        const timestamp = serverTimestamp();
+        const logData = {
+            nftId,
+            sizeKB: sizeKB ? parseFloat(sizeKB) : null,
+            status, 
+            message,
+            timestamp: timestamp,
+            userId,
+            appId,
+        };
+        
+        // 1. Write to PRIVATE History
+        const privateLogsRef = collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
         try {
-            await addDoc(publicFeedRef, {
-                nftId,
-                sizeKB: logData.sizeKB,
-                timestamp: timestamp,
-                // Do NOT include userId for a truly anonymous public feed
-            });
+            await addDoc(privateLogsRef, logData);
         } catch (e) {
-            console.error("Error adding to public feed:", e);
+            console.error("Error adding to private log:", e);
+        }
+
+        // 2. Write to PUBLIC Feed (FIXED: Now includes JSON_DOWNLOAD)
+        if (status === 'SUCCESS' || status === 'JSON_DOWNLOAD') { 
+            const publicFeedRef = collection(db, `public_feeds/${appId}/latest_conversions`);
+            try {
+                await addDoc(publicFeedRef, {
+                    nftId,
+                    sizeKB: logData.sizeKB,
+                    timestamp: timestamp,
+                });
+            } catch (e) {
+                console.error("Error adding to public feed:", e);
+            }
         }
     }
-}
 
     
   // --- Replace your existing renderConversionHistory function ---
-function renderConversionHistory(logs) {
-    const list = document.getElementById('history-list');
-    
-    // NOTE: You might want to keep the user ID display or hide it separately
-    // const userIdDisplay = document.getElementById('user-id-display');
-    // if (userId) { ... }
+    function renderConversionHistory(logs) {
+        const list = document.getElementById('history-list');
+        
+        if (logs.length === 0) {
+            // Change the placeholder text to fit the new look
+            list.innerHTML = `<li class="log-placeholder" style="grid-column: 1 / -1;">No recent activity.</li>`; 
+            return;
+        }
 
-    if (logs.length === 0) {
-        // Change the placeholder text to fit the new look
-        list.innerHTML = `<li class="log-placeholder" style="grid-column: 1 / -1;">No recent activity.</li>`; 
-        return;
+        const sortedLogs = logs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+        list.innerHTML = ''; // Clear the list before rendering new items
+
+        sortedLogs.forEach((log, index) => {
+            // Status class is still useful for color-coding the border
+            const statusClass = log.status === 'SUCCESS' ? 'log-success' : 
+                                log.status === 'JSON_DOWNLOAD' ? 'log-warning' : // Added status for JSON download
+                                log.status === 'SIZE_EXCEEDED' ? 'log-warning' : 'log-error';
+            
+            const nftId = log.nftId;
+
+            const listItem = document.createElement('li');
+            listItem.className = `log-item ${statusClass}`;
+            listItem.dataset.nftId = nftId; 
+            
+            listItem.innerHTML = `
+                <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.status}"></div>
+            `;
+            
+            list.appendChild(listItem);
+
+            // Load the Lottie animation into the mini-preview container
+            const miniContainer = document.getElementById(`lottie-mini-${index}`);
+            if (miniContainer && nftId) {
+                lottie.loadAnimation({
+                    container: miniContainer,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: LOTTIE_FRAGMENT_BASE + `${nftId}.lottie.json`,
+                    rendererSettings: {
+                        clearCanvas: true,
+                    }
+                });
+            }
+        });
     }
 
-    const sortedLogs = logs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-    list.innerHTML = ''; // Clear the list before rendering new items
 
-    sortedLogs.forEach((log, index) => {
-        // Status class is still useful for color-coding the border
-        const statusClass = log.status === 'SUCCESS' ? 'log-success' : 
-                            log.status === 'SIZE_EXCEEDED' ? 'log-warning' : 'log-error';
-        
-        const nftId = log.nftId;
+     // --- MODIFIED setupConversionLogListener ---
+    function setupConversionLogListener() {
+        if (!isAuthReady || !db) return; 
 
-        const listItem = document.createElement('li');
-        // We can use the NFT ID as a data attribute if you ever want to click on it
-        listItem.className = `log-item ${statusClass}`;
-        listItem.dataset.nftId = nftId; // Stores the NFT ID
-        
-        // SIMPLIFIED HTML: Only the Lottie container remains visible
-        listItem.innerHTML = `
-            <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.status}"></div>
-        `;
-        
-        list.appendChild(listItem);
+        // Query for the LATEST 10 logs, ordered by timestamp
+        // NEW PUBLIC PATH: public_feeds/{appId}/latest_conversions
+        const q = query(
+            collection(db, `public_feeds/${appId}/latest_conversions`), 
+            orderBy('timestamp', 'desc'), 
+            limit(10) // <-- MAX LIMIT SET TO 10
+        );
 
-        // Load the Lottie animation into the mini-preview container
-        const miniContainer = document.getElementById(`lottie-mini-${index}`);
-        if (miniContainer && nftId) {
-            lottie.loadAnimation({
-                container: miniContainer,
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                path: LOTTIE_FRAGMENT_BASE + `${nftId}.lottie.json`,
-                rendererSettings: {
-                    clearCanvas: true,
-                }
+        const historyList = document.getElementById('history-list');
+
+        onSnapshot(q, (snapshot) => {
+            const logs = [];
+            snapshot.forEach((doc) => {
+                logs.push({ id: doc.id, ...doc.data() });
             });
-        }
-    });
-}
-
-
-// --- MODIFIED setupConversionLogListener ---
-function setupConversionLogListener() {
-    if (!isAuthReady || !db) return; // Note: We no longer need userId here
-
-    // Query for the latest 12 logs (more for a public grid), ordered by timestamp
-    // NEW PUBLIC PATH: public_feeds/{appId}/latest_conversions
-    const q = query(
-        collection(db, `public_feeds/${appId}/latest_conversions`), 
-        orderBy('timestamp', 'desc'), 
-        limit(12) // Show more items in the public feed
-    );
-
-    const historyList = document.getElementById('history-list');
-
-    onSnapshot(q, (snapshot) => {
-        const logs = [];
-        snapshot.forEach((doc) => {
-            logs.push({ id: doc.id, ...doc.data() });
+            // Render the public feed
+            renderConversionHistory(logs); 
+            
+            // Update the title to reflect a public feed
+            document.getElementById('history-title').textContent = 'Public Conversion Feed (Live)';
+            document.getElementById('user-id-display').style.display = 'none'; // Hide private user ID
+            
+        }, (error) => {
+            console.error("Error listening to public conversion feed:", error);
+            historyList.innerHTML = `<li class="log-placeholder log-error" style="grid-column: 1 / -1;">
+                Failed to load public history. (Check Firebase Rules)
+            </li>`;
         });
-        // Render the public feed
-        renderConversionHistory(logs); 
-        
-        // Update the title to reflect a public feed
-        document.getElementById('history-title').textContent = 'Public Conversion Feed (Live)';
-        document.getElementById('user-id-display').style.display = 'none'; // Hide private user ID
-        
-    }, (error) => {
-        console.error("Error listening to public conversion feed:", error);
-        historyList.innerHTML = `<li class="log-placeholder log-error" style="grid-column: 1 / -1;">
-            Failed to load public history. (Check Firebase Rules)
-        </li>`;
-    });
-}
+    }
 
 
     /* ================= CORE UI DISPLAY FUNCTIONS ================= */
@@ -1311,7 +1327,6 @@ function setupConversionLogListener() {
     /* ================= LOGIC & EXTRACTION (Unchanged) ================= */
     
     function extractTraitFromTable(doc, label) {
-        // ... (function body)
         const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
         for (const thElement of thElements) {
             if (thElement.textContent.trim().toLowerCase() === label.toLowerCase()) {
@@ -1331,7 +1346,6 @@ function setupConversionLogListener() {
     }
 
     function extractOwnerAndQuantityFromTable(doc) {
-        // ... (function body)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
@@ -1382,7 +1396,6 @@ function setupConversionLogListener() {
     }
 
     function extractTrait(doc, traitName) {
-        // ... (function body)
         const nextTraitStopWords = ['Backdrop:', 'Symbol:', 'Gifted by', 'Gifted on', 'Collected on', 'Owner:', 'issued', 'Model:'];
         const stopRegex = new RegExp(`\\s+(${nextTraitStopWords.join('|').replace(/:/g, '\\s*:\\s*')})`, 'i');
         const divs = Array.from(doc.querySelectorAll('div'));
@@ -1436,7 +1449,6 @@ function setupConversionLogListener() {
     }
 
     function extractOwnerAndQuantity(doc) {
-        // ... (function body)
         let owner = 'Unknown';
         let quantity = 'Unknown';
         let giftedBy = 'Unknown';
@@ -1471,7 +1483,6 @@ function setupConversionLogListener() {
     }
 
     async function fetchGiftDetailsFromHTML(nftLink, signal) {
-        // ... (function body)
         const proxyUrl = CORS_PROXY + encodeURIComponent(nftLink);
         let model = { name: 'Unknown', percent: '' };
         let backdrop = { name: 'Unknown', percent: '' };
@@ -1534,7 +1545,6 @@ function setupConversionLogListener() {
     }
 
     async function handleAutoLoad() {
-        // ... (existing handleAutoLoad logic)
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const match = linkInput.match(LINK_REGEX);
@@ -1631,7 +1641,6 @@ function setupConversionLogListener() {
     }
     
     async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false, signal = null) {
-        // ... (existing fetchLottieData logic)
         if (!isAutoLoad) {
              startLoadingAnimations();
              updateProgress(5, `STEP 1/2: Fetching ${nftId} metadata...`);
@@ -1661,7 +1670,6 @@ function setupConversionLogListener() {
     }
     
     function convertAndDownload() {
-        // ... (existing convertAndDownload logic)
         const convertButton = document.getElementById('convertButton');
         if (!validateInput()) return;
 
@@ -1691,7 +1699,6 @@ function setupConversionLogListener() {
     }
 
     function performCompressionAndDownload(convertButton) {
-        // ... (existing performCompressionAndDownload logic, updated with logging)
         convertButton.classList.add('loading');
         convertButton.disabled = true;
 
@@ -1759,20 +1766,37 @@ function setupConversionLogListener() {
         }
     }
     
+    // --- MODIFIED downloadRawJson function with Logging FIX ---
     function downloadRawJson() {
         const linkInput = document.getElementById('nftLink').value.trim();
         const match = linkInput.match(LINK_REGEX);
         if(!match) return;
         const nftId = match[1];
+        
         if(fetchedLottieJsonText) {
+            // 1. Download Logic (Unchanged)
             const blob = new Blob([fetchedLottieJsonText], {type:'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url; a.download = `${nftId}.json`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            
+            // 2. Animation (Unchanged)
+            animateDownloadSuccess('downloadJsonButton');
+
+            // 3. Status Display (Unchanged)
             showFinalStatus('success', 'JSON Downloaded.');
+
+            // --- CRITICAL FIX: Log the JSON download ---
+            logConversionAttempt(
+                nftId, 
+                null, // No TGS size available
+                'JSON_DOWNLOAD', 
+                'Raw JSON downloaded for external optimization.'
+            );
         }
     }
+
     
     function openOptimizationTool() { window.open('https://lottiefiles.com/optimise', '_blank'); }
 
@@ -1794,10 +1818,19 @@ function setupConversionLogListener() {
         applyTheme(!isDarkMode);
         localStorage.setItem('darkMode', !isDarkMode ? 'true' : 'false');
     }
+    
+    // Simple button animation for JSON download (since the TGS function has its own)
+    function animateDownloadSuccess(buttonId) {
+        const button = document.getElementById(buttonId);
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = 'scale(1)';
+        }, 150);
+        showSuccessAnimation(); 
+    }
 
     // Input Validation (Updated with shake animation)
     function validateInput() {
-        // ... (existing validateInput logic)
         const inputElement = document.getElementById('nftLink');
         const linkInput = inputElement.value.trim();
         const isValid = LINK_REGEX.test(linkInput);
