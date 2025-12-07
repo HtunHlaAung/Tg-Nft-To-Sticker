@@ -402,22 +402,24 @@
         box-shadow: none;
     }
     
-    /* NEW: Secondary Actions Container (to hold the square button) */
+    /* NEW: Secondary Actions Container */
     .secondary-actions {
         display: flex;
-        justify-content: flex-end; 
+        /* NEW: Changed to space-between to clearly separate the main button from the secondary ones */
+        justify-content: space-between; 
         margin-bottom: 0px; 
         transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        /* New: Add a small gap between buttons */
+        gap: 12px;
     }
 
-    /* NEW: Telegram Icon Button Styling */
-    #openInTelegramButton {
+    /* NEW: Consolidated styling for all square action buttons */
+    #openInTelegramButton, #downloadImageButton { 
         width: 50px; 
         height: 50px; 
         padding: 0;
         border-radius: 12px;
         font-size: 0;
-        /* ADAPTIVE COLOR: Uses --icon-fill, which changes with dark-mode class */
         color: var(--icon-fill); 
         background: var(--glass-bg); 
         border: 1px solid var(--glass-border); 
@@ -426,16 +428,29 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0; /* Important: prevents shrinking */
     }
 
-    #openInTelegramButton svg {
+    /* General style for the SVG icons inside these buttons */
+    #openInTelegramButton svg, #downloadImageButton svg {
         width: 24px;
         height: 24px;
         transition: all 0.3s ease;
-        /* CRITICAL: Fill based on the parent's 'color' property (which is --icon-fill) */
         fill: currentColor;
     }
-
+    
+    /* NEW: Download Icon specific color and hover */
+    #downloadImageButton:hover:not(:disabled) {
+        /* Use a light-blue/accent color for download hover */
+        color: var(--accent-primary); 
+        transform: translateY(-2px) scale(1.05);
+        background: rgba(59, 130, 246, 0.1); 
+        border-color: var(--accent-primary);
+        box-shadow: 0 4px 10px var(--accent-glow);
+        animation: none;
+    }
+    
+    /* Open In Telegram Button (retained specific hover color) */
     #openInTelegramButton:hover:not(:disabled) {
         /* Hover uses Telegram's signature blue for emphasis */
         color: #0088cc; 
@@ -446,7 +461,8 @@
         animation: none;
     }
 
-    #openInTelegramButton:disabled {
+    /* Disabled State for all secondary buttons */
+    #openInTelegramButton:disabled, #downloadImageButton:disabled {
         opacity: 0.3;
         background: var(--glass-bg);
         border-color: var(--glass-border);
@@ -843,7 +859,14 @@
             <button id="convertButton" disabled aria-disabled="true">Convert to Sticker</button>
             
             <div class="secondary-actions"> 
-                <button id="openInTelegramButton" disabled aria-disabled="true" aria-label="Open in Telegram">
+   <button id="downloadImageButton" disabled aria-disabled="true" aria-label="Download NFT Image">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v8.59l3-3 2 2 4-4 5 5V6H5zm14 11.41l-4-4-2 2-2-2-3 3V18h11.41zM15 9a2 2 0 100-4 2 2 0 000 4z"/>
+    </svg>
+</button>
+
+
+    <button id="openInTelegramButton" disabled aria-disabled="true" aria-label="Open in Telegram">
                     <svg id="telegram-icon" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
                         <path stroke="currentColor" stroke-width="12" d="M23.073 88.132s65.458-26.782 88.16-36.212c8.702-3.772 38.215-15.843 38.215-15.843s13.621-5.28 12.486 7.544c-.379 5.281-3.406 23.764-6.433 43.756-4.54 28.291-9.459 59.221-9.459 59.221s-.756 8.676-7.188 10.185c-6.433 1.509-17.027-5.281-18.919-6.79-1.513-1.132-28.377-18.106-38.214-26.404-2.649-2.263-5.676-6.79.378-12.071 13.621-12.447 29.891-27.913 39.728-37.72 4.54-4.527 9.081-15.089-9.837-2.264-26.864 18.483-53.35 35.835-53.35 35.835s-6.053 3.772-17.404.377c-11.351-3.395-24.594-7.921-24.594-7.921s-9.08-5.659 6.433-11.693Z"/>
                     </svg>
@@ -1205,22 +1228,25 @@
          stopContinuousProgress(); 
     }
 
-    function resetUI() {
+function resetUI() {
         const inputElement = document.getElementById('nftLink');
         const statusDiv = document.getElementById('status');
         const tgButton = document.getElementById('openInTelegramButton'); 
-        
+        // NEW: Image Button
+        const imgButton = document.getElementById('downloadImageButton');
+
         document.getElementById('clearInputButton').classList.remove('active');
-        stopContinuousProgress(0); 
-        inputElement.classList.remove('shake'); 
+        // ... (other resets) ...
 
         if (inputElement.getAttribute('data-valid') !== 'false') {
             document.getElementById('convertButton').style.display = 'block';
-            document.getElementById('downloadJsonButton').style.display = 'none';
-            document.getElementById('optimizeButton').style.display = 'none';
+            // ... (other displays) ...
             
             tgButton.disabled = true;
             tgButton.setAttribute('aria-disabled', 'true');
+            // NEW: Disable Image Button
+            imgButton.disabled = true;
+            imgButton.setAttribute('aria-disabled', 'true');
             fullGiftLink = null; 
 
             statusDiv.innerHTML = '';
@@ -1543,6 +1569,49 @@
             window.open(fullGiftLink, '_blank');
         }
     }
+function downloadNFTImage() {
+    if (!currentNftId) return;
+
+    // Construct the image URL based on the Fragment NFT ID structure
+    const imageUrl = `https://nft.fragment.com/gift/${currentNftId}.medium.jpg`;
+
+    // 1. Show loading state
+    const imgButton = document.getElementById('downloadImageButton');
+    imgButton.classList.add('loading');
+    imgButton.disabled = true;
+    showFinalStatus('loading', `Downloading image...`);
+
+    // 2. Fetch the image data as a Blob
+    fetch(imageUrl)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.blob();
+        })
+        .then(blob => {
+            // 3. Create a local download link (bypassing CORS issues)
+            const tempUrl = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            
+            downloadLink.href = tempUrl;
+            downloadLink.download = `${currentNftId}.medium.jpg`;
+            
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(tempUrl);
+
+            // 4. Cleanup and feedback
+            imgButton.classList.remove('loading');
+            imgButton.disabled = false;
+            animateDownloadSuccess('downloadImageButton');
+            showFinalStatus('success', `Downloaded ${currentNftId}.medium.jpg.`);
+            
+            logConversionAttempt(currentNftId, null, 'IMAGE_DOWNLOAD', 'Thumbnail image downloaded.');
+        })
+        .catch(error => {
+            // ... (Error handling) ...
+        });
+}
 
     async function handleAutoLoad() {
         const inputElement = document.getElementById('nftLink');
@@ -1563,15 +1632,24 @@
         
         fullGiftLink = nftLinkFull; 
 
-        if (newNftId === lastLoadedNftId) {
-            document.getElementById('convertButton').disabled = false;
-            document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
-            document.getElementById('downloadJsonButton').style.display = 'block';
-            
-            tgButton.disabled = false; 
-            tgButton.setAttribute('aria-disabled', 'false');
-            return;
-        }
+// NEW: Image Button
+const imgButton = document.getElementById('downloadImageButton');
+
+if (newNftId === lastLoadedNftId) {
+    document.getElementById('convertButton').disabled = false;
+    document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
+    document.getElementById('downloadJsonButton').style.display = 'block';
+    
+    tgButton.disabled = false; 
+    tgButton.setAttribute('aria-disabled', 'false');
+    
+    // ⭐ CONFIRM THIS IS PRESENT ⭐
+    imgButton.disabled = false; 
+    imgButton.setAttribute('aria-disabled', 'false'); 
+    
+    return;
+}
+
 
         if (fetchAbortController) fetchAbortController.abort();
         fetchAbortController = new AbortController();
@@ -1602,7 +1680,7 @@
 
             showGiftDetails(giftDetails, giftDetails.isError);
 
-            if (lottieData) {
+             if (lottieData) {
                 renderLottiePreview(lottieData);
                 lastLoadedNftId = currentNftId;
                 showFinalStatus('success', `Data loaded. Ready to convert.`);
@@ -1612,6 +1690,10 @@
                 
                 tgButton.disabled = false; 
                 tgButton.setAttribute('aria-disabled', 'false');
+                
+                // ⭐ ADD THESE TWO LINES ⭐
+                document.getElementById('downloadImageButton').disabled = false; 
+                document.getElementById('downloadImageButton').setAttribute('aria-disabled', 'false');
             } else {
                 lastLoadedNftId = null;
                 document.getElementById('convertButton').disabled = true;
@@ -1959,7 +2041,7 @@
 
 
     // Initialization 
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('nftLink');
         
         // Setup Firebase
@@ -1971,6 +2053,9 @@
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.getElementById('clearInputButton').addEventListener('click', clearInput);
         document.getElementById('openInTelegramButton').addEventListener('click', openGiftLinkInTelegram);
+        
+        // --- ADD THIS LINE TO FIX THE ISSUE ---
+        document.getElementById('downloadImageButton').addEventListener('click', downloadNFTImage); 
 
         const inputHandler = () => { validateInput(); handleAutoLoad(); };
         input.addEventListener('paste', () => setTimeout(inputHandler, 50));
