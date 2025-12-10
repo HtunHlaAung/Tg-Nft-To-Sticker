@@ -1,2131 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MagicMall NFT Converter</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-    
-   <style>
-    /* CSS is unchanged */
-    /* ... (Your original CSS) ... */
-    /* CSS VARIABLES */
-    :root {
-        /* Light Mode */
-        --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.8);
-        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        
-        --accent-primary: #3b82f6;
-        --accent-glow: rgba(59, 130, 246, 0.4);
-        --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        
-        --input-bg: rgba(255, 255, 255, 0.9);
-        --input-border: #e2e8f0;
-        
-        --success: #10b981;
-        --error: #ef4444;
-        --particle-color: rgba(30, 41, 59, 0.1); 
-        --tg-card-bg: rgba(255,255,255,0.8);
-        
-        /* ADAPTIVE ICON COLOR - DARK for Light Mode */
-        --icon-fill: #1e293b;
-        
-        /* CSS Spinner Variables */
-        --spinner-size: 30px;
-        --spinner-border: 4px;
-        
-        /* History Colors */
-        --log-bg: rgba(0, 0, 0, 0.05);
-        --log-border: rgba(0, 0, 0, 0.1);
-        --log-success: #10b981;
-        --log-warning: #fbbf24;
-        --log-error: #ef4444;
-    }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Magic Mall Lottie Editor</title>
+  <meta name="theme-color" content="#eaf3ff">
 
-    .dark-mode {
-        /* Dark Mode */
-        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-        --glass-bg: rgba(15, 23, 42, 0.6);
-        --glass-border: rgba(255, 255, 255, 0.1);
-        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
-        
-        --accent-primary: #60a5fa;
-        --accent-glow: rgba(96, 165, 250, 0.4);
-        --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        
-        --input-bg: rgba(30, 41, 59, 0.6);
-        --input-border: rgba(255, 255, 255, 0.1);
-        
-        --success: #34d399;
-        --error: #f87171;
-        --particle-color: rgba(255, 255, 255, 0.05); 
-        --tg-card-bg: rgba(30, 41, 59, 0.4);
-        
-        /* ADAPTIVE ICON COLOR - LIGHT for Dark Mode */
-        --icon-fill: #f8fafc;
-        
-        /* History Colors */
-        --log-bg: rgba(255, 255, 255, 0.05);
-        --log-border: rgba(255, 255, 255, 0.1);
-    }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
-    /* GLOBAL STYLES */
-    body {
-        font-family: 'Inter', sans-serif;
-        background: var(--bg-gradient);
-        background-attachment: fixed;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start; 
-        padding-top: 80px; 
-        padding-bottom: 50px;
-        margin: 0;
-        color: var(--text-primary);
-        transition: background-color 0.5s ease, color 0.5s ease;
-        box-sizing: border-box;
-        perspective: 1000px;
-    }
-
-    /* CONTAINER & GLASS EFFECTS */
-    .container {
-        position: relative;
-        width: 100%;
-        max-width: 460px;
-        background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        box-shadow: var(--glass-shadow);
-        padding: 40px;
-        box-sizing: border-box;
-        z-index: 10;
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        transform-style: preserve-3d;
-    }
-    
-    .container:hover {
-        transform: rotateX(1deg) rotateY(-1deg) scale(1.01);
-        box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.2);
-    }
-
-    h1 {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin: 0 0 10px 0;
-        color: var(--text-primary);
-        text-align: center;
-        letter-spacing: -0.02em;
-    }
-
-    .description {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        text-align: center;
-        margin-bottom: 25px;
-        line-height: 1.5;
-    }
-    
-    .description code {
-        background: rgba(0,0,0,0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: monospace;
-        font-size: 0.85em;
-    }
-    .dark-mode .description code { background: rgba(255,255,255,0.1); }
-
-
-    /* PREVIEW AREA */
-    #lottie-preview {
-        width: 100%;
-        padding-bottom: 100%; 
-        background: var(--input-bg);
-        border-radius: 16px;
-        margin-bottom: 24px;
-        position: relative;
-        overflow: hidden;
-        border: 1px dashed var(--input-border);
-        transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
-        transform: rotateY(0deg); 
-        transform-origin: center center;
-    }
-    
-    #lottie-preview.active {
-        border: 1px solid var(--accent-primary);
-        box-shadow: 0 0 20px var(--accent-glow);
-    }
-    
-    /* NEW: Flip class added on successful load */
-    #lottie-preview.flip {
-        transform: rotateY(360deg);
-    }
-
-    .preview-placeholder {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        text-align: center;
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        padding: 20px;
-        display: flex; 
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-    
-    #lottie-preview svg {
-        position: absolute;
-        top: 0; left: 0; width: 100% !important; height: 100% !important;
-    }
-
-    
-    /* CSS Spinner Styling */
-    .css-spinner {
-        display: none;
-        width: var(--spinner-size);
-        height: var(--spinner-size);
-        border: var(--spinner-border) solid var(--text-secondary);
-        border-top-color: var(--accent-primary);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 5px;
-    }
-
-    .preview-placeholder.loading .css-spinner {
-        display: block;
-    }
-
-    /* INPUT GROUP & VALIDATION */
-    .input-group {
-        position: relative;
-        margin-bottom: 20px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
-
-    input[type="text"] {
-        width: 100%;
-        padding: 16px 80px 16px 16px; 
-        background: var(--input-bg);
-        border: 1px solid var(--input-border);
-        border-radius: 12px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        font-family: 'Inter', sans-serif;
-        outline: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-sizing: border-box;
-        z-index: 1; 
-    }
-
-    /* Input Focus Lighting */
-    input[type="text"]:focus {
-        border-color: var(--accent-primary);
-        box-shadow: 0 0 0 3px var(--accent-glow), 0 0 15px var(--accent-glow) inset;
-    }
-    
-    input[data-valid="true"] { border-color: var(--success); }
-    input[data-valid="false"] { border-color: var(--error); }
-
-    /* Clear Button */
-    #clearInputButton {
-        position: absolute;
-        right: 12px; 
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--input-border);
-        border: none;
-        color: var(--text-secondary);
-        font-size: 14px;
-        cursor: pointer;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none; 
-        transition: all 0.2s ease;
-        z-index: 10;
-        padding: 0;
-        line-height: 1;
-    }
-    
-    #clearInputButton:hover {
-        background: var(--text-secondary);
-        color: white;
-    }
-    
-    #clearInputButton.active {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    
-    /* Validation Icon (Check/X) */
-    .validation-icon {
-        position: absolute;
-        right: 44px; 
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.1rem;
-        opacity: 0;
-        transition: opacity 0.3s;
-        z-index: 5;
-        pointer-events: none;
-        will-change: transform;
-    }
-    
-    /* Status Bar Icon Animation */
-    .validation-icon.animated {
-        animation: iconPop 0.3s ease-out;
-    }
-
-    /* GIFT DETAILS & BUTTONS */
-    #giftDetails {
-        background: var(--tg-card-bg);
-        border-radius: 12px;
-        padding: 0;
-        margin-bottom: 20px;
-        border: 1px solid var(--glass-border);
-        overflow: hidden;
-        /* ACCORDION SETUP: Max-height controls the slide down animation */
-        max-height: 0;
-        transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-        display: block; 
-    }
-
-    /* Class to open the accordion, triggering the transition */
-    #giftDetails.open {
-        max-height: 500px; 
-        padding: 16px 0; 
-    }
-    
-    .detail-line {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 16px; 
-        font-size: 0.95rem;
-        border-bottom: 1px solid rgba(128,128,128,0.1);
-        color: var(--text-primary);
-        align-items: flex-start;
-    }
-    .detail-line:last-child { border-bottom: none; }
-    
-    .detail-line strong {
-        color: var(--text-secondary);
-        font-weight: 500;
-        font-size: 0.9em;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    
-    .detail-value {
-        text-align: right;
-        font-weight: 600;
-        max-width: 60%;
-        word-wrap: break-word;
-    }
-    
-    .percentage-mark {
-        background: var(--accent-gradient);
-        color: white;
-        font-size: 0.75em;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-left: 6px;
-        font-weight: 700;
-        vertical-align: middle;
-    }
-
-    .action-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-
-    button {
-        font-family: 'Space Grotesk', sans-serif;
-        background: var(--accent-gradient);
-        color: white;
-        border: none;
-        padding: 16px;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        width: 100%;
-    }
-
-    button:hover:not(:disabled):not(.loading) {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px var(--accent-glow), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        filter: brightness(1.1);
-        animation: glowPulse 1.5s infinite ease-in-out; 
-    }
-
-    button:active:not(:disabled) {
-        transform: translateY(0);
-        animation: none;
-    }
-
-    button:disabled {
-        background: var(--text-secondary);
-        opacity: 0.3;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-    
-    /* NEW: Secondary Actions Container */
-    .secondary-actions {
-        display: flex;
-        /* NEW: Changed to space-between to clearly separate the main button from the secondary ones */
-        justify-content: space-between; 
-        margin-bottom: 0px; 
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        /* New: Add a small gap between buttons */
-        gap: 12px;
-    }
-
-    /* NEW: Consolidated styling for all square action buttons */
-    #openInTelegramButton, #downloadImageButton { 
-        width: 50px; 
-        height: 50px; 
-        padding: 0;
-        border-radius: 12px;
-        font-size: 0;
-        color: var(--icon-fill); 
-        background: var(--glass-bg); 
-        border: 1px solid var(--glass-border); 
-        box-shadow: var(--glass-shadow);
-        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0; /* Important: prevents shrinking */
-    }
-
-    /* General style for the SVG icons inside these buttons */
-    #openInTelegramButton svg, #downloadImageButton svg {
-        width: 24px;
-        height: 24px;
-        transition: all 0.3s ease;
-        fill: currentColor;
-    }
-    
-    /* NEW: Download Icon specific color and hover */
-    #downloadImageButton:hover:not(:disabled) {
-        /* Use a light-blue/accent color for download hover */
-        color: var(--accent-primary); 
-        transform: translateY(-2px) scale(1.05);
-        background: rgba(59, 130, 246, 0.1); 
-        border-color: var(--accent-primary);
-        box-shadow: 0 4px 10px var(--accent-glow);
-        animation: none;
-    }
-    
-    /* Open In Telegram Button (retained specific hover color) */
-    #openInTelegramButton:hover:not(:disabled) {
-        /* Hover uses Telegram's signature blue for emphasis */
-        color: #0088cc; 
-        transform: translateY(-2px) scale(1.05);
-        background: rgba(0, 136, 204, 0.1); 
-        border-color: #0088cc;
-        box-shadow: 0 4px 10px rgba(0, 136, 204, 0.3);
-        animation: none;
-    }
-
-    /* Disabled State for all secondary buttons */
-    #openInTelegramButton:disabled, #downloadImageButton:disabled {
-        opacity: 0.3;
-        background: var(--glass-bg);
-        border-color: var(--glass-border);
-        cursor: not-allowed;
-        box-shadow: var(--glass-shadow);
-        transform: none;
-    }
-
-    #downloadJsonButton, #optimizeButton {
-        background: transparent;
-        border: 2px solid var(--input-border);
-        color: var(--text-primary);
-        box-shadow: none;
-    }
-    #downloadJsonButton:hover, #optimizeButton:hover {
-        border-color: var(--accent-primary);
-        background: rgba(59, 130, 246, 0.05);
-        color: var(--accent-primary);
-    }
-
-    button.loading::after {
-        content: "";
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        top: calc(50% - 10px);
-        left: calc(50% - 10px);
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-    button.loading { color: transparent; pointer-events: none; }
-
-
-    /* STATUS AREA */
-    #status-area { 
-        margin-top: 25px; 
-        position: relative; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    #status {
-        width: 100%;
-        padding: 16px;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        transition: all 0.3s ease;
-        opacity: 0;
-        transform: translateY(10px);
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    #status.active { opacity: 1; transform: translateY(0); }
-    
-    #status.loading {
-        background: rgba(59, 130, 246, 0.1);
-        color: var(--accent-primary);
-        border: 1px solid var(--accent-primary);
-    }
-    
-    /* Dedicated Error Card Styling */
-    #status.error {
-        background: rgba(239, 68, 68, 0.2); 
-        color: var(--error);
-        border: 2px solid var(--error); 
-        font-weight: 600; 
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); 
-        padding: 20px; 
-    }
-    
-    .dark-mode #status.error {
-        background: rgba(248, 113, 113, 0.15); 
-        box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
-    }
-
-    .error-action-hint {
-        font-weight: 400; 
-        font-size: 0.9em;
-        opacity: 0.8;
-        margin-top: 5px;
-    }
-    
-    /* Update Success Status for consistency */
-    #status.success {
-        background: rgba(16, 185, 129, 0.15);
-        color: var(--success);
-        border: 2px solid var(--success);
-        font-weight: 600;
-        padding: 20px;
-    }
-
-    /* --- PROGRESS BAR STYLING (Cooler Design) --- */
-    .progress-bar {
-        width: 100%;
-        height: 10px; /* Thicker bar */
-        background: var(--input-border); /* Subtle background base */
-        border-radius: 5px;
-        overflow: hidden;
-        margin-top: 8px;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2); /* Inset shadow for depth */
-    }
-    .dark-mode .progress-bar { background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05); }
-    
-    .progress-bar-fill {
-        height: 100%;
-        width: 0%;
-        background: var(--accent-gradient);
-        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation curve */
-        border-radius: 5px;
-        position: relative;
-        overflow: hidden;
-        
-        /* Add a subtle glow/shadow to the bar itself */
-        box-shadow: 0 0 10px var(--accent-glow);
-    }
-    
-    /* Neon Scanning Animation Overlay */
-    #status.loading .progress-bar-fill:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 50%; /* Stripe width */
-        height: 100%;
-        background: linear-gradient(
-            to right, 
-            rgba(255, 255, 255, 0) 0%, 
-            rgba(255, 255, 255, 0.4) 50%, 
-            rgba(255, 255, 255, 0) 100%
-        );
-        transform: translateX(-100%);
-        animation: neonScan 1.5s infinite linear;
-        mix-blend-mode: screen; /* Makes the white stripe look like a moving light */
-    }
-
-    /* Stop animation when done/error */
-    #status.success .progress-bar-fill:before, #status.error .progress-bar-fill:before {
-        animation: none;
-        content: none;
-    }
-
-    
-    /* Only animate the stripe when loading */
-    #status.loading .progress-bar-fill {
-        animation: progressStripe 1s linear infinite;
-    }
-    /* Stop stripe animation when done/error */
-    #status.success .progress-bar-fill, #status.error .progress-bar-fill {
-        background-image: none;
-        animation: none;
-    }
-
-    /* THEME TOGGLE */
-    .theme-toggle {
-        position: fixed; 
-        top: 20px; right: 20px;
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        cursor: pointer;
-        z-index: 100;
-        width: 48px; height: 48px;
-        padding: 10px; border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .theme-toggle:hover { 
-        transform: translateY(-2px);
-        background: var(--input-bg);
-    }
-    
-    .theme-toggle svg {
-        width: 100%; height: 100%;
-        fill: var(--icon-fill);
-        transition: transform 0.5s ease;
-    }
-    .dark-mode .theme-toggle svg {
-        transform: rotate(90deg);
-    }
-
-    /* --- New/Consolidated Transitions for Smooth Theme Change --- */
-    .container, .theme-toggle, input[type="text"], #downloadJsonButton, #optimizeButton, .secondary-actions, #openInTelegramButton {
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-
-    /* ANIMATIONS */
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* PROGRESS BAR SCANNING KEYFRAME */
-    @keyframes neonScan {
-        0% { transform: translateX(-100%) skewX(-30deg); }
-        100% { transform: translateX(200%) skewX(-30deg); }
-    }
-
-    @keyframes iconPop {
-        0% { transform: translateY(-50%) scale(0.5); opacity: 0; }
-        50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
-        100% { transform: translateY(-50%) scale(1); opacity: 1; }
-    }
-
-    /* Shake Animation for Invalid Input */
-    @keyframes inputShake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-5px); }
-        40% { transform: translateX(5px); }
-        60% { transform: translateX(-5px); }
-        80% { transform: translateX(5px); }
-        100% { transform: translateX(0); }
-    }
-
-    /* Apply shake to input when it has the 'shake' class */
-    #nftLink.shake {
-        animation: inputShake 0.5s ease-out;
-        border-color: var(--error) !important;
-        box-shadow: 0 0 10px var(--error);
-    }
-
-    /* Success Lottie Position */
-    #success-lottie-container {
-        position: absolute;
-        top: -50px; left: 50%; transform: translateX(-50%);
-        width: 80px; height: 80px;
-        z-index: 30; opacity: 0; pointer-events: none;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-        transition: opacity 0.3s;
-    }
-    #success-lottie-container.show { opacity: 1; }
-
-    /* Canvas */
-    #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-    
-/* --- 1. CORE HISTORY SECTION STYLES (GLASS PANEL) --- */
-#history-section {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid transparent; 
-    max-width: 100%; 
-    overflow: hidden; 
-}
-
-#history-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--text-primary);
-}
-
-
-/* --- 2. HORIZONTAL LIST CONTAINER (GLASS PANEL) --- */
-#history-list {
-    /* Main container is the "Panel" */
-    background: var(--tg-card-bg); 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px; /* Soft rounding on the panel */
-    
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 12px; 
-    padding: 15px 15px; /* Internal padding */
-    list-style: none; 
-    margin: 0;
-
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
-}
-
-/* Custom, very subtle scrollbar */
-#history-list::-webkit-scrollbar {
-    height: 4px;
-}
-#history-list::-webkit-scrollbar-thumb {
-    background-color: var(--text-secondary);
-    border-radius: 2px;
-    opacity: 0.3;
-}
-
-
-/* --- 3. INDIVIDUAL LOG ITEM STYLES (SQUARE ITEM) --- */
-.log-item {
-    flex-shrink: 0; 
-    width: 70px; /* Item width */
-    height: 70px; /* Item height */
-    cursor: pointer; 
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease;
-    /* Changed from 50% to square corners */
-    border-radius: 12px; 
-    background: transparent;
-    padding: 5px; /* Add internal padding */
-}
-
-/* Floating effect on hover */
-.log-item:hover {
-    transform: translateY(-4px) scale(1.1); 
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* --- 4. MINI PREVIEW CONTAINER (THE LOTTIE SQUARE) --- */
-.log-mini-preview {
-    width: 100%; 
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-
-    background: var(--input-bg); 
-    
-    /* Changed from 50% to square corners to match log-item */
-    border-radius: 8px; 
-    border: 2px solid var(--input-border);
-    
-    transition: all 0.3s ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* --- 5. STATUS INDICATOR DOT REMOVED --- */
-/* The entire .log-item::after block has been removed as requested. */
-
-
-/* Force the embedded SVG (the Lottie canvas) to fill its parent */
-.log-mini-preview svg {
-    width: 100% !important; 
-    height: 100% !important;
-    display: block;
-}
-
-/* Placeholder for when the list is empty */
-#history-list .log-placeholder {
-    width: 100%;
-    text-align: center;
-    line-height: 70px;
-    flex-shrink: 0;
-    min-width: 100%;
-    color: var(--text-secondary);
-}
-
-</style>
+  <link rel="stylesheet" href="styles.css">
+  
 </head>
 <body>
+  
+  <div id="dropOverlay">
+    <i class="ri-drag-drop-line" style="font-size: 64px; margin-bottom: 16px;"></i>
+    ဒီနေရာမှာFileထည့်ပါ
+  </div>
 
-    <canvas id="particle-canvas"></canvas>
+  <header>
+    <div class="brand">
+      <img src="logo.svg" class="app-logo" alt="Logo">
+      Magic Mall
+      <span>Editor</span>
+    </div>
+    <div class="actions">
+      <button id="telegramBtn" class="primary animated-btn" title="Join Telegram Channel">
+        <i class="ri-telegram-fill"></i> Channel
+      </button>
+      
+      <label class="btn-label primary">
+        <i class="ri-upload-cloud-line"></i> Open
+        <input id="fileInput" type="file" accept=".json,.tgs" />
+      </label>
+      <button id="undoBtn" class="ghost"><i class="ri-arrow-go-back-line"></i></button>
+      <button id="redoBtn" class="ghost"><i class="ri-arrow-go-forward-line"></i></button>
+      <button id="settingsBtn" class="ghost" title="Animation Settings"><i class="ri-settings-3-line"></i></button>
+      <button id="tgsScanBtn" class="ghost" title="Check TGS Compatibility">
+        <i class="ri-telegram-line"></i> TGS Scan
+      </button>
+      <button id="exportMenuBtn"><i class="ri-download-2-line"></i> Save</button>
+      <button id="darkToggle"><i class="ri-moon-line"></i></button>
+    </div>
+  </header>
+  
+  <div id="browserWarning" style="background-color: #fff3cd; color: #856404; padding: 10px 20px; text-align: center; border-radius: 8px; margin: 0 12px; font-size: 13px; display: none; border: 1px solid #ffeeba;">
+      ⚠️ သတိပေးချက်!  ဒီ browserမှာ Downloadလုပ်လို့မရပါ။ အပေါ်က (•••) ကိုနှိပ်ပြီး အခြား Browserကနေဖွင့်ပါ။
+  </div>
+  
+  <main>
+    <section class="card preview-section">
+      
+      <div id="loadingIndicator" style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); z-index: 50; display: none; align-items: center; justify-content: center; flex-direction: column;">
+          <div id="loaderAnim" style="width: 100px; height: 100px;"></div>
+          <p style="color: var(--primary); font-weight: 600; margin-top: 10px;">Loading လုပ်နေပါတယ်...</p>
+      </div>
+      <div class="canvas-container">
+        <div id="preview-placeholder" style="color:var(--text-muted);text-align:center; position:absolute;">
+          <i class="ri-image-add-line" style="font-size:32px;opacity:0.5"></i><br>Open a JSON/TGS file
+        </div>
+        <div id="anim"></div>
+      </div>
 
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark and light mode">
-        <span id="themeIconWrapper"></span>
-    </button>
+      <div class="controls-bar">
+        <div class="timeline">
+          <button id="playPauseBtn" class="primary" style="padding:6px 12px"><i class="ri-play-fill"></i></button>
+          <input id="frameSlider" type="range" value="0" min="0" max="100" disabled />
+          <div class="muted" style="width:70px; text-align:right; font-size:11px"> 
+             <span id="frameLabel">0</span> / <span id="totalLabel">0</span> 
+          </div>
+        </div>
+        
+        <div class="filters-row">
+          <div class="filter-pills">
+            <button class="filter-btn active" data-filter="All">All</button>
+            <button class="filter-btn" data-filter="Fill">Fill</button>
+            <button class="filter-btn" data-filter="Stroke">Stroke</button>
+            <button class="filter-btn" data-filter="Gradient Fill">Gradient Fill</button>
+            <button class="filter-btn" data-filter="Gradient Stroke">Gradient Stroke</button>
+          </div>
+          
+          <div style="display:flex; align-items:center; gap:6px; margin-left:4px;">
+            <input id="groupDuplicates" type="checkbox" style="accent-color:var(--primary)">
+            <label for="groupDuplicates" style="font-size:11px; color:var(--text-muted)">Group Colors</label>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="container">
-        <h1>MagicMall NFT Converter</h1>
+    <section class="card editor-section">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('colors')">Colors (<span id="colorStats">0</span>)</button>
+        <button class="tab-btn" onclick="switchTab('themes')">Themes</button>
+        <button class="tab-btn" onclick="switchTab('layers')">Layers</button>
+        <button id="resetColorsBtn" class="danger-btn" style="padding:6px 10px; font-size:12px; margin-left:auto" title="Reset Colors">
+          <i class="ri-refresh-line"></i> Reset
+        </button>
+      </div>
 
-        <p class="description" id="input-description">Convert Telegram NFT Gifts to Stickers.<br>Enter link: <code>t.me/nft/NFT-ID</code></p>
-
-        <div id="lottie-preview">
-            <div class="preview-placeholder">
-                <div id="loadingSpinnerContainer" class="css-spinner"></div>
-                Animation Preview
+      <div id="tab-colors" class="tab-content active">
+        <div id="colors">
+            <div class="color-card" data-color-id="1" data-color-type="single">
+                <input type="color" value="#0b84ff" class="color-picker-input">
+                <input type="text" value="#0B84FF" class="hexInput">
+            </div>
+            <div class="color-card" data-color-id="2" data-color-type="gradient">
+                <div class="color-group-badge"><i class="ri-gradienter-line"></i> GRADIENT</div>
+                <div style="width: 100%; height: 40px; border-radius: 6px; background: linear-gradient(90deg, #ff0000 0%, #00ff00 100%); margin-bottom: 6px; cursor: pointer;"></div>
+                <input type="text" value="GRADIENT" class="hexInput" disabled>
             </div>
         </div>
-
-        <div class="input-group">
-            <input 
-                type="text" 
-                id="nftLink" 
-                placeholder="Paste NFT link here..." 
-                aria-describedby="input-description"
-                aria-required="true"
-                autocomplete="off"
-            >
-            <span class="validation-icon" id="validationIcon"></span>
-            <button id="clearInputButton" aria-label="Clear input">✕</button>
+      </div>
+      
+      <div id="tab-themes" class="tab-content">
+          <button id="saveThemeBtn" class="primary" style="width:100%; margin-bottom:15px;"><i class="ri-save-line"></i>ယခုColorsကိုTheme အနေဖြင့်saveမည်။</button>
+          <div id="themesList">
+              <p style="color:var(--text-muted); font-size:13px; text-align:center;">Saveထားသော Themes မရှိပါ</p>
+          </div>
+      </div>
+      
+      <div id="tab-layers" class="tab-content">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+           <button id="refreshLayers" style="padding:4px 8px;font-size:11px">Refresh</button>
         </div>
-        
-        <div id="giftDetails"></div>
-        
-        <div class="action-buttons">
-            <button id="convertButton" disabled aria-disabled="true">Convert to Sticker</button>
-            
-            <div class="secondary-actions"> 
-   <button id="downloadImageButton" disabled aria-disabled="true" aria-label="Download NFT Image">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-        <path d="M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v8.59l3-3 2 2 4-4 5 5V6H5zm14 11.41l-4-4-2 2-2-2-3 3V18h11.41zM15 9a2 2 0 100-4 2 2 0 000 4z"/>
-    </svg>
-</button>
+        <div id="layerList"></div>
+      </div>
+    </section>
+  </main>
 
+<div id="gradient-editor-modal" class="modal" aria-hidden="true">
+  <div class="modalCard" style="max-width:720px; width:92%; padding:18px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <h3 style="margin:0; font-size:18px;"><i class="ri-gradienter-line"></i> Gradient Editor</h3>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="gradientReverseBtn" class="ghost" title="Reverse gradient"><i class="ri-swap-horizontal-line"></i></button>
+        <button id="gradientResetBtn" class="ghost" title="Reset"><i class="ri-refresh-line"></i></button>
+        <button class="modal-close ghost" style="font-size:13px;">Close</button>
+      </div>
+    </div>
 
-    <button id="openInTelegramButton" disabled aria-disabled="true" aria-label="Open in Telegram">
-                    <svg id="telegram-icon" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
-                        <path stroke="currentColor" stroke-width="12" d="M23.073 88.132s65.458-26.782 88.16-36.212c8.702-3.772 38.215-15.843 38.215-15.843s13.621-5.28 12.486 7.544c-.379 5.281-3.406 23.764-6.433 43.756-4.54 28.291-9.459 59.221-9.459 59.221s-.756 8.676-7.188 10.185c-6.433 1.509-17.027-5.281-18.919-6.79-1.513-1.132-28.377-18.106-38.214-26.404-2.649-2.263-5.676-6.79.378-12.071 13.621-12.447 29.891-27.913 39.728-37.72 4.54-4.527 9.081-15.089-9.837-2.264-26.864 18.483-53.35 35.835-53.35 35.835s-6.053 3.772-17.404.377c-11.351-3.395-24.594-7.921-24.594-7.921s-9.08-5.659 6.433-11.693Z"/>
-                    </svg>
-                </button>
+    <div id="gradientEditorContent" style="margin-top:12px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;">
+      <div style="flex:1 1 420px; min-width:280px;">
+        <div id="gradientCanvasWrap" style="padding:12px; border-radius:12px; background:var(--surface); border:1px solid var(--surface-border); box-shadow:var(--shadow);">
+          <div id="gradientBar" style="position:relative; height:56px; border-radius:10px; overflow:hidden; cursor:pointer; user-select:none;">
+            </div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:13px; color:var(--text-muted);">
+            <div>Drag stops to reposition</div>
+            <div id="gradientPositionsLabel">Positions: —</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="addGradientStop" class="primary" style="padding:8px 10px; font-size:13px;"><i class="ri-add-line"></i> Add Stop</button>
+          <button id="applyGradientChanges" class="primary" style="background:var(--primary); border: none; padding:8px 12px;">Apply to Animation</button>
+          <button id="discardGradientChanges" class="ghost modal-close" style="padding:8px 10px; font-size:13px;">Cancel</button>
+        </div>
+      </div>
+
+      <div style="width:300px; min-width:230px;">
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">Stops</div>
+        
+        <div id="gradientStopsList" style="display:flex; flex-direction:column; gap:8px; max-height:360px; overflow:auto; padding-right:6px;">
             </div>
 
-            <button id="downloadJsonButton" style="display: none;">Download JSON 💾</button>
-            <button id="optimizeButton" style="display: none;">Optimize Tool 🛠️</button>
+        <div style="margin-top:12px; border-top:1px dashed var(--surface-border); padding-top:10px; font-size:13px; color:var(--text-muted);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div>Preview Alpha</div>
+            <input id="gradientAlpha" type="range" min="0" max="1" step="0.01" value="1" style="width:120px;">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>Stop Count</div>
+            <div id="stopCountLabel">0</div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div id="status-area">
-            <div id="success-lottie-container"></div>
-            <div id="status" role="alert" aria-live="polite"></div>
-        </div>
-        
-        <div id="history-section">
-            <h3 id="history-title">Conversion History <span id="user-id-display">N/A</span></h3>
-            <ul id="history-list">
-                <li class="log-placeholder">Connecting to database...</li>
-            </ul>
+    <div class="modal-btn-row" style="margin-top:14px;">
+      <button class="ghost modal-close" style="width:100%;">Close</button>
+    </div>
+  </div>
+</div>
+
+  <div id="export-modal" class="modal" aria-hidden="true">
+    <div class="modalCard"></div>
+  </div>
+  
+  <div id="tgs-scan-modal" class="modal" aria-hidden="true">
+    <div class="modalCard">
+        <h3 style="margin-top:0"><i class="ri-telegram-line"></i> Telegram Stickerစစ်ဆေးခြင်း</h3>
+        <p class="muted" style="margin-top:-10px; font-size:13px;">Telegram ၏ sticker လိုအပ်ချက်များနှင့်ကိုက်ညီမှု့ရှိမရှိစစ်ဆေးနေပါတယ်။</p>
+        <div id="tgs-results"></div>
+        <p class="muted" style="font-size:11px; margin-top:15px;">သတိ ပေးချက် Sticker File Size 64 KB ထက်ကြီးမကြီးမစစ်ဆေးနိုင်သောကြောင့် ကိုယ့်ဘာသာကြည့်ပါ☺️။</p>
+        <div class="modal-btn-row">
+            <button class="primary modal-close" style="background:#2AABEE; border:none;">
+                Exportထုတ်မည်
+            </button>
+            <button class="ghost modal-close" style="color:var(--text-muted); border-color:var(--surface-border)">
+                Close
+            </button>
         </div>
     </div>
-<script>
-    // CRITICAL: INSERT YOUR FIREBASE CONFIGURATION HERE
-    // Replace the object below with the exact config you copied from your Firebase project settings.
-    window.__firebase_config = {
-        apiKey: "AIzaSyBkZ8a9q82725NoLzdLqQ0i0VQB1QF9jOQ",
-        authDomain: "magicmall-nft-gift-to-sticker.firebaseapp.com",
-        projectId: "magicmall-nft-gift-to-sticker",
-        storageBucket: "magicmall-nft-gift-to-sticker.firebasestorage.app",
-        messagingSenderId: "988637453904",
-        appId: "1:988637453904:web:13209e8b5b3deb49497b55",
-        measurementId: "G-EN5FBRERWQ"
-    };
-    
-    window.__app_id = 'magicmall-converter'; 
-    window.__initial_auth_token = null; 
-</script> 
-
-<script type="module">
-    // --- FIREBASE IMPORTS ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { 
-        getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, setLogLevel 
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    
-    // SVG Icons 
-    const ICON_MOON = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.1,22c-0.3,0-0.6,0-0.9,0c-5.5-0.5-9.8-5.1-9.8-10.7C1.4,5.8,5.8,1.4,11.3,1.4c0.5,0,0.9,0.3,1.1,0.8c0.1,0.4,0,0.9-0.3,1.3C10.6,4.7,9.8,6.8,9.8,9c0,4.4,3.6,8,8,8c2.2,0,4.3-0.8,5.5-2.2c0.3-0.4,0.8-0.5,1.3-0.3c0.4,0.2,0.8,0.7,0.8,1.2c0,0.1,0,0.3,0,0.4c-0.5,3.3-2.6,6.1-5.6,7.8C17.5,25.3,14.8,22,12.1,22z"/></svg>`;
-    const ICON_SUN = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12,4c0.6,0,1-0.4,1-1V2c0-0.6-0.4-1-1-1s-1,0.4-1,1v1C11,3.6,11.4,4,12,4z M6.3,6.3c0.4-0.4,0.4-1,0-1.4L5.6,4.2c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l0.7,0.7C5.3,6.7,5.9,6.7,6.3,6.3z M17.7,6.3c0.4,0.4,1,0.4,1.4,0l0.7-0.7c0.4-0.4,0.4-1,0-1.4s-1-0.4-1.4,0l-0.7,0.7C17.3,5.3,17.3,5.9,17.7,6.3z M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M2,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2c-0.6,0-1,0.4-1,1S1.4,13,2,13z M21,13h1c0.6,0,1-0.4,1-1s-0.4-1-1-1h-1c-0.6,0-1,0.4-1,1S20.4,13,21,13z M6.3,17.7c-0.4-0.4-1-0.4-1.4,0l-0.7,0.7c-0.4,0.4-0.4,1,0,1.4s1,0.4,1.4,0l0.7-0.7C6.7,18.7,6.7,18.1,6.3,17.7z M17.7,17.7c-0.4-0.4-0.4-1,0,1.4l0.7,0.7c0.4,0.4,1,0.4,1.4,0s0.4-1,0-1.4l-0.7-0.7C18.7,17.3,18.1,17.3,17.7,17.7z M12,20c-0.6,0-1,0.4-1,1v1c0,0.6,0.4,1,1,1s1-0.4,1-1v-1C13,20.4,12.6,20,12,20z"/></svg>`;
-
-    // Global state variables
-    const TELEGRAM_TGS_LIMIT_KB = 64; 
-    const TELEGRAM_TGS_LIMIT_BYTES = TELEGRAM_TGS_LIMIT_KB * 1024;
-    const LINK_REGEX = /t\.me\/nft\/([a-zA-Z0-9_-]+)/;
-    const LOTTIE_FRAGMENT_BASE = 'https://nft.fragment.com/gift/';
-    const CORS_PROXY = 'https://api.allorigins.win/get?url='; 
-
-    let currentNftId = null;
-    let currentLottieAnimation = null;
-    let fetchedLottieJsonText = null;
-    let lastLoadedNftId = null; 
-    let successLottieAnimation = null; 
-    let fetchAbortController = null;
-    let statusMessageTimer = null; 
-    let continuousProgressTimer = null; 
-    let fullGiftLink = null; 
-    
-    // --- FIREBASE STATE VARIABLES ---
-    let db = null;
-    let auth = null;
-    let userId = null;
-    let isAuthReady = false;
-    // Safely retrieve global variables
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    // Access the object directly
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-
-    // Simple Checkmark Lottie Data (for success animation) 
-    const successCheckmarkLottie = {
-        "v": "5.7.4", "fr": 30, "ip": 0, "op": 60, "w": 100, "h": 100, "nm": "Success Checkmark", "ddd": 0, "assets": [],
-        "layers": [{"ddd": 0, "ind": 1, "ty": 4, "nm": "Checkmark", "sr": 1, "ks": {"o": {"a": 0, "k": 100, "ix": 11}, "rp": {"a": 0, "k": 0, "ix": 12}, "s": {"a": 0, "k": [100, 100, 100], "ix": 6}, "p": {"a": 0, "k": [50, 50, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0, 0], "ix": 1}, "r": {"a": 0, "k": 0, "ix": 10}}, "ao": 0, "shapes": [{"ty": "gr", "nm": "Group 1", "it": [{"ty": "sh", "nm": "Path 1", "ind": 0, "ks": {"a": 0, "k": {"i": [[-1.2, 0], [0, -1.2], [1.2, 0]], "o": [[0, -1.2], [1.2, 0], [0, 1.2]], "v": [[28.5, 52.8], [42.6, 66.8], [71.5, 37.9]]}, "ix": 2}, "mn": "ADBEVectorShape", "hd": false}, {"ty": "st", "c": {"a": 0, "k": [0, 0.8, 0.4, 1], "ix": 3}, "o": {"a": 0, "k": 100, "ix": 4}, "w": {"a": 0, "k": 10, "ix": 5}, "lc": 1, "lj": 1, "ml": 4, "mn": "ADBEVectorGraphicStroke", "hd": false}, {"ty": "gr", "nm": "Group 2", "it": [], "mn": "ADBEVectorGroup", "hd": false}], "mn": "ADBEVectorGroup", "hd": false}], "bm": 0}]
-    };
-
-    /* ================= FIREBASE LOGGING FUNCTIONS ================= */
-    
-    function getConversionLogCollectionRef() {
-        if (!db || !userId) return null;
-        // Path: /artifacts/{appId}/users/{userId}/conversion_logs
-        return collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
-    }
-
-    async function logConversionAttempt(nftId, sizeKB, status, message) {
-        if (!isAuthReady || !db || !userId) {
-            console.warn("Firestore not ready or user not authenticated for logging.");
-            return;
-        }
-        const timestamp = serverTimestamp();
-        const logData = {
-            nftId,
-            sizeKB: sizeKB ? parseFloat(sizeKB) : null,
-            status, 
-            message,
-            timestamp: timestamp,
-            userId,
-            appId,
-        };
-        
-        // 1. Write to PRIVATE History
-        const privateLogsRef = collection(db, `artifacts/${appId}/users/${userId}/conversion_logs`);
-        try {
-            await addDoc(privateLogsRef, logData);
-        } catch (e) {
-            console.error("Error adding to private log:", e);
-        }
-
-        // 2. Write to PUBLIC Feed (FIXED: Now includes JSON_DOWNLOAD)
-        if (status === 'SUCCESS' || status === 'JSON_DOWNLOAD') { 
-            const publicFeedRef = collection(db, `public_feeds/${appId}/latest_conversions`);
-            try {
-                await addDoc(publicFeedRef, {
-                    nftId,
-                    sizeKB: logData.sizeKB,
-                    timestamp: timestamp,
-                });
-            } catch (e) {
-                console.error("Error adding to public feed:", e);
-            }
-        }
-    }
-
-    
-  // --- Replace your existing renderConversionHistory function ---
-    function renderConversionHistory(logs) {
-        const list = document.getElementById('history-list');
-        
-        if (logs.length === 0) {
-            // Change the placeholder text to fit the new look
-            list.innerHTML = `<li class="log-placeholder" style="grid-column: 1 / -1;">No recent activity.</li>`; 
-            return;
-        }
-
-        const sortedLogs = logs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-        list.innerHTML = ''; // Clear the list before rendering new items
-
-        sortedLogs.forEach((log, index) => {
-            // Status class is still useful for color-coding the border
-            const statusClass = log.status === 'SUCCESS' ? 'log-success' : 
-                                log.status === 'JSON_DOWNLOAD' ? 'log-warning' : // Added status for JSON download
-                                log.status === 'SIZE_EXCEEDED' ? 'log-warning' : 'log-error';
-            
-            const nftId = log.nftId;
-
-            const listItem = document.createElement('li');
-            listItem.className = `log-item ${statusClass}`;
-            listItem.dataset.nftId = nftId; 
-            
-            listItem.innerHTML = `
-                <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.status}"></div>
-            `;
-            
-            list.appendChild(listItem);
-
-            // Load the Lottie animation into the mini-preview container
-            const miniContainer = document.getElementById(`lottie-mini-${index}`);
-            if (miniContainer && nftId) {
-                lottie.loadAnimation({
-                    container: miniContainer,
-                    renderer: 'svg',
-                    loop: true,
-                    autoplay: true,
-                    path: LOTTIE_FRAGMENT_BASE + `${nftId}.lottie.json`,
-                    rendererSettings: {
-                        clearCanvas: true,
-                    }
-                });
-            }
-        });
-    }
-
-
-     // --- MODIFIED setupConversionLogListener ---
-    function setupConversionLogListener() {
-        if (!isAuthReady || !db) return; 
-
-        // Query for the LATEST 10 logs, ordered by timestamp
-        // NEW PUBLIC PATH: public_feeds/{appId}/latest_conversions
-        const q = query(
-            collection(db, `public_feeds/${appId}/latest_conversions`), 
-            orderBy('timestamp', 'desc'), 
-            limit(10) // <-- MAX LIMIT SET TO 10
-        );
-
-        const historyList = document.getElementById('history-list');
-
-        onSnapshot(q, (snapshot) => {
-            const logs = [];
-            snapshot.forEach((doc) => {
-                logs.push({ id: doc.id, ...doc.data() });
-            });
-            // Render the public feed
-            renderConversionHistory(logs); 
-            
-            // Update the title to reflect a public feed
-            document.getElementById('history-title').textContent = 'Public Conversion Feed (Live)';
-            document.getElementById('user-id-display').style.display = 'none'; // Hide private user ID
-            
-        }, (error) => {
-            console.error("Error listening to public conversion feed:", error);
-            historyList.innerHTML = `<li class="log-placeholder log-error" style="grid-column: 1 / -1;">
-                Failed to load public history. (Check Firebase Rules)
-            </li>`;
-        });
-    }
-
-
-    /* ================= CORE UI DISPLAY FUNCTIONS ================= */
-
-    function showGiftDetails(details, isError = false) { 
-        // ... (existing showGiftDetails function)
-        const detailBox = document.getElementById("giftDetails");
-        detailBox.innerHTML = '';
-        
-        const { giftId, model, backdrop, symbol, owner, quantity, giftedBy, giftedTo, giftedDate } = details;
-
-        const hasMetadata = Object.values(details).some(value => {
-            if (typeof value === 'object' && value !== null) {
-                return value.name && value.name !== "Unknown" && value.name !== "-";
-            }
-            return value && value !== "Unknown" && value !== "-";
-        });
-                    
-        if (isError || !hasMetadata) {
-            detailBox.classList.remove("open");
-            return;
-        }
-
-        let htmlContent = '';
-
-        const createDetailLine = (label, value) => {
-            let displayValue = '';
-            let actualValue = '';
-
-            if (typeof value === 'object' && value !== null && value.name) {
-                actualValue = value.name;
-                if (value.percent) {
-                    displayValue = `${actualValue} <span class="percentage-mark">${value.percent}</span>`;
-                } else {
-                    displayValue = actualValue;
-                }
-            } else {
-                actualValue = typeof value === 'string' ? value : 'Unknown';
-                displayValue = actualValue;
-            }
-
-            if (actualValue && actualValue !== 'Unknown' && actualValue !== '-') {
-                return `<div class="detail-line">
-                            <strong>${label}</strong>
-                            <div class="detail-value">${displayValue}</div>
-                        </div>`;
-            }
-            return '';
-        };
-
-        let formattedGiftId = giftId;
-        if (giftId && giftId !== 'Unknown' && giftId !== '-') {
-            const idMatch = details.nftLinkFull ? details.nftLinkFull.match(/-(\d+)$/) : null;
-            let numericId = idMatch ? idMatch[1] : '';
-            if (numericId) formattedGiftId = `${giftId} #${numericId}`;
-            
-            const modelName = typeof model === 'object' && model.name ? model.name : (typeof model === 'string' ? model : '');
-            const modelMatch = modelName.split(' ')[0];
-            if (!modelName || modelName === 'Unknown' || giftId.toLowerCase() !== modelMatch.toLowerCase()) {
-                htmlContent += createDetailLine('Gift ID', formattedGiftId);
-            }
-        }
-
-        htmlContent += createDetailLine('Model', model);
-        htmlContent += createDetailLine('Backdrop', backdrop);
-        htmlContent += createDetailLine('Symbol', symbol);
-        
-        htmlContent += createDetailLine('Owner', owner);
-
-        let formattedQuantity = quantity;
-        if (quantity && quantity !== 'Unknown' && quantity !== '-') {
-            formattedQuantity = quantity.replace(/[^0-9\/\s,]/g, '').trim(); 
-            formattedQuantity = formattedQuantity.replace(/\s+/g, ''); 
-            formattedQuantity = formattedQuantity.split('/').map(part => {
-                let numStr = part.replace(/,/g, '').trim(); 
-                return numStr.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'); 
-            }).join(' / '); 
-        }
-        htmlContent += createDetailLine('Quantity', formattedQuantity);
-
-        let giftNote = null;
-        if (giftedBy && giftedBy !== 'Unknown' && giftedBy !== '-') {
-            giftNote = (giftedTo && giftedTo !== 'Unknown') ? `by ${giftedBy} to ${giftedTo}` : `by ${giftedBy}`;
-            if (giftedDate && giftedDate !== 'Unknown') giftNote += ` on ${giftedDate}`;
-        } else if (giftedDate && giftedDate !== 'Unknown') {
-             giftNote = `on ${giftedDate}`;
-        }
-        
-        if (giftNote) {
-            htmlContent += `<div class="detail-line">
-                                <strong>Gifted</strong>
-                                <div class="detail-value" style="font-size:0.85em; opacity:0.8;">${giftNote}</div> 
-                            </div>`;
-        }
-
-        detailBox.innerHTML = htmlContent;
-        detailBox.classList.add("open");
-    }
-
-    function resetGiftDetails() {
-        const detailBox = document.getElementById("giftDetails");
-        detailBox.innerHTML = ''; 
-        detailBox.classList.remove("open");
-    }
-
-    function resetPreview() {
-        const previewBox = document.getElementById('lottie-preview');
-        if (currentLottieAnimation) {
-            currentLottieAnimation.destroy();
-            currentLottieAnimation = null;
-        }
-        previewBox.innerHTML = `<div class="preview-placeholder">
-            <div id="loadingSpinnerContainer" class="css-spinner"></div>
-            Animation Preview
-        </div>`;
-        previewBox.classList.remove('active', 'flip');
-        document.getElementById('loadingSpinnerContainer').style.display = 'none';
-    }
-
-    function startLoadingAnimations() {
-        const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
-        const spinner = document.getElementById('loadingSpinnerContainer');
-
-        resetPreview(); 
-        if (previewPlaceholder) {
-            previewPlaceholder.classList.add('loading');
-        }
-        if (spinner) {
-            spinner.style.display = 'block';
-        }
-    }
-    
-    function stopLoadingAnimations() {
-         const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
-         const spinner = document.getElementById('loadingSpinnerContainer');
-         
-         if (previewPlaceholder) {
-            previewPlaceholder.classList.remove('loading');
-         }
-         if (spinner) {
-            spinner.style.display = 'none';
-         }
-         stopContinuousProgress(); 
-    }
-
-function resetUI() {
-        const inputElement = document.getElementById('nftLink');
-        const statusDiv = document.getElementById('status');
-        const tgButton = document.getElementById('openInTelegramButton'); 
-        // NEW: Image Button
-        const imgButton = document.getElementById('downloadImageButton');
-
-        document.getElementById('clearInputButton').classList.remove('active');
-        // ... (other resets) ...
-
-        if (inputElement.getAttribute('data-valid') !== 'false') {
-            document.getElementById('convertButton').style.display = 'block';
-            // ... (other displays) ...
-            
-            tgButton.disabled = true;
-            tgButton.setAttribute('aria-disabled', 'true');
-            // NEW: Disable Image Button
-            imgButton.disabled = true;
-            imgButton.setAttribute('aria-disabled', 'true');
-            fullGiftLink = null; 
-
-            statusDiv.innerHTML = '';
-            statusDiv.className = '';
-            statusDiv.classList.remove('active');
-
-            const convertButton = document.getElementById('convertButton');
-            convertButton.disabled = true;
-            convertButton.setAttribute('aria-disabled', 'true');
-            convertButton.classList.remove('loading');
-            hideSuccessAnimation();
-
-            resetPreview();
-            resetGiftDetails(); 
-            fetchedLottieJsonText = null;
-            lastLoadedNftId = null;
-        }
-    }
-    
-    function renderLottiePreview(json_data) {
-        stopLoadingAnimations();
-        resetPreview(); 
-        const previewBox = document.getElementById('lottie-preview');
-        previewBox.classList.add('active');
-
-        previewBox.classList.remove('flip');
-        void previewBox.offsetWidth; 
-        previewBox.classList.add('flip');
-
-        currentLottieAnimation = lottie.loadAnimation({
-            container: previewBox,
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            animationData: json_data
-        });
-    }
-
-    function updateProgress(percentage, message, isTemporary = false) {
-        const statusDiv = document.getElementById('status');
-        if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
-
-        const clampedPercentage = Math.max(0, Math.min(100, percentage));
-        
-        statusDiv.className = 'loading active';
-        statusDiv.innerHTML = `
-            <div>${message}</div>
-            <div class="progress-bar">
-                <div class="progress-bar-fill" style="width: ${clampedPercentage.toFixed(0)}%;"></div>
-            </div>
-        `;
-
-        if (isTemporary) {
-             statusMessageTimer = setTimeout(() => { statusDiv.classList.remove('active'); }, 3000);
-        }
-    }
-    
-    function startContinuousProgress() {
-        const statusDiv = document.getElementById('status');
-        statusDiv.className = 'loading active';
-        let currentPercentage = 5; 
-        const fillElement = document.querySelector('.progress-bar-fill');
-
-        if (continuousProgressTimer) clearInterval(continuousProgressTimer);
-
-        continuousProgressTimer = setInterval(() => {
-            if (!fillElement) return stopContinuousProgress(0);
-
-            if (currentPercentage < 45) {
-                const increment = currentPercentage < 20 ? 2 : 0.5;
-                currentPercentage += increment;
-                if (currentPercentage > 45) currentPercentage = 45;
-                fillElement.style.width = `${currentPercentage.toFixed(0)}%`;
-            }
-        }, 300); 
-    }
-
-    function stopContinuousProgress(finalPercentage = null) {
-        if (continuousProgressTimer) {
-            clearInterval(continuousProgressTimer);
-            continuousProgressTimer = null;
-        }
-        const fillElement = document.querySelector('.progress-bar-fill');
-        if (fillElement && finalPercentage !== null) {
-             fillElement.style.width = `${finalPercentage.toFixed(0)}%`;
-        }
-    }
-
-    function showFinalStatus(className, message, hint = null) {
-        const statusDiv = document.getElementById('status');
-        if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
-        stopContinuousProgress(className === 'success' ? 100 : 0); 
-        
-        statusDiv.className = `${className} active`;
-        
-        let htmlContent = `<div>${message}</div>`;
-        if (className === 'error' && hint) {
-            htmlContent += `<div class="error-action-hint">${hint}</div>`;
-        }
-        
-        statusDiv.innerHTML = htmlContent;
-    }
-
-    /* ================= LOGIC & EXTRACTION (Unchanged) ================= */
-    
-    function extractTraitFromTable(doc, label) {
-        const thElements = Array.from(doc.querySelectorAll('.tgme_gift_table th'));
-        for (const thElement of thElements) {
-            if (thElement.textContent.trim().toLowerCase() === label.toLowerCase()) {
-                 const tdElement = thElement.nextElementSibling;
-                 if (tdElement) {
-                     const innerHTML = tdElement.innerHTML.trim();
-                     const textContent = tdElement.textContent.trim();
-                     const percentMatch = innerHTML.match(/<mark>([^<]+)<\/mark>/i);
-                     let percentage = percentMatch ? percentMatch[1].trim() : '';
-                     let name = textContent.replace(percentage, '').trim().replace(/[\s,]*%$/, '').trim();
-                     if (name === '' && percentage !== '') name = label; 
-                     return { name: name || 'Unknown', percent: percentage };
-                 }
-            }
-        }
-        return { name: 'Unknown', percent: '' };
-    }
-
-    function extractOwnerAndQuantityFromTable(doc) {
-        let owner = 'Unknown';
-        let quantity = 'Unknown';
-        let giftedBy = 'Unknown';
-        let giftedTo = 'Unknown';
-        let giftedDate = 'Unknown';
-
-        const ownerTh = Array.from(doc.querySelectorAll('.tgme_gift_table th')).find(th => th.textContent.trim() === 'Owner');
-        if (ownerTh) {
-            const ownerTd = ownerTh.nextElementSibling;
-            if (ownerTd) {
-                const span = ownerTd.querySelector('span[dir="auto"]');
-                owner = span ? (span.querySelector('span') ? span.querySelector('span').textContent.trim() : span.textContent.trim()) : ownerTd.textContent.trim().split(' ')[0].replace(/[\(\)\[\]#]/g, '');
-            }
-        }
-
-        const quantityTh = Array.from(doc.querySelectorAll('.tgme_gift_table th')).find(th => th.textContent.trim() === 'Quantity');
-        if (quantityTh) {
-            const quantityTd = quantityTh.nextElementSibling;
-            if (quantityTd) {
-                quantity = quantityTd.textContent.trim();
-                quantity = quantity.replace(/issued/i, '').trim().replace(/\s*\/s*/, ' / '); 
-            }
-        }
-        
-        const footerTh = doc.querySelector('.tgme_gift_table th.footer[colspan="2"]');
-        if (footerTh) {
-            const textContent = footerTh.textContent.trim();
-            const giftedMatch = textContent.match(/Gifted by\s*([^\n\r]+?)\s*to\s*([^\n\r]+?)\s*on\s*([^\n\r]+)/i);
-
-            if (giftedMatch) {
-                const senderAnchor = footerTh.querySelector('a:first-child');
-                const recipientAnchor = footerTh.querySelector('a:last-child');
-                
-                giftedBy = senderAnchor ? (senderAnchor.querySelector('span') ? senderAnchor.querySelector('span').textContent.trim() : senderAnchor.textContent.trim()) : 'Unknown';
-                giftedTo = recipientAnchor ? (recipientAnchor.querySelector('span') ? recipientAnchor.querySelector('span').textContent.trim() : recipientAnchor.textContent.trim()) : 'Unknown';
-                
-                const dateMatch = textContent.match(/on\s*([^\n\r]+)$/i);
-                giftedDate = dateMatch ? dateMatch[1].trim() : 'Unknown';
-            } else {
-                const dateMatch = textContent.match(/Gifted on\s*([^\n\r]+)/i);
-                if (dateMatch) {
-                    giftedDate = dateMatch[1].trim();
-                }
-            }
-        }
-
-        return { owner, quantity, giftedBy, giftedTo, giftedDate };
-    }
-
-    function extractTrait(doc, traitName) {
-        const nextTraitStopWords = ['Backdrop:', 'Symbol:', 'Gifted by', 'Gifted on', 'Collected on', 'Owner:', 'issued', 'Model:'];
-        const stopRegex = new RegExp(`\\s+(${nextTraitStopWords.join('|').replace(/:/g, '\\s*:\\s*')})`, 'i');
-        const divs = Array.from(doc.querySelectorAll('div'));
-        
-        for (const div of divs) {
-            let textContent = div.textContent ? div.textContent.trim() : '';
-
-            if (textContent.startsWith(traitName) || textContent.startsWith(traitName + ':')) {
-                let fullValue = textContent.substring(traitName.length).trim();
-                fullValue = fullValue.replace(/^[-\.:\s]*/, '', '').trim(); 
-                
-                const match = fullValue.match(stopRegex);
-                let finalValue = fullValue;
-                if (match && match.index > 0) {
-                    finalValue = fullValue.substring(0, match.index).trim();
-                }
-                
-                finalValue = finalValue.replace(/\s[\d\.,]+\s*%(.*)?$/, '').trim(); 
-                finalValue = finalValue.replace(/\s[\d\.,]+\s*(%|issued)\s*$/, '').trim(); 
-                
-                return finalValue || 'Unknown';
-            }
-            
-            const bTag = div.querySelector('b');
-            if (bTag && bTag.textContent && bTag.textContent.trim() === traitName) {
-                let textValue = '';
-                let textNode = bTag.nextSibling;
-                while (textNode) {
-                    if (textNode.nodeType === 3) { 
-                        textValue += textNode.textContent;
-                    }
-                    if (textNode.nodeType === 1 && textNode !== bTag) break; 
-                    textNode = textNode.nextSibling;
-                }
-
-                textValue = textValue.trim().replace(/^[-\.:\s]*/, '').trim();
-                
-                const match = textValue.match(stopRegex);
-                let finalValue = textValue;
-                if (match && match.index > 0) {
-                    finalValue = textValue.substring(0, match.index).trim();
-                }
-                
-                finalValue = finalValue.replace(/\s[\d\.,]+\s*%(.*)?$/, '').trim();
-                finalValue = finalValue.replace(/\s[\d\.,]+\s*(%|issued)\s*$/, '').trim(); 
-                
-                return finalValue || 'Unknown';
-            }
-        }
-        return 'Unknown';
-    }
-
-    function extractOwnerAndQuantity(doc) {
-        let owner = 'Unknown';
-        let quantity = 'Unknown';
-        let giftedBy = 'Unknown';
-        let giftedTo = 'Unknown';
-        let giftedDate = 'Unknown';
-
-        const textContent = doc.body.textContent;
-
-        const ownerMatch = textContent.match(/Owner:\s*([^\n\r]+)/i);
-        if (ownerMatch) {
-            owner = ownerMatch[1].trim().split(' ')[0].replace(/[\(\)\[\]#]/g, '');
-        }
-        
-        const quantityMatch = textContent.match(/(\d[\d\s,]+)\s*(?:\/\s*(\d[\d\s,]+)\s*)?issued/i);
-        if (quantityMatch) {
-            quantity = quantityMatch[2] ? `${quantityMatch[1].trim()} / ${quantityMatch[2].trim()}` : `${quantityMatch[1].trim()}`;
-            quantity = quantity.replace(/\s+/g, ''); 
-        }
-
-        const giftedMatch = textContent.match(/Gifted by\s*([^\n\r]+?)\s*to\s*([^\n\r]+?)\s*on\s*([^\n\r]+)/i);
-        if (giftedMatch) {
-            giftedBy = giftedMatch[1].trim();
-            giftedTo = giftedMatch[2].trim();
-            giftedDate = giftedMatch[3].trim();
-        } else {
-            const dateMatch = textContent.match(/Gifted on\s*([^\n\r]+)/i);
-            if (dateMatch) {
-                giftedDate = dateMatch[1].trim();
-            }
-        }
-        return { owner, quantity, giftedBy, giftedTo, giftedDate };
-    }
-
-    async function fetchGiftDetailsFromHTML(nftLink, signal) {
-        const proxyUrl = CORS_PROXY + encodeURIComponent(nftLink);
-        let model = { name: 'Unknown', percent: '' };
-        let backdrop = { name: 'Unknown', percent: '' };
-        let symbol = { name: 'Unknown', percent: '' };
-        let ownerDetails = {};
-        let giftId = 'Unknown';
-
-        try {
-            const response = await fetch(proxyUrl, { signal });
-            if (!response.ok) throw new Error(`Proxy Error`);
-            const data = await response.json();
-            const doc = new DOMParser().parseFromString(data.contents, 'text/html');
-
-            try {
-                model = extractTraitFromTable(doc, 'Model');
-                backdrop = extractTraitFromTable(doc, 'Backdrop');
-                symbol = extractTraitFromTable(doc, 'Symbol');
-                ownerDetails = extractOwnerAndQuantityFromTable(doc);
-            } catch(e) { console.warn('Table parsing failed', e); }
-
-            if (model.name === 'Unknown') {
-                 let strModel = extractTrait(doc, 'Model');
-                 if(strModel === 'Unknown') {
-                      const meta = doc.querySelector('meta[name="twitter:description"]') || doc.querySelector('meta[property="og:description"]');
-                      if(meta) {
-                          const c = meta.content;
-                          const m = c.match(/Model:\s*([^,\n\r]+)/i);
-                          if(m) strModel = m[1].trim();
-                      }
-                 }
-                 model = { name: strModel, percent: '' };
-            }
-            if (Object.keys(ownerDetails).length === 0 || ownerDetails.owner === 'Unknown') {
-                ownerDetails = extractOwnerAndQuantity(doc);
-            }
-
-            const titleEl = doc.querySelector('meta[property="og:title"]') || doc.querySelector('title');
-            if(titleEl) giftId = (titleEl.getAttribute('content') || titleEl.textContent).replace(/ #\d+/, '').replace(/ — Telegram$/,'').replace(/ on Telegram$/,'').replace(/NFT Gift: /,'').replace(/Collectable Gift #\d+/,'').trim();
-            if(giftId === 'Unknown') {
-                 const h1 = doc.querySelector('h1') || doc.querySelector('.tgme_widget_message_link');
-                 if(h1) giftId = h1.textContent.trim().replace(/ #\d+/, '').trim();
-            }
-
-            return { 
-                ...ownerDetails, giftId, model, backdrop, symbol, nftLinkFull: nftLink, isError: false 
-            };
-        } catch (err) {
-            if (err.name === 'AbortError') throw err;
-            console.error(err);
-            return { isError: true, nftLinkFull: nftLink, ...ownerDetails, model, backdrop, symbol, giftId };
-        }
-    }
-
-    /* ================= MAIN HANDLERS (Updated for Logging) ================= */
-    
-    function openGiftLinkInTelegram() {
-        if (fullGiftLink) {
-            window.open(fullGiftLink, '_blank');
-        }
-    }
-function downloadNFTImage() {
-    if (!currentNftId) return;
-
-    // Construct the image URL based on the Fragment NFT ID structure
-    const imageUrl = `https://nft.fragment.com/gift/${currentNftId}.medium.jpg`;
-
-    // 1. Show loading state
-    const imgButton = document.getElementById('downloadImageButton');
-    imgButton.classList.add('loading');
-    imgButton.disabled = true;
-    showFinalStatus('loading', `Downloading image...`);
-
-    // 2. Fetch the image data as a Blob
-    fetch(imageUrl)
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return response.blob();
-        })
-        .then(blob => {
-            // 3. Create a local download link (bypassing CORS issues)
-            const tempUrl = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            
-            downloadLink.href = tempUrl;
-            downloadLink.download = `${currentNftId}.medium.jpg`;
-            
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(tempUrl);
-
-            // 4. Cleanup and feedback
-            imgButton.classList.remove('loading');
-            imgButton.disabled = false;
-            animateDownloadSuccess('downloadImageButton');
-            showFinalStatus('success', `Downloaded ${currentNftId}.medium.jpg.`);
-            
-            logConversionAttempt(currentNftId, null, 'IMAGE_DOWNLOAD', 'Thumbnail image downloaded.');
-        })
-        .catch(error => {
-            // ... (Error handling) ...
-        });
-}
-
-    async function handleAutoLoad() {
-        const inputElement = document.getElementById('nftLink');
-        const linkInput = inputElement.value.trim();
-        const match = linkInput.match(LINK_REGEX);
-        const icon = document.getElementById('validationIcon');
-        const tgButton = document.getElementById('openInTelegramButton'); 
-
-        document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
-
-        if (!match) {
-            if (linkInput === '') resetUI();
-            return;
-        }
-
-        const newNftId = match[1];
-        const nftLinkFull = `https://t.me/nft/${newNftId}`;
-        
-        fullGiftLink = nftLinkFull; 
-
-// NEW: Image Button
-const imgButton = document.getElementById('downloadImageButton');
-
-if (newNftId === lastLoadedNftId) {
-    document.getElementById('convertButton').disabled = false;
-    document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
-    document.getElementById('downloadJsonButton').style.display = 'block';
-    
-    tgButton.disabled = false; 
-    tgButton.setAttribute('aria-disabled', 'false');
-    
-    // ⭐ CONFIRM THIS IS PRESENT ⭐
-    imgButton.disabled = false; 
-    imgButton.setAttribute('aria-disabled', 'false'); 
-    
-    return;
-}
-
-
-        if (fetchAbortController) fetchAbortController.abort();
-        fetchAbortController = new AbortController();
-        const signal = fetchAbortController.signal;
-
-        currentNftId = newNftId;
-        const lottieUrl = LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`;
-
-        document.getElementById('downloadJsonButton').style.display = 'none';
-        document.getElementById('optimizeButton').style.display = 'none';
-        tgButton.disabled = true; 
-
-        fetchedLottieJsonText = null;
-        resetGiftDetails();
-        startLoadingAnimations();
-        
-        updateProgress(5, `STEP 1/2: Fetching details and animation...`);
-        startContinuousProgress();
-
-        try {
-            const [lottieData, giftDetails] = await Promise.all([
-                fetchLottieData(currentNftId, lottieUrl, true, signal),
-                fetchGiftDetailsFromHTML(nftLinkFull, signal)
-            ]);
-
-            stopContinuousProgress(50);
-            stopLoadingAnimations();
-
-            showGiftDetails(giftDetails, giftDetails.isError);
-
-             if (lottieData) {
-                renderLottiePreview(lottieData);
-                lastLoadedNftId = currentNftId;
-                showFinalStatus('success', `Data loaded. Ready to convert.`);
-                document.getElementById('convertButton').disabled = false;
-                document.getElementById('convertButton').setAttribute('aria-disabled', 'false');
-                document.getElementById('downloadJsonButton').style.display = 'block';
-                
-                tgButton.disabled = false; 
-                tgButton.setAttribute('aria-disabled', 'false');
-                
-                // ⭐ ADD THESE TWO LINES ⭐
-                document.getElementById('downloadImageButton').disabled = false; 
-                document.getElementById('downloadImageButton').setAttribute('aria-disabled', 'false');
-            } else {
-                lastLoadedNftId = null;
-                document.getElementById('convertButton').disabled = true;
-                const previewBox = document.getElementById('lottie-preview');
-                previewBox.innerHTML = '<div class="preview-placeholder" style="color:var(--error); font-weight:600;">Animation Not Found</div>';
-                 showFinalStatus('error', 
-                    'Animation not found.',
-                    'Check the link for typos or try clearing the input and re-pasting.'
-                );
-                logConversionAttempt(currentNftId, null, 'ERROR', 'Animation data not found.');
-            }
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-            lastLoadedNftId = null;
-            stopContinuousProgress(0); 
-            stopLoadingAnimations(); 
-            const previewBox = document.getElementById('lottie-preview');
-            previewBox.innerHTML = '<div class="preview-placeholder" style="color:var(--error); font-weight:600;">Network Error. Please try again.</div>';
-            showFinalStatus('error', 
-                `Failed to fetch details.`,
-                'A network issue occurred. Ensure the link is correct and try again.'
-            );
-            logConversionAttempt(currentNftId, null, 'ERROR', 'Network or Fetch Failure during AutoLoad.');
-        } finally {
-            fetchAbortController = null;
-        }
-    }
-    
-    async function fetchLottieData(nftId, lottieUrl, isAutoLoad = false, signal = null) {
-        if (!isAutoLoad) {
-             startLoadingAnimations();
-             updateProgress(5, `STEP 1/2: Fetching ${nftId} metadata...`);
-             startContinuousProgress(); 
-        }
-        try {
-            const response = await fetch(lottieUrl, { signal });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const text = await response.text();
-            fetchedLottieJsonText = text;
-            const jsonData = JSON.parse(text);
-            if (!isAutoLoad) {
-                 stopContinuousProgress(50);
-                 renderLottiePreview(jsonData);
-            }
-            return jsonData;
-        } catch (error) {
-            if (error.name === 'AbortError') throw error;
-            if (!isAutoLoad) {
-                stopContinuousProgress(0);
-                showFinalStatus('error', `Fetch Error: ${error.message}`, 'Could not retrieve animation data from Fragment.');
-                stopLoadingAnimations();
-                logConversionAttempt(nftId, null, 'ERROR', `Lottie Fetch Failed: ${error.message}`);
-            }
-            return null;
-        }
-    }
-    
-    function convertAndDownload() {
-        const convertButton = document.getElementById('convertButton');
-        if (!validateInput()) return;
-
-        if (!fetchedLottieJsonText) {
-             const linkInput = document.getElementById('nftLink').value.trim();
-             const match = linkInput.match(LINK_REGEX);
-             if(!match) { convertButton.classList.remove('loading'); convertButton.disabled = false; return; }
-             currentNftId = match[1];
-             
-             convertButton.classList.add('loading');
-             convertButton.disabled = true;
-             updateProgress(5, `STEP 1/2: Re-fetching ${currentNftId} animation...`);
-             startContinuousProgress();
-             
-             fetchLottieData(currentNftId, LOTTIE_FRAGMENT_BASE + `${currentNftId}.lottie.json`, false).then((data)=>{
-                 if(!data) {
-                     convertButton.classList.remove('loading'); 
-                     convertButton.disabled = true; 
-                     return;
-                 }
-                 performCompressionAndDownload(convertButton);
-             });
-             return;
-        }
-        
-        performCompressionAndDownload(convertButton);
-    }
-
-    function performCompressionAndDownload(convertButton) {
-        convertButton.classList.add('loading');
-        convertButton.disabled = true;
-
-        try {
-            updateProgress(50, `STEP 2/2: Compressing to .TGS...`);
-
-            setTimeout(() => {
-                let success = false;
-                try {
-                    const jsonBytes = new TextEncoder().encode(fetchedLottieJsonText);
-                    const tgsBytes = pako.gzip(jsonBytes);
-                    const tgsSizeKB = (tgsBytes.length / 1024).toFixed(2);
-
-                    if (tgsBytes.length >= TELEGRAM_TGS_LIMIT_BYTES) {
-                        document.getElementById('convertButton').style.display = 'none';
-                        document.getElementById('downloadJsonButton').style.display = 'block';
-                        document.getElementById('optimizeButton').style.display = 'block';
-                        
-                        showFinalStatus('error', 
-                            `Size ${tgsSizeKB}KB exceeds 64KB limit. Cannot convert.`,
-                            `Click 'Optimize Tool 🛠️' to reduce file size, or download the JSON to optimize externally.`
-                        );
-                        logConversionAttempt(currentNftId, tgsSizeKB, 'SIZE_EXCEEDED', `Size limit exceeded (${tgsSizeKB} KB > 64 KB)`);
-                        return; 
-                    }
-
-                    updateProgress(90, `Finalizing and preparing download...`);
-                    
-                    const tgsBlob = new Blob([tgsBytes], { type: 'application/x-tgsticker' });
-                    const tempUrl = URL.createObjectURL(tgsBlob);
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = tempUrl;
-                    downloadLink.download = `${currentNftId}.tgs`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    URL.revokeObjectURL(tempUrl);
-
-                    showSuccessAnimation();
-                    showFinalStatus('success', `Downloaded ${currentNftId}.tgs (${tgsSizeKB} KB)`);
-                    document.getElementById('downloadJsonButton').style.display = 'block';
-                    
-                    logConversionAttempt(currentNftId, tgsSizeKB, 'SUCCESS', `Successfully downloaded .tgs (${tgsSizeKB} KB)`);
-                    success = true;
-
-                } catch (error) {
-                    console.error("Compression/Download Error:", error);
-                    showFinalStatus('error', 
-                        `System Error: ${error.message}`,
-                        `Check your browser console for technical details, or try clearing the input and re-pasting the link.`
-                    );
-                    logConversionAttempt(currentNftId, null, 'ERROR', `Compression/Download Failed: ${error.message}`);
-                } finally {
-                    convertButton.classList.remove('loading');
-                    convertButton.disabled = success ? false : true; 
-                }
-            }, 50);
-        
-        } catch (error) {
-             console.error("Initial Compression Setup Error:", error);
-             convertButton.classList.remove('loading');
-             convertButton.disabled = false;
-             showFinalStatus('error', 'Critical setup error occurred.', 'Please try refreshing the page.');
-             logConversionAttempt(currentNftId, null, 'ERROR', 'Critical setup error occurred.');
-        }
-    }
-    
-    // --- MODIFIED downloadRawJson function with Logging FIX ---
-    function downloadRawJson() {
-        const linkInput = document.getElementById('nftLink').value.trim();
-        const match = linkInput.match(LINK_REGEX);
-        if(!match) return;
-        const nftId = match[1];
-        
-        if(fetchedLottieJsonText) {
-            // 1. Download Logic (Unchanged)
-            const blob = new Blob([fetchedLottieJsonText], {type:'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `${nftId}.json`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-            
-            // 2. Animation (Unchanged)
-            animateDownloadSuccess('downloadJsonButton');
-
-            // 3. Status Display (Unchanged)
-            showFinalStatus('success', 'JSON Downloaded.');
-
-            // --- CRITICAL FIX: Log the JSON download ---
-            logConversionAttempt(
-                nftId, 
-                null, // No TGS size available
-                'JSON_DOWNLOAD', 
-                'Raw JSON downloaded for external optimization.'
-            );
-        }
-    }
-
-    
-    function openOptimizationTool() { window.open('https://lottiefiles.com/optimise', '_blank'); }
-
-    // Theme Logic 
-    function applyTheme(isDarkMode) {
-        const body = document.body;
-        const toggleIconWrapper = document.getElementById('themeIconWrapper');
-        if (isDarkMode) {
-            body.classList.add('dark-mode');
-            toggleIconWrapper.innerHTML = ICON_SUN; 
-        } else {
-            body.classList.remove('dark-mode');
-            toggleIconWrapper.innerHTML = ICON_MOON; 
-        }
-        if (typeof initParticles === 'function') initParticles();
-    }
-    function toggleTheme() {
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        applyTheme(!isDarkMode);
-        localStorage.setItem('darkMode', !isDarkMode ? 'true' : 'false');
-    }
-    
-    // Simple button animation for JSON download (since the TGS function has its own)
-    function animateDownloadSuccess(buttonId) {
-        const button = document.getElementById(buttonId);
-        button.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            button.style.transform = 'scale(1)';
-        }, 150);
-        showSuccessAnimation(); 
-    }
-
-    // Input Validation (Updated with shake animation)
-    function validateInput() {
-        const inputElement = document.getElementById('nftLink');
-        const linkInput = inputElement.value.trim();
-        const isValid = LINK_REGEX.test(linkInput);
-        const icon = document.getElementById('validationIcon');
-        const btn = document.getElementById('convertButton');
-
-        document.getElementById('clearInputButton').classList.toggle('active', linkInput.length > 0);
-
-        if (linkInput === '') {
-            inputElement.removeAttribute('data-valid');
-            inputElement.classList.remove('shake'); 
-            icon.style.opacity = 0;
-            icon.classList.remove('animated');
-            btn.disabled = true;
-            resetUI();
-            return false;
-        }
-
-        const wasValid = inputElement.getAttribute('data-valid') === 'true';
-
-        inputElement.setAttribute('data-valid', isValid ? 'true' : 'false');
-        icon.innerHTML = isValid ? '✓' : '✕';
-        icon.style.color = isValid ? 'var(--success)' : 'var(--error)';
-        icon.style.opacity = 1;
-        btn.disabled = !isValid;
-        
-        if (isValid !== wasValid) {
-            icon.classList.remove('animated');
-            void icon.offsetWidth; 
-            icon.classList.add('animated');
-        }
-
-        if (!isValid) {
-            inputElement.classList.remove('shake');
-            void inputElement.offsetWidth;
-            inputElement.classList.add('shake');
-            
-            showFinalStatus('error', 'Invalid Link.', 'Format must be: t.me/nft/NFT-ID');
-            resetPreview();
-            resetGiftDetails();
-        } else {
-             inputElement.classList.remove('shake');
-        }
-        return isValid;
-    }
-    
-    function clearInput() {
-        const input = document.getElementById('nftLink');
-        input.value = '';
-        input.removeAttribute('data-valid');
-        document.getElementById('validationIcon').style.opacity = 0;
-        document.getElementById('validationIcon').classList.remove('animated');
-        document.getElementById('clearInputButton').classList.remove('active');
-        resetUI();
-        input.focus();
-    }
-
-    // Success Animation 
-    function showSuccessAnimation() {
-        const container = document.getElementById('success-lottie-container');
-        if (container && successLottieAnimation) {
-            container.classList.add('show');
-            successLottieAnimation.goToAndPlay(0, true);
-            setTimeout(() => { 
-                successLottieAnimation.stop(); 
-                container.classList.remove('show'); 
-            }, 2000);
-        }
-    }
-    function hideSuccessAnimation() {
-         document.getElementById('success-lottie-container').classList.remove('show');
-         if (successLottieAnimation) successLottieAnimation.stop();
-    }
-    
-    // --- FIREBASE INITIALIZATION ---
-    function initializeFirebase() {
-        const historyList = document.getElementById('history-list');
-        const userIdDisplay = document.getElementById('user-id-display');
-
-        if (!firebaseConfig) {
-             console.error("Firebase config is missing. History will not work.");
-             historyList.innerHTML = `<li class="log-placeholder log-error">Firebase config is missing.</li>`;
-             userIdDisplay.textContent = 'Error';
-             return;
-        }
-
-        setLogLevel('debug');
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        
-        historyList.innerHTML = `<li class="log-placeholder">Authenticating user...</li>`;
-
-
-        // Use onAuthStateChanged for reliable user ID detection
-        const authUnsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                // User is signed in.
-                userId = user.uid;
-                isAuthReady = true;
-                console.log("Firebase Auth Ready. User ID:", userId);
-                userIdDisplay.textContent = `User ID: ${userId.substring(0, 4)}...${userId.substring(userId.length - 4)}`;
-                historyList.innerHTML = `<li class="log-placeholder">Loading history...</li>`;
-                setupConversionLogListener();
-            } else {
-                // No user is signed in, attempt anonymous sign-in or use fallback
-                const signIn = initialAuthToken ? 
-                                signInWithCustomToken(auth, initialAuthToken) : 
-                                signInAnonymously(auth);
-
-                signIn.catch(error => {
-                    console.error("Firebase Authentication Error (Anonymous/Token):", error);
-                    // Fallback to a random ID if auth fails completely
-                    userId = crypto.randomUUID();
-                    isAuthReady = true;
-                    console.log("Using Anonymous/Fallback ID:", userId);
-                    userIdDisplay.textContent = `User ID: FALLBACK`;
-                    historyList.innerHTML = `<li class="log-placeholder log-warning">Auth failed. Logging locally/fallback.</li>`;
-                    setupConversionLogListener();
-                });
-            }
-            // Stop listening to the auth state once we have a user/fallback to prevent re-runs
-            if (isAuthReady) authUnsubscribe(); 
-        });
-    }
-
-
-    // Initialization 
-document.addEventListener('DOMContentLoaded', () => {
-        const input = document.getElementById('nftLink');
-        
-        // Setup Firebase
-        initializeFirebase();
-
-        document.getElementById('convertButton').addEventListener('click', convertAndDownload);
-        document.getElementById('downloadJsonButton').addEventListener('click', downloadRawJson);
-        document.getElementById('optimizeButton').addEventListener('click', openOptimizationTool);
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        document.getElementById('clearInputButton').addEventListener('click', clearInput);
-        document.getElementById('openInTelegramButton').addEventListener('click', openGiftLinkInTelegram);
-        
-        // --- ADD THIS LINE TO FIX THE ISSUE ---
-        document.getElementById('downloadImageButton').addEventListener('click', downloadNFTImage); 
-
-        const inputHandler = () => { validateInput(); handleAutoLoad(); };
-        input.addEventListener('paste', () => setTimeout(inputHandler, 50));
-        input.addEventListener('input', inputHandler);
-
-        // Theme Init
-        const savedTheme = localStorage.getItem('darkMode');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyTheme(savedTheme === 'true' || (savedTheme === null && prefersDark));
-
-        // Success Anim Init
-        const successContainer = document.getElementById('success-lottie-container');
-        if (successContainer) {
-            successLottieAnimation = lottie.loadAnimation({
-                container: successContainer, renderer: 'svg', loop: false, autoplay: false, animationData: successCheckmarkLottie
-            });
-        }
-        
-        // Initial Check
-        if(input.value) { validateInput(); handleAutoLoad(); }
-    });
-
-
-    // Particle System (Subtle Background) 
-    (function() {
-        const canvas = document.getElementById('particle-canvas');
-        if (!canvas) return; 
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let w, h;
-        
-        window.initParticles = function() {
-             w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
-             particles = [];
-             for (let i = 0; i < (w < 600 ? 30 : 60); i++) particles.push(new Particle());
-        }
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * w;
-                this.y = Math.random() * h;
-                this.radius = Math.random() * 2 + 0.5;
-                this.vx = Math.random() * 0.2 - 0.1;
-                this.vy = Math.random() * 0.2 - 0.1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-                const particleColor = getComputedStyle(document.documentElement).getPropertyValue('--particle-color').trim() || 'rgba(100,100,100,0.1)';
-                ctx.fillStyle = particleColor;
-                ctx.fill();
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                if (this.x < 0) this.x = w; if (this.x > w) this.x = 0;
-                if (this.y < 0) this.y = h; if (this.y > h) this.y = 0;
-            }
-        }
-        
-        function loop() {
-            if (!canvas.isConnected) return;
-            requestAnimationFrame(loop);
-            ctx.clearRect(0, 0, w, h);
-            particles.forEach(p => { p.update(); p.draw(); });
-        }
-        
-        initParticles(); 
-        loop();
-        window.addEventListener('resize', initParticles);
-    })();
-</script>
+  </div>
+ 
+  <div id="settings-modal" class="modal" aria-hidden="true">
+    <div class="modalCard">
+      <h3 style="margin-top:0">Animation Settings</h3>
+      <div class="setting-row">
+        <label>Width (px)</label>
+        <input type="number" id="set-w" class="setting-input">
+      </div>
+      <div class="setting-row">
+        <label>Height (px)</label>
+        <input type="number" id="set-h" class="setting-input">
+      </div>
+      <div class="setting-row">
+        <label>Frame Rate (fps)</label>
+        <input type="number" id="set-fr" class="setting-input">
+      </div>
+      <div class="setting-row">
+        <label>Scale (%)</label>
+        <input type="number" id="set-scale" class="setting-input" value="100">
+      </div>
+      <div style="margin-top:20px; display:flex; gap:10px">
+        <button id="applySettings" class="primary" style="flex:1">Apply</button>
+        <button class="ghost modal-close settings-close" style="flex:1">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; font-size:11px; color:var(--text-muted); padding-bottom:12px">
+    Created By @Magic_Mall_GameShop © 2025
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
