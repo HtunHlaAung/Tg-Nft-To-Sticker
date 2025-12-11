@@ -12,8 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     
    <style>
-    /* CSS is unchanged */
-    /* ... (Your original CSS) ... */
     /* CSS VARIABLES */
     :root {
         /* Light Mode */
@@ -37,7 +35,6 @@
         --particle-color: rgba(30, 41, 59, 0.1); 
         --tg-card-bg: rgba(255,255,255,0.8);
         
-        /* ADAPTIVE ICON COLOR - DARK for Light Mode */
         --icon-fill: #1e293b;
         
         /* CSS Spinner Variables */
@@ -74,7 +71,6 @@
         --particle-color: rgba(255, 255, 255, 0.05); 
         --tg-card-bg: rgba(30, 41, 59, 0.4);
         
-        /* ADAPTIVE ICON COLOR - LIGHT for Dark Mode */
         --icon-fill: #f8fafc;
         
         /* History Colors */
@@ -122,6 +118,21 @@
         transform: rotateX(1deg) rotateY(-1deg) scale(1.01);
         box-shadow: 0 16px 40px 0 rgba(31, 38, 135, 0.2);
     }
+    
+    /* ⭐ NEW: Working State Glow (KEPT) ⭐ */
+    .container.is-working {
+        box-shadow: 0 0 0 4px var(--accent-glow), var(--glass-shadow);
+        animation: workingPulse 2s infinite alternate; 
+    }
+    
+    @keyframes workingPulse {
+        0% { box-shadow: 0 0 0 0px var(--accent-glow), var(--glass-shadow); }
+        100% { box-shadow: 0 0 0 4px var(--accent-glow), 0 8px 32px 0 rgba(31, 38, 135, 0.2); }
+    }
+    .dark-mode .container.is-working {
+        box-shadow: 0 0 0 4px var(--accent-glow), var(--glass-shadow);
+    }
+    /* ⭐ END NEW ⭐ */
 
     h1 {
         font-family: 'Space Grotesk', sans-serif;
@@ -226,7 +237,8 @@
 
     input[type="text"] {
         width: 100%;
-        padding: 16px 80px 16px 16px; 
+        /* REVERTED: Original padding restored (removed space for paste button) */
+        padding: 16px 50px 16px 16px; 
         background: var(--input-bg);
         border: 1px solid var(--input-border);
         border-radius: 12px;
@@ -248,7 +260,9 @@
     input[data-valid="true"] { border-color: var(--success); }
     input[data-valid="false"] { border-color: var(--error); }
 
-    /* Clear Button */
+    /* Paste Button removed from here */
+    
+    /* Clear Button - REVERTED Position back to the far right */
     #clearInputButton {
         position: absolute;
         right: 12px; 
@@ -259,9 +273,9 @@
         color: var(--text-secondary);
         font-size: 14px;
         cursor: pointer;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%; 
+        width: 32px; 
+        height: 32px;
+        border-radius: 8px; 
         display: flex;
         align-items: center;
         justify-content: center;
@@ -283,10 +297,10 @@
         pointer-events: auto;
     }
     
-    /* Validation Icon (Check/X) */
+    /* Validation Icon (Check/X) - REVERTED Position next to clear button */
     .validation-icon {
         position: absolute;
-        right: 44px; 
+        right: 50px; /* Adjusted back to 50px, which is left of the clear button */
         top: 50%;
         transform: translateY(-50%);
         font-size: 1.1rem;
@@ -405,11 +419,9 @@
     /* NEW: Secondary Actions Container */
     .secondary-actions {
         display: flex;
-        /* NEW: Changed to space-between to clearly separate the main button from the secondary ones */
         justify-content: space-between; 
         margin-bottom: 0px; 
         transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        /* New: Add a small gap between buttons */
         gap: 12px;
     }
 
@@ -428,7 +440,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0; /* Important: prevents shrinking */
+        flex-shrink: 0; 
     }
 
     /* General style for the SVG icons inside these buttons */
@@ -441,7 +453,6 @@
     
     /* NEW: Download Icon specific color and hover */
     #downloadImageButton:hover:not(:disabled) {
-        /* Use a light-blue/accent color for download hover */
         color: var(--accent-primary); 
         transform: translateY(-2px) scale(1.05);
         background: rgba(59, 130, 246, 0.1); 
@@ -452,7 +463,6 @@
     
     /* Open In Telegram Button (retained specific hover color) */
     #openInTelegramButton:hover:not(:disabled) {
-        /* Hover uses Telegram's signature blue for emphasis */
         color: #0088cc; 
         transform: translateY(-2px) scale(1.05);
         background: rgba(0, 136, 204, 0.1); 
@@ -766,10 +776,10 @@
     height: 70px; /* Item height */
     cursor: pointer; 
     transition: transform 0.3s ease-out, box-shadow 0.3s ease;
-    /* Changed from 50% to square corners */
     border-radius: 12px; 
     background: transparent;
     padding: 5px; /* Add internal padding */
+    position: relative; /* Added for the timestamp */
 }
 
 /* Floating effect on hover */
@@ -777,6 +787,24 @@
     transform: translateY(-4px) scale(1.1); 
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
+
+/* ⭐ NEW: Timestamp Badge (KEPT) ⭐ */
+.log-item-timestamp {
+    position: absolute;
+    bottom: -15px; /* Position below the item */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--input-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0.7;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
 
 /* --- 4. MINI PREVIEW CONTAINER (THE LOTTIE SQUARE) --- */
 .log-mini-preview {
@@ -796,10 +824,6 @@
     justify-content: center;
     align-items: center;
 }
-
-/* --- 5. STATUS INDICATOR DOT REMOVED --- */
-/* The entire .log-item::after block has been removed as requested. */
-
 
 /* Force the embedded SVG (the Lottie canvas) to fill its parent */
 .log-mini-preview svg {
@@ -849,7 +873,9 @@
                 aria-required="true"
                 autocomplete="off"
             >
+            
             <span class="validation-icon" id="validationIcon"></span>
+            
             <button id="clearInputButton" aria-label="Clear input">✕</button>
         </div>
         
@@ -868,7 +894,7 @@
 
     <button id="openInTelegramButton" disabled aria-disabled="true" aria-label="Open in Telegram">
                     <svg id="telegram-icon" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" fill="none">
-                        <path stroke="currentColor" stroke-width="12" d="M23.073 88.132s65.458-26.782 88.16-36.212c8.702-3.772 38.215-15.843 38.215-15.843s13.621-5.28 12.486 7.544c-.379 5.281-3.406 23.764-6.433 43.756-4.54 28.291-9.459 59.221-9.459 59.221s-.756 8.676-7.188 10.185c-6.433 1.509-17.027-5.281-18.919-6.79-1.513-1.132-28.377-18.106-38.214-26.404-2.649-2.263-5.676-6.79.378-12.071 13.621-12.447 29.891-27.913 39.728-37.72 4.54-4.527 9.081-15.089-9.837-2.264-26.864 18.483-53.35 35.835-53.35 35.835s-6.053 3.772-17.404.377c-11.351-3.395-24.594-7.921-24.594-7.921s-9.08-5.659 6.433-11.693Z"/>
+                        <path stroke="currentColor" stroke-width="12" d="M23.073 88.132s65.458-26.782 88.16-36.212c8.702-3.772 38.215-15.843 38.215-15.843s13.621-5.28 12.486 7.544c-.379 5.281-3.406 23.764-6.433 43.756-4.54 28.291-9.459 59.221-9.459 59.221s-.756 8.676-7.188 10.185c-6.433 1.509-17.027-5.281-18.919-6.79-1.513-1.132-28.377-18.106-38.214-26.404-2.649-2.263-5.676-6.79.378-12.071 13.621-12.447 29.891-27.913 39.728-37.72 4.54-4.527 9.081-15.089-9.837-2.264-26.864 18.483-53.35 35.835-53.35 35.835s-6.053 3.772-17.404.377c-11.351-3.395-24.594-7.921-24.594-7.921s-9.080-5.659 6.433-11.693Z"/>
                     </svg>
                 </button>
             </div>
@@ -953,7 +979,7 @@
         "layers": [{"ddd": 0, "ind": 1, "ty": 4, "nm": "Checkmark", "sr": 1, "ks": {"o": {"a": 0, "k": 100, "ix": 11}, "rp": {"a": 0, "k": 0, "ix": 12}, "s": {"a": 0, "k": [100, 100, 100], "ix": 6}, "p": {"a": 0, "k": [50, 50, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0, 0], "ix": 1}, "r": {"a": 0, "k": 0, "ix": 10}}, "ao": 0, "shapes": [{"ty": "gr", "nm": "Group 1", "it": [{"ty": "sh", "nm": "Path 1", "ind": 0, "ks": {"a": 0, "k": {"i": [[-1.2, 0], [0, -1.2], [1.2, 0]], "o": [[0, -1.2], [1.2, 0], [0, 1.2]], "v": [[28.5, 52.8], [42.6, 66.8], [71.5, 37.9]]}, "ix": 2}, "mn": "ADBEVectorShape", "hd": false}, {"ty": "st", "c": {"a": 0, "k": [0, 0.8, 0.4, 1], "ix": 3}, "o": {"a": 0, "k": 100, "ix": 4}, "w": {"a": 0, "k": 10, "ix": 5}, "lc": 1, "lj": 1, "ml": 4, "mn": "ADBEVectorGraphicStroke", "hd": false}, {"ty": "gr", "nm": "Group 2", "it": [], "mn": "ADBEVectorGroup", "hd": false}], "mn": "ADBEVectorGroup", "hd": false}], "bm": 0}]
     };
 
-    /* ================= FIREBASE LOGGING FUNCTIONS ================= */
+    /* ================= FIREBASE LOGGING FUNCTIONS (KEPT) ================= */
     
     function getConversionLogCollectionRef() {
         if (!db || !userId) return null;
@@ -999,9 +1025,34 @@
             }
         }
     }
-
     
-  // --- Replace your existing renderConversionHistory function ---
+    // ⭐ Utility function to format Firestore Timestamp (KEPT) ⭐
+    function formatTimeAgo(firestoreTimestamp) {
+        if (!firestoreTimestamp || !firestoreTimestamp.seconds) return 'N/A';
+        const now = Date.now();
+        const seconds = firestoreTimestamp.seconds;
+        const milliseconds = seconds * 1000 + (firestoreTimestamp.nanoseconds / 1000000 || 0);
+        const diff = now - milliseconds;
+        
+        const units = [
+            { name: "year", ms: 31536000000 },
+            { name: "month", ms: 2592000000 },
+            { name: "day", ms: 86400000 },
+            { name: "hour", ms: 3600000 },
+            { name: "minute", ms: 60000 },
+            { name: "second", ms: 1000 }
+        ];
+
+        for (const unit of units) {
+            const count = Math.floor(diff / unit.ms);
+            if (count >= 1) {
+                return `${count}${unit.name.charAt(0)} ago`;
+            }
+        }
+        return 'just now';
+    }
+    
+    // --- Render Conversion History (KEPT) ---
     function renderConversionHistory(logs) {
         const list = document.getElementById('history-list');
         
@@ -1021,13 +1072,17 @@
                                 log.status === 'SIZE_EXCEEDED' ? 'log-warning' : 'log-error';
             
             const nftId = log.nftId;
+            // ⭐ NEW: Get formatted time ⭐
+            const timeAgo = formatTimeAgo(log.timestamp);
 
             const listItem = document.createElement('li');
             listItem.className = `log-item ${statusClass}`;
             listItem.dataset.nftId = nftId; 
             
+            // ⭐ NEW: Added timestamp element ⭐
             listItem.innerHTML = `
-                <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.status}"></div>
+                <div id="lottie-mini-${index}" class="log-mini-preview" title="${nftId} - ${log.sizeKB ? log.sizeKB + 'KB' : 'N/A'}"></div>
+                <span class="log-item-timestamp">${timeAgo}</span>
             `;
             
             list.appendChild(listItem);
@@ -1050,7 +1105,7 @@
     }
 
 
-     // --- MODIFIED setupConversionLogListener ---
+     // --- MODIFIED setupConversionLogListener (KEPT) ---
     function setupConversionLogListener() {
         if (!isAuthReady || !db) return; 
 
@@ -1085,7 +1140,7 @@
     }
 
 
-    /* ================= CORE UI DISPLAY FUNCTIONS ================= */
+    /* ================= CORE UI DISPLAY FUNCTIONS (KEPT) ================= */
 
     function showGiftDetails(details, isError = false) { 
         // ... (existing showGiftDetails function)
@@ -1202,9 +1257,11 @@
         document.getElementById('loadingSpinnerContainer').style.display = 'none';
     }
 
+    // ⭐ MODIFIED: To include 'is-working' class on the container (KEPT) ⭐
     function startLoadingAnimations() {
         const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
         const spinner = document.getElementById('loadingSpinnerContainer');
+        const container = document.querySelector('.container');
 
         resetPreview(); 
         if (previewPlaceholder) {
@@ -1213,11 +1270,16 @@
         if (spinner) {
             spinner.style.display = 'block';
         }
+        
+        // Start working state
+        container.classList.add('is-working');
     }
     
+    // ⭐ MODIFIED: To remove 'is-working' class on the container (KEPT) ⭐
     function stopLoadingAnimations() {
          const previewPlaceholder = document.querySelector('#lottie-preview .preview-placeholder');
          const spinner = document.getElementById('loadingSpinnerContainer');
+         const container = document.querySelector('.container');
          
          if (previewPlaceholder) {
             previewPlaceholder.classList.remove('loading');
@@ -1226,6 +1288,9 @@
             spinner.style.display = 'none';
          }
          stopContinuousProgress(); 
+         
+         // Stop working state
+         container.classList.remove('is-working');
     }
 
 function resetUI() {
@@ -1234,6 +1299,7 @@ function resetUI() {
         const tgButton = document.getElementById('openInTelegramButton'); 
         // NEW: Image Button
         const imgButton = document.getElementById('downloadImageButton');
+        const container = document.querySelector('.container'); // Get container
 
         document.getElementById('clearInputButton').classList.remove('active');
         // ... (other resets) ...
@@ -1263,6 +1329,9 @@ function resetUI() {
             resetGiftDetails(); 
             fetchedLottieJsonText = null;
             lastLoadedNftId = null;
+            
+            // ⭐ MODIFIED: Remove working state on full reset (KEPT) ⭐
+            container.classList.remove('is-working');
         }
     }
     
@@ -1285,6 +1354,7 @@ function resetUI() {
         });
     }
 
+    // ⭐ MODIFIED: Updated message for clarity in working state (KEPT) ⭐
     function updateProgress(percentage, message, isTemporary = false) {
         const statusDiv = document.getElementById('status');
         if (statusMessageTimer) { clearTimeout(statusMessageTimer); statusMessageTimer = null; }
@@ -1293,7 +1363,7 @@ function resetUI() {
         
         statusDiv.className = 'loading active';
         statusDiv.innerHTML = `
-            <div>${message}</div>
+            <div>**WORKING:** ${message}</div>
             <div class="progress-bar">
                 <div class="progress-bar-fill" style="width: ${clampedPercentage.toFixed(0)}%;"></div>
             </div>
@@ -1304,9 +1374,14 @@ function resetUI() {
         }
     }
     
+    // ⭐ MODIFIED: Updated to use a more visible start message (KEPT) ⭐
     function startContinuousProgress() {
         const statusDiv = document.getElementById('status');
+        const container = document.querySelector('.container');
+        
         statusDiv.className = 'loading active';
+        container.classList.add('is-working');
+        
         let currentPercentage = 5; 
         const fillElement = document.querySelector('.progress-bar-fill');
 
@@ -1322,8 +1397,11 @@ function resetUI() {
                 fillElement.style.width = `${currentPercentage.toFixed(0)}%`;
             }
         }, 300); 
+        
+        updateProgress(5, `Starting background fetch and parsing...`);
     }
 
+    // ⭐ MODIFIED: Stop continuous progress and remove working state (KEPT) ⭐
     function stopContinuousProgress(finalPercentage = null) {
         if (continuousProgressTimer) {
             clearInterval(continuousProgressTimer);
@@ -1333,6 +1411,9 @@ function resetUI() {
         if (fillElement && finalPercentage !== null) {
              fillElement.style.width = `${finalPercentage.toFixed(0)}%`;
         }
+        
+        // Remove the working glow only when stopping the progress explicitly
+        document.querySelector('.container').classList.remove('is-working');
     }
 
     function showFinalStatus(className, message, hint = null) {
@@ -1564,6 +1645,8 @@ function resetUI() {
 
     /* ================= MAIN HANDLERS (Updated for Logging) ================= */
     
+    // REMOVED: pasteFromClipboard function 
+
     function openGiftLinkInTelegram() {
         if (fullGiftLink) {
             window.open(fullGiftLink, '_blank');
@@ -1610,6 +1693,10 @@ function downloadNFTImage() {
         })
         .catch(error => {
             // ... (Error handling) ...
+            imgButton.classList.remove('loading');
+            imgButton.disabled = false;
+             showFinalStatus('error', `Image Download Failed.`, `Could not fetch image for ${currentNftId}.`);
+             logConversionAttempt(currentNftId, null, 'ERROR', `Image Download Failed: ${error.message}`);
         });
 }
 
@@ -1666,7 +1753,7 @@ if (newNftId === lastLoadedNftId) {
         resetGiftDetails();
         startLoadingAnimations();
         
-        updateProgress(5, `STEP 1/2: Fetching details and animation...`);
+        // Removed explicit updateProgress(5...) and replaced with startContinuousProgress
         startContinuousProgress();
 
         try {
@@ -1783,6 +1870,8 @@ if (newNftId === lastLoadedNftId) {
     function performCompressionAndDownload(convertButton) {
         convertButton.classList.add('loading');
         convertButton.disabled = true;
+        // ⭐ MODIFIED: Ensure working state is active during compression (KEPT) ⭐
+        document.querySelector('.container').classList.add('is-working');
 
         try {
             updateProgress(50, `STEP 2/2: Compressing to .TGS...`);
@@ -1836,6 +1925,8 @@ if (newNftId === lastLoadedNftId) {
                 } finally {
                     convertButton.classList.remove('loading');
                     convertButton.disabled = success ? false : true; 
+                    // ⭐ MODIFIED: Remove working state after final status (KEPT) ⭐
+                    document.querySelector('.container').classList.remove('is-working');
                 }
             }, 50);
         
@@ -1848,7 +1939,7 @@ if (newNftId === lastLoadedNftId) {
         }
     }
     
-    // --- MODIFIED downloadRawJson function with Logging FIX ---
+    // --- MODIFIED downloadRawJson function with Logging FIX (KEPT) ---
     function downloadRawJson() {
         const linkInput = document.getElementById('nftLink').value.trim();
         const match = linkInput.match(LINK_REGEX);
@@ -1987,7 +2078,7 @@ if (newNftId === lastLoadedNftId) {
          if (successLottieAnimation) successLottieAnimation.stop();
     }
     
-    // --- FIREBASE INITIALIZATION ---
+    // --- FIREBASE INITIALIZATION (KEPT) ---
     function initializeFirebase() {
         const historyList = document.getElementById('history-list');
         const userIdDisplay = document.getElementById('user-id-display');
@@ -2053,11 +2144,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         document.getElementById('clearInputButton').addEventListener('click', clearInput);
         document.getElementById('openInTelegramButton').addEventListener('click', openGiftLinkInTelegram);
-        
-        // --- ADD THIS LINE TO FIX THE ISSUE ---
         document.getElementById('downloadImageButton').addEventListener('click', downloadNFTImage); 
+        
+        // REMOVED: Paste Button Listener was here
 
         const inputHandler = () => { validateInput(); handleAutoLoad(); };
+        // We can still listen for paste events on the input field
         input.addEventListener('paste', () => setTimeout(inputHandler, 50));
         input.addEventListener('input', inputHandler);
 
